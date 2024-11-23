@@ -1,0 +1,1892 @@
+# Translation of Plugins - Slider, Gallery, and Carousel by MetaSlider &#8211; Responsive WordPress Image Sliders - Stable (latest release) in Korean
+# This file is distributed under the same license as the Plugins - Slider, Gallery, and Carousel by MetaSlider &#8211; Responsive WordPress Image Sliders - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-09-10 07:52:32+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ko_KR\n"
+"Project-Id-Version: Plugins - Slider, Gallery, and Carousel by MetaSlider &#8211; Responsive WordPress Image Sliders - Stable (latest release)\n"
+
+#: themes/nexus/v1.0.0/theme.php:46
+msgid "Click Here"
+msgstr "여기를 클릭하세요"
+
+#: themes/manifest.php:48
+msgid "To add a button to the Nexus theme, enter the URL and the button text into the \"Link\" tab."
+msgstr "Nexus 테마에 버튼을 추가하려면 '링크' 탭에 URL과 버튼 텍스트를 입력합니다."
+
+#: themes/manifest-premium.php:39
+msgid "This is the Beta version of the Hero Theme and currently it must be full-width. It should also be used with Carousel Mode disabled."
+msgstr "이 테마는 영웅 테마의 베타 버전이며 현재 전체 폭으로 사용해야 합니다. 또한 캐러셀 모드를 비활성화한 상태에서 사용해야 합니다."
+
+#: themes/manifest-premium.php:38
+msgid "A dynamic slideshow theme that emphasizes the active slide by scaling it larger than the surrounding slides, creating a hero-like focal point that draws the viewer's attention."
+msgstr "활성 슬라이드를 주변 슬라이드보다 크게 확대하여 강조하는 역동적인 슬라이드쇼 테마로, 시청자의 시선을 사로잡는 영웅과 같은 초점을 만들어 줍니다."
+
+#: themes/manifest-legacy.php:47 themes/manifest.php:47
+msgid "Featuring a built-in button with custom link, Nexus seamlessly integrates key points and interactive elements, making your presentation both engaging and navigable."
+msgstr "사용자 지정 링크가 내장된 버튼이 있는 Nexus는 핵심 포인트와 대화형 요소를 매끄럽게 통합하여 프레젠테이션을 매력적이고 탐색하기 쉽게 만들어 줍니다."
+
+#: themes/bitono/customize.php:34 themes/clarity/customize.php:34
+#: themes/databold/customize.php:34 themes/draxler/customize.php:34
+msgid "Caption links"
+msgstr "캡션 링크"
+
+#: themes/bitono/customize.php:28 themes/clarity/customize.php:28
+#: themes/databold/customize.php:28 themes/draxler/customize.php:28
+msgid "Caption text"
+msgstr "캡션 텍스트"
+
+#: themes/bitono/customize.php:22 themes/clarity/customize.php:22
+#: themes/databold/customize.php:22 themes/draxler/customize.php:22
+msgid "Caption background"
+msgstr "캡션 배경"
+
+#: ml-slider.php:2309
+msgid "A TikTok Slide will display a video in your slideshow directly from TikTok.com."
+msgstr "틱톡 슬라이드는 TikTok.com에서 바로 슬라이드쇼에 동영상을 표시합니다."
+
+#: ml-slider.php:2305
+msgid "Create slideshows with Tiktok Videos"
+msgstr "틱톡 동영상으로 슬라이드쇼 만들기"
+
+#: ml-slider.php:1796
+msgid "Loading... Please wait! This may take some minutes due we're downloading sample Local videos."
+msgstr "로드 중... 잠시만 기다려주세요! 샘플 로컬 동영상을 다운로드하는 중이므로 몇 분 정도 걸릴 수 있습니다."
+
+#: ml-slider.php:728
+msgid "Tiktok"
+msgstr "틱톡"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:739
+#: admin/views/pages/parts/slider-settings.php:624
+msgid "Image Animation"
+msgstr "이미지 애니메이션"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:685
+#: admin/views/pages/parts/slider-settings-legacy.php:701
+msgid "Number of Squares"
+msgstr "제곱 수"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:452
+#: admin/views/pages/parts/slider-settings.php:381
+msgid "Stop On First Slide After Looping"
+msgstr "루핑 후 첫 번째 슬라이드에서 중지"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:162
+#: admin/views/pages/parts/slider-settings.php:98
+msgid "Visible On Hover"
+msgstr "마우스오버 시 표시"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:159
+#: admin/views/pages/parts/slider-settings.php:95
+msgid "Visible"
+msgstr "표시함"
+
+#: themes/manifest-premium.php:31
+msgid "Ideal for Images, Post Feed slides, YouTube and Vimeo vertical videos."
+msgstr "이미지, 포스트 피드 슬라이드, 유튜브 및 비메오 세로형 동영상에 이상적입니다."
+
+#: themes/manifest-premium.php:30
+msgid "A theme to showcase vertical images and videos."
+msgstr "세로 이미지와 동영상을 보여줄 수 있는 테마입니다."
+
+#: themes/manifest-premium.php:28
+msgid "vertical"
+msgstr "수직"
+
+#: themes/manifest-premium.php:27
+msgid "videos"
+msgstr "동영상"
+
+#: themes/manifest-premium.php:18
+msgid "Image, External URL and Post Feed slides are displayed in 2 columns, while the rest of slide types in 1 column."
+msgstr "이미지, 외부 URL 및 포스트 피드 슬라이드는 2개의 열에 표시되고 나머지 슬라이드 유형은 1개의 열에 표시됩니다."
+
+#: themes/manifest-premium.php:17
+msgid "A 2 columns minimalistic theme to split your images and captions."
+msgstr "이미지와 캡션을 분할할 수 있는 2열의 미니멀한 테마."
+
+#: themes/manifest-premium.php:15
+msgid "2 columns"
+msgstr "2열"
+
+#: themes/manifest-premium.php:14 themes/manifest-premium.php:26
+msgid "minimalist"
+msgstr "미니멀리스트"
+
+#: themes/manifest-legacy.php:23 themes/manifest.php:23
+msgid "Clarity is focused on accessibility. It has easy-to-read fonts, and a straightforward, distraction-free interface."
+msgstr "Clarity는 접근성에 중점을 두고 있습니다. 읽기 쉬운 글꼴과 산만하지 않은 직관적인 인터페이스가 특징입니다."
+
+#: ml-slider.php:1751
+msgid "Slide restored."
+msgstr "슬라이드가 복원되었습니다."
+
+#: ml-slider.php:1748
+msgid "Slide permanently deleted."
+msgstr "슬라이드가 영구 삭제되었습니다."
+
+#: admin/views/pages/upgrade.php:87
+msgid "MetaSlider Pro provides stylish and exclusive themes for your slideshows."
+msgstr "메타슬라이더 프로는 슬라이드쇼를 위한 세련되고 독점적인 테마를 제공합니다."
+
+#: admin/views/pages/upgrade.php:86
+msgid "Extra premium themes"
+msgstr "추가 프리미엄 테마"
+
+#: admin/views/pages/upgrade.php:63
+msgid "Easily include videos hosted by YouTube, Vimeo or TikTok."
+msgstr "유튜브, 비메오 또는 틱톡에서 호스팅하는 동영상을 쉽게 포함할 수 있습니다."
+
+#: admin/views/pages/upgrade.php:62
+msgid "Add YouTube, Vimeo and Tiktok slides"
+msgstr "유튜브, 비메오, 틱톡 슬라이드 추가하기"
+
+#: admin/views/pages/start.php:55
+msgid "Create a demo slideshow."
+msgstr "데모 슬라이드쇼를 만듭니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:879
+#: admin/views/pages/parts/slider-settings.php:686
+msgid "This is used on the navigation button for the active slide. It helps screen readers understand which slide is active."
+msgstr "활성 슬라이드의 탐색 버튼에 사용됩니다. 화면 리더가 어떤 슬라이드가 활성화되어 있는지 이해하는 데 도움이 됩니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:874
+#: admin/views/pages/parts/slider-settings.php:681
+msgid "ARIA Current"
+msgstr "ARIA 현재"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:535
+#: admin/views/pages/parts/slider-settings.php:464
+msgid "Loop Carousel Continuously"
+msgstr "캐러셀 연속 반복"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:517
+msgid "Display multiple slides at once. Slideshow output will be 100% wide. Carousel Mode only uses the \"Slide\" Effect."
+msgstr "한 번에 여러 개의 슬라이드를 표시합니다. 슬라이드쇼 출력은 100% 너비로 표시됩니다. 캐러셀 모드는 '슬라이드' 효과만 사용합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:450
+#: admin/views/pages/parts/slider-settings.php:379
+msgid "Loop Continuously"
+msgstr "연속 루프"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:437
+#: admin/views/pages/parts/slider-settings.php:366
+msgid "This allows user to pause or resume Auto Play on the slideshow."
+msgstr "이를 통해 사용자는 슬라이드쇼에서 자동 재생을 일시 중지하거나 다시 시작할 수 있습니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:432
+#: admin/views/pages/parts/slider-settings.php:361
+msgid "Play / Pause Button"
+msgstr "재생/일시 정지 버튼"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:181
+#: admin/views/pages/parts/slider-settings.php:117
+msgid "Show navigation options so that users can browse the slides."
+msgstr "사용자가 슬라이드를 탐색할 수 있도록 탐색 옵션을 표시합니다."
+
+#: admin/views/pages/dashboard.php:28
+msgid "Slideshows permanently deleted."
+msgstr "슬라이드쇼가 영구적으로 삭제됩니다."
+
+#: themes/manifest-legacy.php:39 themes/manifest.php:39
+msgid "Draxler is a minimalist theme."
+msgstr "드랙슬러는 미니멀한 테마입니다."
+
+#: themes/manifest-legacy.php:31 themes/manifest.php:31
+msgid "Databold is a minimalist theme recommended for Image, External Image and Post feed slides."
+msgstr "데이터볼드는 이미지, 외부 이미지 및 글 피드 슬라이드에 권장되는 미니멀한 테마입니다."
+
+#: themes/manifest-legacy.php:15 themes/manifest.php:15
+msgid "Bitono is a minimalist theme with a 2-color scheme. Recommended for Image, External Image and Post feed slides."
+msgstr "비토노는 2가지 색상을 사용하는 미니멀한 테마입니다. 이미지, 외부 이미지 및 포스트 피드 슬라이드에 권장됩니다."
+
+#: inc/slider/metaslider.class.php:252
+msgid "Click the \"Add Slide\" button to create your slideshow"
+msgstr "슬라이드쇼를 만들려면 '슬라이드 추가' 버튼을 클릭합니다."
+
+#: inc/slide/metaslide.image.class.php:492
+msgid "Link"
+msgstr "링크"
+
+#: admin/views/slides/tabs/link.php:45
+msgid "This text is used by search engines and visitors using screen readers. Adding Alt text for links is highly recommended."
+msgstr "이 텍스트는 검색 엔진과 화면 리더를 사용하는 방문자가 사용합니다. 링크에 대체 텍스트를 추가하는 것이 좋습니다."
+
+#: admin/views/slides/tabs/link.php:44
+msgid "Image Link Alt Text"
+msgstr "이미지 링크 대체 텍스트"
+
+#: admin/views/slides/tabs/link.php:9
+msgid "Image Link URL"
+msgstr "이미지 링크 URL"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:853
+#: admin/views/pages/parts/slider-settings.php:660
+msgid "This helps make the slideshow navigation more accessible."
+msgstr "이렇게 하면 슬라이드쇼 탐색에 더 쉽게 액세스할 수 있습니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:848
+#: admin/views/pages/parts/slider-settings.php:655
+msgid "Tabindex For Navigation"
+msgstr "내비게이션용 탭 색인"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:866
+#: admin/views/pages/parts/slider-settings.php:673
+msgid "If Autoplay is enabled, this causes screen readers to announce that the slides are changing."
+msgstr "자동 재생을 사용하도록 설정하면 화면 리더가 슬라이드가 변경되고 있음을 알립니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:861
+#: admin/views/pages/parts/slider-settings.php:668
+msgid "ARIA Live"
+msgstr "ARIA 라이브"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:829
+#: admin/views/pages/parts/slider-settings.php:636
+msgid "Accessibility Options"
+msgstr "접근성 옵션"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:447
+#: admin/views/pages/parts/slider-settings.php:376
+msgid "If you choose \"Loop continuously\", the slides will loop infinitely. If you choose \"Stop on first slide after looping\", the slideshow will stop on the first slide after showing all the items. If you choose \"Stop on last slide\", the slides will stop on the last slide."
+msgstr "\"계속 반복\"을 선택하면 슬라이드가 무한히 반복됩니다. \"반복 후 첫 번째 슬라이드에서 중지\"를 선택하면 슬라이드 쇼가 모든 항목을 표시한 후 첫 번째 슬라이드에서 중지됩니다. '마지막 슬라이드에서 중지'를 선택하면 슬라이드가 마지막 슬라이드에서 중지됩니다."
+
+#: ml-slider.php:1793
+msgid "Loading... Please wait!"
+msgstr "로드 중... 잠시만 기다려주세요!"
+
+#: admin/views/slides/tabs/seo.php:34
+msgid "This text is used by search engines and visitors using screen readers. Adding Alt text is highly recommended."
+msgstr "이 텍스트는 검색 엔진과 화면 리더를 사용하는 방문자가 사용합니다. 대체 텍스트를 추가하는 것이 좋습니다."
+
+#: admin/views/slides/tabs/seo.php:8
+msgid "Visitors will see this text if they hover over your image slide. Adding Title text is useful but not required."
+msgstr "방문자가 이미지 슬라이드 위로 마우스를 가져가면 이 텍스트가 표시됩니다. 제목 텍스트를 추가하는 것은 유용하지만 필수는 아닙니다."
+
+#: admin/views/slides/tabs/link.php:10
+msgid "When visitors click on your image slide, they will be taken to this URL."
+msgstr "방문자가 이미지 슬라이드를 클릭하면 이 URL로 이동합니다."
+
+#: admin/views/slides/tabs/crop.php:7
+msgid "Choose how images are cropped if their size doesn't exactly match the size of your slideshow. This works if \"Smart Crop\" is selected in the \"Image Crop\" settings."
+msgstr "이미지 크기가 슬라이드쇼의 크기와 정확히 일치하지 않는 경우 이미지 자르기 방법을 선택합니다. '이미지 자르기' 설정에서 '스마트 자르기'를 선택하면 이 기능이 작동합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:741
+#: admin/views/pages/parts/slider-settings.php:626
+msgid "Easing adds gradual acceleration and deceleration to slide transitions, rather than abrupt starts and stops. Easing only uses the \"Slide\" Effect."
+msgstr "완화는 슬라이드 전환에 갑작스러운 시작과 정지가 아닌 점진적인 가속 및 감속을 추가합니다. 완화는 '슬라이드' 효과만 사용합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:653
+#: admin/views/pages/parts/slider-settings.php:582
+msgid "Transition Speed"
+msgstr "전환 속도"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:568
+#: admin/views/pages/parts/slider-settings.php:497
+msgid "This adds an animation when the slideshow loads. It only uses the \"Fade\" transition effect."
+msgstr "슬라이드쇼가 로드될 때 애니메이션을 추가합니다. '페이드' 전환 효과만 사용합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:540
+#: admin/views/pages/parts/slider-settings.php:469
+msgid "Infinite loop of slides when Carousel Mode is enabled. This option disables arrows and navigation."
+msgstr "캐러셀 모드가 활성화된 경우 슬라이드 무한 루프. 이 옵션은 화살표 및 탐색 기능을 비활성화합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:411
+#: admin/views/pages/parts/slider-settings.php:340
+msgid "Center align the slideshow in the available space on your website."
+msgstr "웹사이트의 사용 가능한 공간에 슬라이드쇼를 중앙에 정렬합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:376
+#: admin/views/pages/parts/slider-settings.php:305
+msgid "When enabled this setting will hide the navigation on screen widths equal to or greater than %spx."
+msgstr "이 설정을 활성화하면 %spx보다 큰 화면 너비에서는 내비게이션이 숨겨집니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:354
+#: admin/views/pages/parts/slider-settings-legacy.php:365
+#: admin/views/pages/parts/slider-settings.php:283
+#: admin/views/pages/parts/slider-settings.php:294
+msgid "When enabled this setting will hide the navigation on screen widths of %1$spx to %2$spx."
+msgstr "이 설정을 활성화하면 %1$spx에서 %2$spx의 화면 너비에서 탐색을 숨깁니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:344
+#: admin/views/pages/parts/slider-settings.php:273
+msgid "When enabled this setting will hide the navigation on screen widths less than %spx."
+msgstr "이 설정을 활성화하면 화면 너비가 %spx 미만인 경우 내비게이션이 숨겨집니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:339
+#: admin/views/pages/parts/slider-settings.php:268
+msgid "Hide Navigation On"
+msgstr "탐색 켜짐 숨기기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:327
+#: admin/views/pages/parts/slider-settings.php:256
+msgid "When enabled this setting will hide the arrows on screen widths equal to or greater than %spx."
+msgstr "이 설정을 활성화하면 %spx보다 큰 화면 너비에서 화살표가 숨겨집니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:305
+#: admin/views/pages/parts/slider-settings-legacy.php:316
+#: admin/views/pages/parts/slider-settings.php:234
+#: admin/views/pages/parts/slider-settings.php:245
+msgid "When enabled this setting will hide the arrows on screen widths of %1$spx to %2$spx."
+msgstr "이 설정을 활성화하면 화면 너비가 %1$spx~%2$spx인 경우 화살표가 숨겨집니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:295
+#: admin/views/pages/parts/slider-settings.php:224
+msgid "When enabled this setting will hide the arrows on screen widths less than %spx."
+msgstr "이 설정을 활성화하면 화면 너비가 %spx 미만인 경우 화살표가 숨겨집니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:290
+#: admin/views/pages/parts/slider-settings.php:219
+msgid "Hide Arrows On"
+msgstr "화살표 켜짐 숨기기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:285
+#: admin/views/pages/parts/slider-settings.php:214
+msgid "Mobile Options"
+msgstr "모바일 옵션"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:54
+#: admin/views/pages/parts/slider-settings.php:58
+msgid "This animation is used when changing slides."
+msgstr "이 애니메이션은 슬라이드를 변경할 때 사용됩니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:52
+#: admin/views/pages/parts/slider-settings.php:56
+msgid "Transition Effect"
+msgstr "전환 효과"
+
+#: admin/routes/api.php:1217
+msgid "Import data could not be processed"
+msgstr "가져오기 데이터를 처리할 수 없습니다."
+
+#: admin/routes/api.php:1201
+msgid "Import slug not found"
+msgstr "가져오기 슬러그를 찾을 수 없습니다."
+
+#: themes/manifest-legacy.php:190 themes/manifest.php:191
+msgid "A minimalist theme that gets out of the way so you can showcasing your beautiful pictures. Best used with Image Slides."
+msgstr "아름다운 사진을 보여줄 수 있도록 방해 요소를 없애주는 미니멀한 테마입니다. 이미지 슬라이드와 함께 사용하는 것이 가장 좋습니다."
+
+#: inc/slide/metaslide.image.class.php:89
+msgid "This isn't a valid image format. Please try again."
+msgstr "유효한 이미지 형식이 아닙니다. 다시 시도해 주십시오."
+
+#: inc/slide/metaslide.class.php:440
+msgid "Duplicate slide"
+msgstr "슬라이드 복제"
+
+#: admin/views/pages/parts/toolbar.php:86
+msgid "Adding custom CSS is a MetaSlider Pro feature. Click to learn more."
+msgstr "사용자 정의 CSS 추가는 메타슬라이더 프로 기능입니다. 자세히 알아보려면 클릭하세요."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:714
+#: admin/views/pages/parts/slider-settings.php:599
+msgid "Select the direction that slides will move. Vertical will not work if \"Carousel mode\" is enabled or \"Effect\" is set to \"Fade\"."
+msgstr "슬라이드가 이동할 방향을 선택합니다. '캐러셀 모드'가 활성화되어 있거나 '효과'가 '페이드'로 설정되어 있으면 수직이 작동하지 않습니다."
+
+#: admin/views/pages/parts/slider-settings.php:446
+msgid "Display multiple slides at once. Slideshow output will be 100% wide. Carousel Mode only uses the 'Slide' Effect."
+msgstr "한 번에 여러 개의 슬라이드를 표시합니다. 슬라이드쇼 출력은 100% 너비로 표시됩니다. 캐러셀 모드는 '슬라이드' 효과만 사용합니다."
+
+#: admin/routes/api.php:1095 admin/assets/dist/js/app.js:2
+msgid "Maximum Number of Custom Field in Post Feed Sliders"
+msgstr "포스트 피드 슬라이더의 최대 사용자 정의 필드 수"
+
+#: admin/Notices.php:369 admin/routes/api.php:140
+#: inc/slide/metaslide.class.php:149 inc/slide/metaslide.image.class.php:133
+#: inc/slide/metaslide.image.class.php:152
+#: inc/slide/metaslide.image.class.php:237 ml-slider.php:829 ml-slider.php:911
+#: ml-slider.php:1023 ml-slider.php:2523 ml-slider.php:2564
+msgid "Access denied. Sorry, you do not have permission to complete this task."
+msgstr "액세스가 거부되었습니다. 죄송합니다. 이 작업을 완료할 수 있는 권한이 없습니다."
+
+#: ml-slider.php:1957
+msgctxt "Keep the plugin name \"MetaSlider\" when possible"
+msgid "Select slideshow to insert into post"
+msgstr "게시물에 삽입할 슬라이드쇼 선택"
+
+#: admin/views/slides/tabs/schedule.php:9
+msgid "With MetaSlider Pro, you can schedule your slides. You can choose to show your slides on specific dates, days of the week, or times of day."
+msgstr "메타슬라이더 프로를 사용하면 슬라이드를 예약할 수 있습니다. 특정 날짜, 요일 또는 시간대에 슬라이드를 표시하도록 선택할 수 있습니다."
+
+#: admin/views/slides/tabs/schedule.php:8
+msgid "Get MetaSlider Pro"
+msgstr "메타슬라이더 프로 다운로드"
+
+#: admin/views/slides/tabs/mobile.php:95
+msgid "When enabled this setting will hide the caption on screen widths of %1$spx to %2$spx"
+msgstr "이 설정을 활성화하면 %1$spx~%2$spx의 화면 너비에서 캡션이 숨겨집니다."
+
+#: admin/views/slides/tabs/mobile.php:85
+msgid "When enabled this setting will hide the caption on screen widths equal to or greater than %spx"
+msgstr "이 설정을 활성화하면 %spx보다 큰 화면 너비에서는 캡션이 숨겨집니다."
+
+#: admin/views/slides/tabs/mobile.php:56
+msgid "When enabled this setting will hide the slide on screen widths of %1$spx to %2$spx"
+msgstr "이 설정을 활성화하면 %1$spx~%2$spx의 화면 너비에서 슬라이드가 숨겨집니다."
+
+#: admin/views/slides/tabs/mobile.php:46
+msgid "When enabled this setting will hide the slide on screen widths equal to or greater than %spx"
+msgstr "이 설정을 활성화하면 %spx보다 큰 화면 너비에서 슬라이드가 숨겨집니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:655
+#: admin/views/pages/parts/slider-settings.php:584
+msgid "Choose the speed of the animation in milliseconds. You can select the animation in the \"Effect\" field."
+msgstr "애니메이션의 속도를 밀리초 단위로 선택합니다. '효과' 필드에서 애니메이션을 선택할 수 있습니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:620
+#: admin/views/pages/parts/slider-settings.php:549
+msgid "Allow touch swipe navigation of the slider on touch-enabled devices."
+msgstr "터치 지원 장치에서 슬라이더의 터치 스와이프 탐색을 허용합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:615
+#: admin/views/pages/parts/slider-settings.php:544
+msgid "Touch Swipe"
+msgstr "터치 스와이프"
+
+#: admin/Table.php:38
+msgid "You don't have any slideshows yet. Click %shere%s to create a new slideshow."
+msgstr "아직 슬라이드쇼가 없습니다. %s여기%s를 클릭하여 새 슬라이드쇼를 만듭니다."
+
+#: ml-slider.php:1880
+msgid "Move slideshow to trash"
+msgstr "슬라이드쇼를 휴지통으로 이동"
+
+#: inc/slide/metaslide.image.class.php:512
+msgid "Mobile"
+msgstr "모바일"
+
+#: admin/views/slides/tabs/mobile.php:72
+msgid "Hide caption on:"
+msgstr "캡션 숨기기 켜짐:"
+
+#: admin/views/slides/tabs/mobile.php:33
+msgid "Hide slide on:"
+msgstr "슬라이드 숨기기 켜짐:"
+
+#: admin/views/slides/tabs/link.php:22
+msgid "Open link in a new window"
+msgstr "새 창에서 링크 열기"
+
+#: admin/views/slides/tabs/link.php:20
+msgid "New window"
+msgstr "새 창"
+
+#: admin/views/pages/upgrade.php:127
+msgid "Hide any slide, without having to delete them."
+msgstr "슬라이드를 삭제할 필요 없이 숨길 수 있습니다."
+
+#: admin/views/pages/upgrade.php:111
+msgid "Customize your slideshows to fit with your website."
+msgstr "웹사이트에 맞게 슬라이드쇼를 사용자 정의하세요."
+
+#: admin/views/pages/upgrade.php:102
+msgid "Add Post Feed slides"
+msgstr "포스트 피드 슬라이드 추가"
+
+#: admin/views/pages/upgrade.php:79
+msgid "Create slideshows with external videos."
+msgstr "외부 동영상으로 슬라이드쇼를 만듭니다."
+
+#: admin/views/pages/upgrade.php:78
+msgid "Add external video slides"
+msgstr "외부 동영상 슬라이드 추가"
+
+#: admin/views/pages/upgrade.php:71
+msgid "Create slideshows with videos from your WordPress media library."
+msgstr "워드프레스 미디어 라이브러리에 있는 동영상으로 슬라이드쇼를 만듭니다."
+
+#: admin/views/pages/upgrade.php:70
+msgid "Add local video slides"
+msgstr "로컬 비디오 슬라이드 추가"
+
+#: admin/views/pages/upgrade.php:55
+msgid "Allow users to browse your slideshows using thumbnail navigation."
+msgstr "사용자가 썸네일 탐색을 사용하여 슬라이드쇼를 탐색할 수 있도록 허용합니다."
+
+#: admin/views/pages/upgrade.php:39
+msgid "We keep MetaSlider compatible with the latest versions of WordPress."
+msgstr "메타슬라이더는 최신 버전의 워드프레스와 호환성을 유지합니다."
+
+#: admin/views/pages/upgrade.php:20
+msgid "Free"
+msgstr "무료"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:895
+#: admin/views/pages/parts/slider-settings.php:702
+msgid "Enter custom CSS classes to apply to the slider wrapper. Separate multiple classes with a space."
+msgstr "슬라이더 래퍼에 적용할 사용자 정의 CSS 클래스를 입력합니다. 여러 클래스를 공백으로 구분합니다."
+
+#: ml-slider.php:2270
+msgid "External Video Slides will display your MP4, WebM, and MOV videos. Features include text captions, cover images, auto play, mute, lazy load, the ability to hide controls, and much more."
+msgstr "외부 비디오 슬라이드에는 MP4, WebM 및 MOV 동영상이 표시됩니다. 텍스트 캡션, 표지 이미지, 자동 재생, 음소거, 지연 로드, 컨트롤 숨기기 기능 등 다양한 기능을 제공합니다."
+
+#: ml-slider.php:2266
+msgid "With External Video slides, you can add videos directly from non-WordPress sources."
+msgstr "외부 비디오 슬라이드를 사용하면 워드프레스가 아닌 소스에서 직접 비디오를 추가할 수 있습니다."
+
+#: ml-slider.php:2262
+msgid "Create slideshows with videos stored outside of WordPress"
+msgstr "워드프레스 외부에 저장된 동영상으로 슬라이드쇼 만들기"
+
+#: ml-slider.php:727
+msgid "External Video"
+msgstr "외부 비디오"
+
+#: admin/views/pages/parts/slider-settings.php:133
+#: admin/assets/dist/js/app.js:2
+msgid "Filmstrip (Pro)"
+msgstr "필름스트립(프로)"
+
+#: admin/views/pages/parts/slider-settings.php:129
+#: admin/assets/dist/js/app.js:2
+msgid "Thumbnail (Pro)"
+msgstr "썸네일(프로)"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:451
+#: admin/views/pages/parts/slider-settings.php:380
+msgid "Stop On Last Slide"
+msgstr "마지막 슬라이드에서 중지"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:445
+#: admin/views/pages/parts/slider-settings.php:374
+msgid "Loop"
+msgstr "루프"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:401
+#: admin/views/pages/parts/slider-settings.php:330
+msgid "Advanced Options"
+msgstr "고급 옵션"
+
+#: admin/Table.php:131 admin/views/pages/parts/shortcode.php:11
+msgid "Click to copy shortcode."
+msgstr "클릭하여 쇼트코드를 복사합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:250
+#: admin/views/pages/parts/slider-settings.php:180
+msgid "Theme"
+msgstr "테마"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:20
+#: admin/views/pages/parts/slider-settings.php:24
+msgid "Main Options"
+msgstr "주요 옵션"
+
+#: ml-slider.php:543 ml-slider.php:546
+msgid "Create Slideshow"
+msgstr "슬라이드쇼 만들기"
+
+#: ml-slider.php:532 ml-slider.php:535
+msgid "All Slideshows"
+msgstr "모든 슬라이드쇼"
+
+#: inc/slider/metaslider.class.php:295
+msgid "Edit Slideshow"
+msgstr "슬라이드쇼 편집"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:504
+#: admin/views/pages/parts/slider-settings.php:433
+msgid "Allow navigation to follow the slide's height smoothly."
+msgstr "탐색이 슬라이드 높이를 부드럽게 따라갈 수 있도록 허용"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:499
+#: admin/views/pages/parts/slider-settings.php:428
+msgid "Smooth Height"
+msgstr "부드러운 높이"
+
+#. Description of the plugin
+#: ml-slider.php
+msgid "MetaSlider gives you the power to create a beautiful slideshow, carousel, or gallery on your WordPress site."
+msgstr "메타슬라이더는 워드프레스 사이트에서 멋진 슬라이드쇼, 캐러셀 또는 갤러리를 만들 수 있는 기능을 제공합니다."
+
+#: ml-slider.php:2442
+msgid "Allowed Files"
+msgstr "허용된 파일"
+
+#: ml-slider.php:2227
+msgid "Local Video slides will display your MP4, WebM, and MOV videos with cover images, auto play, mute, lazy load, the ability to hide controls, and much more."
+msgstr "로컬 비디오 슬라이드에는 표지 이미지, 자동 재생, 음소거, 지연 로드, 컨트롤 숨기기 기능 등이 포함된 MP4, WebM 및 MOV 비디오가 표시됩니다."
+
+#: ml-slider.php:2223
+msgid "With Local Video slides, you can build beautiful slideshows with videos in your WordPress media library."
+msgstr "로컬 비디오 슬라이드를 사용하면 워드프레스 미디어 라이브러리에 있는 동영상으로 멋진 슬라이드쇼를 만들 수 있습니다."
+
+#: ml-slider.php:2219
+msgid "Create slideshows with videos in your media library"
+msgstr "미디어 라이브러리에 있는 동영상으로 슬라이드쇼 만들기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:840
+#: admin/views/pages/parts/slider-settings.php:647
+msgid "Use arrow keys to get to the next slide."
+msgstr "화살표 키를 사용하여 다음 슬라이드로 이동합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:835
+#: admin/views/pages/parts/slider-settings.php:642
+msgid "Keyboard Controls"
+msgstr "키보드 컨트롤"
+
+#: ml-slider.php:726
+msgid "Local Video"
+msgstr "로컬 비디오"
+
+#: admin/views/pages/start.php:37
+msgid "Open Media Library"
+msgstr "미디어 라이브러리 열기"
+
+#: admin/views/pages/start.php:36
+msgid "Select Files"
+msgstr "파일 선택"
+
+#: admin/views/pages/start.php:34
+msgctxt "Uploader: Drop files to upload - or - Select Files"
+msgid "or"
+msgstr "또는"
+
+#: admin/views/pages/start.php:33
+msgid "Drop files to upload"
+msgstr "Drop files to upload업로드할 파일 드롭"
+
+#: admin/views/pages/start.php:27
+msgid "Choose your own images to start a new slideshow."
+msgstr "나만의 이미지를 선택하여 새 슬라이드쇼를 시작하세요."
+
+#: ml-slider.php:2184
+msgid "External URL slides give you all the power of MetaSlider, using images stored anywhere you want."
+msgstr "외부 URL 슬라이드는 원하는 곳에 저장된 이미지를 사용하여 메타슬라이더의 모든 기능을 사용할 수 있습니다."
+
+#: ml-slider.php:2180
+msgid "With External URL slides, you can load images directly from non-WordPress sources such as CDNs or image hosts."
+msgstr "외부 URL 슬라이드를 사용하면 CDN이나 이미지 호스트와 같은 워드프레스가 아닌 소스에서 직접 이미지를 로드할 수 있습니다."
+
+#: ml-slider.php:2176
+msgid "Create slideshows with images stored outside of WordPress"
+msgstr "워드프레스 외부에 저장된 이미지로 슬라이드쇼 만들기"
+
+#: ml-slider.php:2141
+msgid "Post Feed slides will automatically display your posts with images, text, custom fields, and much more."
+msgstr "게시물 피드 슬라이드는 이미지, 텍스트, 사용자 정의 필드 등이 포함된 게시물을 자동으로 표시합니다."
+
+#: ml-slider.php:2137
+msgid "With Post Feed slides, you can build slideshows with your latest posts, events, or WooCommerce products."
+msgstr "게시물 피드 슬라이드를 사용하면 최신 게시물, 이벤트 또는 우커머스 제품으로 슬라이드쇼를 만들 수 있습니다."
+
+#: ml-slider.php:2133
+msgid "Create slideshows with your posts"
+msgstr "게시물로 슬라이드쇼 만들기"
+
+#: ml-slider.php:2100
+msgid "YouTube slides will display your videos with auto play, mute, lazy load, the ability to hide controls, and much more."
+msgstr "YouTube 슬라이드는 자동 재생, 음소거, 지연 로드, 컨트롤 숨기기 기능 등을 사용하여 동영상을 표시합니다."
+
+#: ml-slider.php:2096
+msgid "With YouTube slides, you can build beautiful slideshows with your YouTube videos."
+msgstr "YouTube 슬라이드를 사용하면 YouTube 동영상으로 멋진 슬라이드쇼를 만들 수 있습니다."
+
+#: ml-slider.php:2092
+msgid "Create slideshows with your YouTube videos"
+msgstr "YouTube 동영상으로 슬라이드쇼 만들기"
+
+#: ml-slider.php:2059
+msgid "Vimeo slides will display your videos with auto play, mute, the ability to hide controls, and much more."
+msgstr "Vimeo 슬라이드는 자동 재생, 음소거, 컨트롤 숨기기 기능 등을 통해 동영상을 표시합니다."
+
+#: ml-slider.php:2055
+msgid "With Vimeo slides, you can build beautiful slideshows with your Vimeo videos."
+msgstr "Vimeo 슬라이드를 사용하면 Vimeo 동영상으로 멋진 슬라이드쇼를 만들 수 있습니다."
+
+#: ml-slider.php:2051
+msgid "Create slideshows with your Vimeo videos"
+msgstr "Vimeo 동영상으로 슬라이드쇼 만들기"
+
+#: ml-slider.php:2022 ml-slider.php:2063 ml-slider.php:2104 ml-slider.php:2147
+#: ml-slider.php:2190 ml-slider.php:2233 ml-slider.php:2276 ml-slider.php:2315
+#: admin/assets/dist/js/app.js:2
+msgid "Find out more about MetaSlider Pro"
+msgstr "메타슬라이더 프로에 대해 자세히 알아보기"
+
+#: ml-slider.php:2016
+msgid "You start with an image and then can add text, video, colors, animations, more images, and even shortcodes."
+msgstr "이미지로 시작한 다음 텍스트, 동영상, 색상, 애니메이션, 더 많은 이미지, 쇼트코드까지 추가할 수 있습니다."
+
+#: ml-slider.php:2012
+msgid "With Layer slides, you can create beautiful, stylish layers of different elements."
+msgstr "레이어 슬라이드를 사용하면 다양한 요소로 아름답고 스타일리시한 레이어를 만들 수 있습니다."
+
+#: ml-slider.php:2008
+msgid "Create slides by adding text, videos and more to your images"
+msgstr "이미지에 텍스트, 동영상 등을 추가하여 슬라이드 만들기"
+
+#: admin/views/pages/parts/toolbar.php:125 ml-slider.php:1836
+msgid "Return to Published Slides"
+msgstr "게시된 슬라이드로 돌아가기"
+
+#: ml-slider.php:1826
+msgid "You are viewing slides that have been trashed, which will be automatically deleted in %s days."
+msgstr "휴지통에 버려진 슬라이드를 보고 있으며, 이 슬라이드는 %s일 후에 자동으로 삭제됩니다."
+
+#: ml-slider.php:1047
+msgid "The slide was permanently deleted"
+msgstr "슬라이드가 영구 삭제되었습니다."
+
+#: ml-slider.php:725
+msgid "External URL"
+msgstr "외부 URL"
+
+#: inc/slide/metaslide.class.php:396
+msgid "Trash slide"
+msgstr "슬라이드 휴지통"
+
+#: admin/views/pages/dashboard.php:23
+msgid "%d slideshow permanently deleted."
+msgid_plural "%d slideshows permanently deleted."
+msgstr[0] "%d 슬라이드쇼가 영구적으로 삭제되었습니다."
+
+#: admin/views/pages/dashboard.php:20
+msgid "%d slideshow restored from the Trash."
+msgid_plural "%d slideshows restored from the Trash."
+msgstr[0] "휴지통에서 %d 슬라이드쇼를 복원했습니다."
+
+#: admin/views/pages/dashboard.php:17
+msgid "%d slideshow moved to the Trash."
+msgid_plural "%d slideshows moved to the Trash."
+msgstr[0] "%d 슬라이드쇼를 휴지통으로 이동했습니다."
+
+#: admin/Table.php:352
+msgid "Empty Trash"
+msgstr "휴지통 비우기"
+
+#: admin/Table.php:55
+msgid "Published"
+msgstr "발행함"
+
+#: ml-slider.php:490
+msgid "Home"
+msgstr "홈"
+
+#: admin/views/pages/start.php:77
+msgid "Create a Slideshow"
+msgstr "슬라이드쇼 생성"
+
+#: admin/views/pages/start.php:9
+msgid "Carousel Slideshow with Captions"
+msgstr "캡션이 있는 캐러셀 슬라이드쇼"
+
+#: admin/views/pages/start.php:5
+msgid "Carousel Slideshow"
+msgstr "회전식 슬라이드쇼"
+
+#: admin/views/pages/start.php:63
+msgid "Image Slideshow"
+msgstr "이미지 슬라이드쇼"
+
+#: admin/views/pages/start.php:62
+msgid "Blank Slideshow"
+msgstr "빈 슬라이드쇼"
+
+#: admin/views/pages/start.php:52
+msgid "Create a slideshow with sample images"
+msgstr "샘플 이미지로 슬라이드쇼 만들기"
+
+#: admin/views/pages/start.php:26
+msgid "Create a slideshow with your images"
+msgstr "이미지로 슬라이드쇼 만들기"
+
+#: admin/views/pages/dashboard.php:8
+msgid "Add New"
+msgstr "새로 추가"
+
+#: admin/Table.php:71
+msgid "Created"
+msgstr "생성됨"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:132
+msgid "Box Rain Grow"
+msgstr "Box Rain Grow"
+
+#: admin/Notices.php:377 inc/slide/metaslide.class.php:158
+#: inc/slide/metaslide.image.class.php:142
+#: inc/slide/metaslide.image.class.php:246
+#: inc/slide/metaslide.image.class.php:368 ml-slider.php:838 ml-slider.php:920
+#: ml-slider.php:1032 ml-slider.php:2532 ml-slider.php:2573
+msgid "Bad request"
+msgstr "잘못된 요청"
+
+#: inc/slide/metaslide.image.class.php:358
+msgid "Access denied"
+msgstr "접근 불가"
+
+#: themes/manifest-legacy.php:142 themes/manifest.php:143
+msgid "If you would like to use the image titles as the navigation, you will need to use FlexSlider. Additionally, to change the slide navigation label, edit the image title in the media library or manually on the slide (SEO tab)."
+msgstr "이미지 제목을 내비게이션으로 사용하려면 FlexSlider를 사용해야 합니다. 또한 슬라이드 탐색 레이블을 변경하려면 미디어 라이브러리에서 또는 슬라이드(SEO 탭)에서 수동으로 이미지 제목을 편집하십시오."
+
+#: ml-slider.php:262
+msgid "MetaSlider Pro is installed but is out of date. You may update it %shere%s. Learn more about this notice %shere%s"
+msgstr "메타슬라이더 프로가 설치되었지만 최신 버전이 아닙니다. %shere%s에서 업데이트할 수 있습니다. 이 알림에 대해 자세히 알아보려면 %shere%s"
+
+#: ml-slider.php:495
+msgid "Upgrade to Pro"
+msgstr "프로로 업그레이드"
+
+#: admin/Notices.php:345
+msgid "Go there &rarr;"
+msgstr "거기로 이동 &rarr;"
+
+#: admin/Notices.php:344
+msgid "Sign up &rarr;"
+msgstr "회원가입 &rarr;"
+
+#: admin/Notices.php:343
+msgid "Get MetaSlider Pro &rarr;"
+msgstr "메타슬라이더 프로 받기 &rarr;"
+
+#: admin/Notices.php:340
+msgid "Let's Start &rarr;"
+msgstr "시작하자 &rarr;"
+
+#: admin/Notices.php:108
+msgid "Spice up your site with animated layers and video slides with MetaSlider Pro"
+msgstr "메타슬라이더 프로를 사용하여 애니메이션 레이어와 비디오 슬라이드로 사이트를 멋지게 꾸밀 수 있습니다."
+
+#: admin/Notices.php:98
+msgctxt "Keep the plugin name \"MetaSlider\" when possible"
+msgid "Like MetaSlider? Please help us by giving a positive review at WordPress.org"
+msgstr "메타슬라이더를 좋아하시나요? WordPress.org에서 긍정적인 리뷰를 제공하여 저희를 도와주세요."
+
+#: admin/views/pages/upgrade.php:21
+msgid "Pro"
+msgstr "프로"
+
+#: admin/Table.php:336
+msgid "Edit"
+msgstr "편집"
+
+#: admin/views/pages/dashboard.php:36
+msgid "Search"
+msgstr "검색"
+
+#: admin/Notices.php:342
+msgid "Find out more &rarr;"
+msgstr "더 알아보기 &rarr;"
+
+#: ml-slider.php:492
+msgid "Settings & Help"
+msgstr "설정 및 도움말"
+
+#: admin/views/pages/settings.php:58 admin/assets/dist/js/app.js:2
+msgid "Help Center"
+msgstr "지원 센터"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:223
+#: admin/views/pages/parts/slider-settings.php:159
+#: admin/assets/dist/js/app.js:2
+msgid "100% Width"
+msgstr "100% 폭"
+
+#: admin/views/pages/dashboard.php:8 admin/assets/dist/js/app.js:2
+msgid "Slideshows"
+msgstr "슬라이드쇼"
+
+#: admin/routes/api.php:918 admin/routes/api.php:1105
+msgid "The field (%s) cannot be empty"
+msgstr "필드(%s)는 비워둘 수 없습니다."
+
+#: admin/routes/api.php:914
+msgid "The title cannot be empty."
+msgstr "제목은 비워 둘 수 없습니다."
+
+#: admin/routes/api.php:550
+msgid "Nothing to import."
+msgstr "가져올 항목이 없습니다."
+
+#: admin/views/pages/parts/ie-warning.php:12
+msgid "Update Internet Explorer"
+msgstr "인터넷 익스플로러 업데이트"
+
+#: admin/views/pages/parts/ie-warning.php:8
+msgid "IE11"
+msgstr "IE11"
+
+#: admin/views/pages/parts/ie-warning.php:8
+msgid "Microsoft Internet Explorer 11"
+msgstr "마이크로소프트 인터넷 익스플로러 11"
+
+#: admin/views/pages/parts/ie-warning.php:8
+msgid "It looks like you are using %s. While MetaSlider does support %s on the frontend of the website where users see your slideshows, some of the tools we provide back here require a modern browser."
+msgstr "%s을(를) 사용 중인 것 같습니다. 메타슬라이더는 사용자가 슬라이드쇼를 보는 웹사이트의 프런트엔드에서 %s를 지원하지만 여기에서 제공하는 일부 도구를 사용하려면 최신 브라우저가 필요합니다."
+
+#: admin/views/pages/parts/ie-warning.php:4
+msgid "Browser upgrade required"
+msgstr "브라우저 업그레이드 필요"
+
+#: admin/views/pages/settings.php:89 admin/assets/dist/js/app.js:2
+msgid "Export"
+msgstr "내보내기"
+
+#: admin/views/pages/settings.php:74 admin/assets/dist/js/app.js:2
+msgid "Import"
+msgstr "가져오기"
+
+#: ml-slider.php:1927
+msgid "Add slideshow"
+msgstr "슬라이드쇼 추가"
+
+#: inc/metaslider.systemcheck.class.php:208
+msgid "Warning:"
+msgstr "경고:"
+
+#: inc/metaslider.systemcheck.class.php:94
+msgid "this article"
+msgstr "이 게시물"
+
+#: inc/metaslider.systemcheck.class.php:91
+msgid "Your settings might not be saving properly due to a configuration on your server. %s is currently set to %s, but we recommend a setting of 4000. Please see %s for more information. The php.ini file is being loaded from here: %s"
+msgstr "서버 구성으로 인해 설정이 제대로 저장되지 않을 수 있습니다. %s은(는) 현재 %s로 설정되어 있지만 4000으로 설정하는 것이 좋습니다. 자세한 내용은 %s를 참조하십시오. php.ini 파일이 여기에서 로드되고 있습니다: %s"
+
+#: admin/views/pages/parts/toolbar.php:35
+msgctxt "This is a keyboard shortcut."
+msgid " (alt + p)"
+msgstr " (alt + p)"
+
+#: admin/routes/api.php:805
+msgid "This was not a slideshow, so we cannot update the setting."
+msgstr "이것은 슬라이드쇼가 아니므로 설정을 업데이트할 수 없습니다."
+
+#: themes/simply-dark/v1.0.0/theme.php:26
+msgid "Next Slide"
+msgstr "다음 슬라이드"
+
+#: themes/simply-dark/v1.0.0/theme.php:24
+msgid "Previous Slide"
+msgstr "이전 슬라이드"
+
+#: admin/views/pages/parts/toolbar.php:90
+msgid "Add CSS"
+msgstr "CSS 추가"
+
+#: admin/views/pages/upgrade.php:110
+msgid "Add custom CSS"
+msgstr "맞춤 CSS 추가"
+
+#: admin/views/pages/parts/toolbar.php:81
+msgid "Duplicate"
+msgstr "복제"
+
+#: admin/views/pages/parts/toolbar.php:69
+msgid "Duplicate this slideshow"
+msgstr "이 슬라이드쇼 복제"
+
+#: admin/views/pages/parts/toolbar.php:64
+msgid "New"
+msgstr "신규"
+
+#: admin/views/pages/parts/toolbar.php:35
+msgid "Save & open the preview"
+msgstr "미리보기 저장 및 열기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:800
+msgid "Opacity of title and navigation, between 0 and 1."
+msgstr "제목 및 탐색의 불투명도는 0에서 1 사이입니다."
+
+#: admin/slideshows/Themes.php:331
+msgid "We removed your selected theme as it could not be found. Was the folder deleted?"
+msgstr "선택한 테마를 찾을 수 없어 제거했습니다. 폴더가 삭제되었습니까?"
+
+#: admin/routes/api.php:592
+msgid "This was not a slideshow, so we cannot delete it."
+msgstr "이것은 슬라이드쇼가 아니기때문에 삭제할 수 없습니다."
+
+#: ml-slider.php:491
+msgid "Quick Start"
+msgstr "퀵 스타트"
+
+#: admin/views/pages/start.php:20
+msgid "Thanks for using MetaSlider, the WordPress slideshow plugin"
+msgstr "#1 워드프레스 슬라이드쇼 프러그인, 메타슬라이더를 설치해주셔서 감사합니다."
+
+#: admin/Pages.php:139
+msgid "Please confirm that you would like to delete this slideshow."
+msgstr "정말로 이 Slideshow를 삭제하시겠습니까?"
+
+#: admin/views/pages/parts/toolbar.php:100
+msgid "Save slideshow"
+msgstr "슬라이드쇼 저장"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:639
+#: admin/views/pages/parts/slider-settings-legacy.php:659
+#: admin/views/pages/parts/slider-settings-legacy.php:788
+#: admin/views/pages/parts/slider-settings-legacy.php:820
+#: admin/views/pages/parts/slider-settings.php:568
+#: admin/views/pages/parts/slider-settings.php:588
+msgctxt "Short for milliseconds"
+msgid "ms"
+msgstr "ms"
+
+#: ml-slider.php:2359
+msgid "MetaSlider Pro"
+msgstr "메타슬라이더 프로"
+
+#: admin/Notices.php:341
+msgctxt "Keep the plugin name \"MetaSlider\" when possible"
+msgid "Review MetaSlider &rarr;"
+msgstr "메타슬라이더 리뷰 &rarr;"
+
+#: themes/manifest-legacy.php:215
+msgid "The Nivo Dark theme included here for legacy purposes. Note: only works with Nivo Slider"
+msgstr "레거시 목적을 위해 여기에 포함된 Nivo Dark 테마. 참고: Nivo Slider에서만 작동합니다."
+
+#: themes/manifest-legacy.php:207
+msgid "The Nivo Bar theme included here for legacy purposes. Note: only works with Nivo Slider"
+msgstr "레거시 목적을 위해 여기에 포함된 Nivo Bar 테마. 참고: Nivo Slider에서만 작동합니다."
+
+#: themes/manifest-legacy.php:199
+msgid "The Nivo Light theme included here for legacy purposes. Note: only works with Nivo Slider"
+msgstr "레거시 목적을 위해 여기에 포함된 Nivo Light 테마. 참고: Nivo Slider에서만 작동합니다."
+
+#: themes/manifest-legacy.php:181 themes/manifest.php:182
+msgid "A bold and clear design that works well on a darker images."
+msgstr "어두운 이미지에 잘 어울리는 대담하고 선명한 디자인."
+
+#: themes/manifest-legacy.php:172 themes/manifest.php:173
+msgid "This theme has a unique design that gives it a sophisticated look."
+msgstr "이 테마는 세련된 느낌을 주는 독특한 디자인을 가지고 있습니다."
+
+#: themes/manifest-legacy.php:141 themes/manifest.php:142
+msgid "This theme has a special additional functionality that uses image titles as the slide navigation. "
+msgstr "이 테마에는 이미지 제목을 슬라이드 탐색으로 사용하는 특별한 추가 기능이 있습니다. "
+
+#: themes/manifest-legacy.php:132 themes/manifest.php:133
+msgid "A simple theme that neatly blends into any existing website."
+msgstr "기존 웹 사이트와 깔끔하게 조화를 이루는 단순한 테마입니다."
+
+#: themes/manifest-legacy.php:123 themes/manifest.php:124
+msgid "A futuristic and linear design that goes will with a dark background."
+msgstr "어두운 배경과 어울리는 미래적이고 선형적인 디자인."
+
+#: themes/manifest-legacy.php:114 themes/manifest.php:115
+msgid "This theme places the controls vertically for a unique look."
+msgstr "이 테마는 독특한 모양을 위해 컨트롤을 수직으로 배치합니다."
+
+#: themes/manifest-legacy.php:73 themes/manifest.php:74
+msgid "A fun, circular design to brighten up your site. This theme works well with dark images"
+msgstr "사이트를 밝게 만드는 재미있는 원형 디자인. 이 테마는 어두운 이미지와 잘 어울립니다."
+
+#: themes/manifest-legacy.php:64 themes/manifest.php:65
+msgid "A clean, subtle theme that features block arrows and bold design."
+msgstr "블록 화살표와 대담한 디자인이 특징인 깨끗하고 미묘한 테마입니다."
+
+#: themes/manifest-legacy.php:55 themes/manifest.php:56
+msgid "A simple, slick square design that looks good on darker images."
+msgstr "어두운 이미지에 잘 어울리는 단순하고 매끄러운 사각형 디자인입니다."
+
+#: themes/manifest-legacy.php:82 themes/manifest.php:83
+msgid "A minimalistic, no-frills design that was built to blend in with most themes."
+msgstr "대부분의 테마와 조화를 이루도록 제작된 미니멀하고 군더더기 없는 디자인입니다."
+
+#: inc/slide/metaslide.image.class.php:541
+msgid "Schedule"
+msgstr "일정"
+
+#: admin/views/slides/tabs/schedule.php:6
+msgid "Update or activate your MetaSlider Pro now to add a start/end date option to your slides"
+msgstr "슬라이드에 시작/종료 날짜 옵션을 추가하려면 지금 메타슬라이더 프로를 업데이트하거나 활성화하세요."
+
+#: admin/views/pages/upgrade.php:126
+msgid "Toggle your slide's visibility"
+msgstr "슬라이드의 가시성 전환"
+
+#: admin/views/pages/upgrade.php:119
+msgid "Add a start/end date to individual slides."
+msgstr "개별 슬라이드에 시작/종료 날짜를 추가합니다."
+
+#: admin/views/pages/upgrade.php:118
+msgid "Schedule your slides"
+msgstr "슬라이드 예약"
+
+#: admin/slideshows/Themes.php:60
+msgid "No themes found."
+msgstr "테마를 찾을 수 없습니다."
+
+#: admin/slideshows/Image.php:145
+msgid "We could not find any images to import."
+msgstr "가져올 이미지를 찾을 수 없습니다."
+
+#: admin/routes/api.php:463 admin/routes/api.php:585
+msgid "This slideshow is no longer available."
+msgstr "이 슬라이드쇼는 더 이상 사용할 수 없습니다."
+
+#: admin/routes/api.php:455
+msgid "The request format was not valid."
+msgstr "요청 형식이 유효하지 않습니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:563
+#: admin/views/pages/parts/slider-settings.php:492
+msgid "Fade In"
+msgstr "Fade In"
+
+#: admin/views/slides/tabs/seo.php:39
+msgid "Use the image alt text"
+msgstr "이미지 대체 텍스트 사용"
+
+#: admin/views/slides/tabs/seo.php:37
+msgid "Enable this to inherit the image alt text"
+msgstr "이미지 대체 텍스트를 상속하려면 이것을 활성화하십시오."
+
+#: admin/views/slides/tabs/seo.php:13
+msgid "Use the image title"
+msgstr "이미지 제목 사용"
+
+#: admin/views/slides/tabs/seo.php:11
+msgid "Enable this to inherit the image title"
+msgstr "이미지 제목을 상속하려면 이것을 활성화하십시오."
+
+#: admin/views/notices/header-notice.php:23
+msgid "Dismiss"
+msgstr "기각"
+
+#: admin/Pages.php:144
+msgid "Item was copied to your clipboard"
+msgstr "항목이 클립보드에 복사되었습니다."
+
+#: admin/Pages.php:143 admin/assets/dist/js/app.js:2
+#: admin/assets/js/app/globals.js:105
+msgid "Success"
+msgstr "성공"
+
+#: ml-slider.php:2372
+msgid "Leave a review"
+msgstr "리뷰를 남겨주세요"
+
+#: ml-slider.php:2353
+msgid "Premium Support"
+msgstr "프리미엄 지원"
+
+#: ml-slider.php:2363
+msgid "Support"
+msgstr "지원"
+
+#: admin/Table.php:59 admin/Table.php:87 admin/Table.php:337
+msgid "Trash"
+msgstr "휴지통"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:1003
+#: admin/views/pages/parts/slider-settings.php:791
+msgid "View trashed slides"
+msgstr "삭제된 슬라이드 보기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:197
+#: admin/assets/dist/js/app.js:2
+msgid "Filmstrip"
+msgstr "영사 슬라이드"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:193
+#: admin/assets/dist/js/app.js:2
+msgid "Thumbnail"
+msgstr "썸네일"
+
+#: admin/Table.php:69 admin/views/pages/parts/toolbar.php:44
+#: admin/assets/dist/js/app.js:2
+msgid "Preview"
+msgstr "미리보기"
+
+#: admin/views/pages/parts/toolbar.php:25
+msgid "Add a new slide"
+msgstr "새 슬라이드 추가"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:981
+#: admin/views/pages/parts/slider-settings.php:781 ml-slider.php:1765
+msgid "Trashed Slides"
+msgstr "휴지통 슬라이드"
+
+#: admin/slideshows/Settings.php:59
+msgid "New Slideshow"
+msgstr "새 슬라이드쇼"
+
+#: ml-slider.php:935
+msgid "The slide was successfully trashed"
+msgstr "슬라이드가 성공적으로 삭제되었습니다."
+
+#: ml-slider.php:876
+msgid "The attempt to restore the slide failed."
+msgstr "슬라이드를 복원하려는 시도가 실패했습니다."
+
+#: ml-slider.php:853
+msgid "The slide was successfully restored"
+msgstr "슬라이드가 성공적으로 복원되었습니다."
+
+#: ml-slider.php:681
+msgid "Add to slideshow"
+msgstr "슬라이드쇼에 추가"
+
+#: admin/slideshows/Settings.php:85 inc/slider/metaslider.class.php:122
+msgid "Previous"
+msgstr "이전"
+
+#: inc/slide/metaslide.class.php:428 inc/slide/metaslide.class.php:683
+#: inc/slide/metaslide.class.php:684
+msgid "Update slide image"
+msgstr "슬라이드 이미지 업데이트"
+
+#: admin/Table.php:83 admin/Table.php:323 inc/slide/metaslide.class.php:416
+msgid "Delete Permanently"
+msgstr "영구적으로 삭제"
+
+#: admin/Table.php:82 admin/Table.php:322 inc/slide/metaslide.class.php:406
+msgid "Restore"
+msgstr "복원"
+
+#: inc/slide/metaslide.class.php:308
+msgid "There was an error while updating the database. Please try again."
+msgstr "데이터베이스를 업데이트하는 동안 오류가 발생했습니다. 다시 시도해 주세요."
+
+#: inc/slide/metaslide.class.php:127
+msgid "There was an error updating the image. Please try again"
+msgstr "이미지를 업데이트하는 중에 오류가 발생했습니다. 다시 시도해 주세요"
+
+#: inc/slide/metaslide.class.php:117
+msgid "The image was successfully updated."
+msgstr "이미지가 성공적으로 업데이트되었습니다."
+
+#: inc/slide/metaslide.class.php:94
+msgid "The requested image does not exist. Please try again."
+msgstr "요청한 이미지가 존재하지 않습니다. 다시 시도해 주세요."
+
+#: admin/views/pages/upgrade.php:135
+msgid "Have your specific queries addressed directly by our experts."
+msgstr "구체적인 질문은 전문가가 직접 답변해 드립니다."
+
+#: admin/views/pages/upgrade.php:134
+msgid "Premium support"
+msgstr "프리미엄 지원"
+
+#: admin/views/pages/upgrade.php:103
+msgid "Easily build slides based on your WordPress posts."
+msgstr "워드프레스 게시물을 기반으로 슬라이드를 쉽게 구축할 수 있습니다."
+
+#: admin/views/pages/upgrade.php:95
+msgid "Add layers to your slides with over 50 available transition effects."
+msgstr "50개 이상의 사용 가능한 전환 효과로 슬라이드에 레이어를 추가하세요."
+
+#: admin/views/pages/upgrade.php:94
+msgid "Add slide layers"
+msgstr "슬라이드 레이어 추가"
+
+#: admin/views/pages/upgrade.php:54
+msgid "Thumbnail navigation"
+msgstr "썸네일 탐색"
+
+#: admin/views/pages/upgrade.php:47
+msgid "Unique Smart Crop functionality ensures your slides are perfectly resized."
+msgstr "고유한 스마트 자르기 기능으로 슬라이드 크기를 완벽하게 조정할 수 있습니다."
+
+#: admin/views/pages/upgrade.php:46
+msgid "Intelligent image cropping"
+msgstr "지능형 이미지 자르기"
+
+#: admin/views/pages/upgrade.php:38
+msgid "Regular updates"
+msgstr "정기 업데이트"
+
+#: admin/views/pages/upgrade.php:31
+msgid "Create and manage as many slideshows as you need."
+msgstr "필요한 만큼 슬라이드쇼를 만들고 관리하세요."
+
+#: admin/views/pages/upgrade.php:30
+msgid "Create unlimited slideshows"
+msgstr "무제한 슬라이드쇼 만들기"
+
+#: admin/views/pages/upgrade.php:26 admin/views/pages/upgrade.php:145
+#: admin/views/slides/tabs/schedule.php:10 admin/assets/dist/js/app.js:2
+msgid "Upgrade now"
+msgstr "지금 업그레이드"
+
+#: admin/views/pages/upgrade.php:25 admin/views/pages/upgrade.php:144
+msgid "Installed"
+msgstr "설치됨"
+
+#: admin/views/pages/upgrade.php:13
+msgid "Comparison Chart"
+msgstr "비교 차트"
+
+#: admin/views/notices/header-notice.php:8
+msgid "Logo"
+msgstr "로고"
+
+#: admin/slideshows/Settings.php:86 inc/slider/metaslider.class.php:123
+msgid "Next"
+msgstr "다음"
+
+#: admin/Pages.php:145
+msgid "Press to undo"
+msgstr "실행 취소하려면 누르세요."
+
+#: admin/Pages.php:142
+msgid "Slide deleted"
+msgstr "슬라이드 삭제됨"
+
+#: admin/Pages.php:141
+msgid "Slide restored"
+msgstr "슬라이드 복원됨"
+
+#: admin/Pages.php:140
+msgid "Undo"
+msgstr "실행 취소"
+
+#: admin/Notices.php:489
+msgid "The attempt to update the option failed."
+msgstr "옵션 업데이트 시도가 실패했습니다."
+
+#: admin/Notices.php:464
+msgid "The requested data does not exist."
+msgstr "요청한 데이터가 존재하지 않습니다."
+
+#: admin/Notices.php:398
+msgid "The option was successfully updated"
+msgstr "옵션이 성공적으로 업데이트되었습니다."
+
+#: admin/Notices.php:385
+msgid "This item does not exist. Please refresh the page and try again."
+msgstr "이 항목이 존재하지 않습니다. 페이지를 새로고침하고 다시 시도하세요."
+
+#: admin/Notices.php:361 admin/support/Analytics.php:66
+#: inc/slide/metaslide.class.php:141 inc/slide/metaslide.image.class.php:125
+#: inc/slide/metaslide.image.class.php:229
+#: inc/slide/metaslide.image.class.php:350 ml-slider.php:821 ml-slider.php:903
+#: ml-slider.php:1015 ml-slider.php:2515 ml-slider.php:2556
+msgid "The security check failed. Please refresh the page and try again."
+msgstr "보안 검사에 실패했습니다. 페이지를 새로고침하고 다시 시도하세요."
+
+#: admin/Notices.php:347
+msgid "Read more"
+msgstr "더 읽기"
+
+#: admin/Notices.php:320
+msgid "weeks"
+msgstr "주"
+
+#: admin/Notices.php:130
+msgid "Can you translate? Want to improve MetaSlider for speakers of your language?"
+msgstr "번역이 가능합니까? 귀하의 언어 사용자를 위해 메타슬라이더를 개선하고 싶습니까?"
+
+#: admin/Notices.php:119
+msgid "Increase your revenue and conversion with video slides and many more MetaSlider Pro features"
+msgstr "비디오 슬라이드 및 더 많은 메타슬라이더 프로 기능으로 수익 및 전환율을 높이십시오."
+
+#: ml-slider.php:724
+msgid "Layer Slide"
+msgstr "레이어 슬라이드"
+
+#: ml-slider.php:723
+msgid "YouTube"
+msgstr "YouTube"
+
+#: ml-slider.php:722
+msgid "Vimeo"
+msgstr "Vimeo"
+
+#: ml-slider.php:721
+msgid "Post Feed"
+msgstr "게시물 피드"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: ml-slider.php
+msgid "https://www.metaslider.com"
+msgstr "https://www.metaslider.com"
+
+#: ml-slider.php:1973
+msgid "Insert slideshow"
+msgstr "슬라이드쇼 삽입"
+
+#: ml-slider.php:1963
+msgid "Choose slideshow"
+msgstr "슬라이드쇼 선택"
+
+#: admin/Table.php:72 admin/views/pages/parts/slider-settings-legacy.php:958
+#: admin/views/pages/parts/slider-settings.php:759
+msgid "Shortcode"
+msgstr "쇼트코드"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:937
+#: admin/views/pages/parts/slider-settings.php:744
+msgid "Delay adding the flexslider class to the slideshow."
+msgstr "슬라이드쇼에 플렉스슬라이더 클래스를 추가하는 것을 지연합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:932
+#: admin/views/pages/parts/slider-settings.php:739
+msgid "No Conflict Mode"
+msgstr "충돌 모드 없음"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:924
+#: admin/views/pages/parts/slider-settings.php:731
+msgid "Uncheck this if you would like to include your own Javascript."
+msgstr "자체 자바스크립트를 포함하려면 이 옵션을 선택 취소하세요."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:919
+#: admin/views/pages/parts/slider-settings.php:726
+msgid "Print JS"
+msgstr "인쇄 JS"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:911
+#: admin/views/pages/parts/slider-settings.php:718
+msgid "Uncheck this if you would like to include your own CSS."
+msgstr "고유한 CSS를 포함하려면 이 옵션을 선택 취소하세요."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:906
+#: admin/views/pages/parts/slider-settings.php:713
+msgid "Print CSS"
+msgstr "인쇄 CSS"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:893
+#: admin/views/pages/parts/slider-settings.php:700
+msgid "CSS Classes"
+msgstr "CSS 클래스"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:887
+#: admin/views/pages/parts/slider-settings.php:694
+msgid "Developer Options"
+msgstr "개발자 옵션"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:816
+msgid "Set the fade in speed of the caption."
+msgstr "캡션의 페이드 인 속도 설정"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:814
+msgid "Caption Speed"
+msgstr "캡션 속도"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:798
+msgid "Opacity"
+msgstr "Opacity"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:784
+msgid "Delay between squares in ms."
+msgstr "사각형 사이의 지연 시간(ms)입니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:782
+msgid "Square Delay"
+msgstr "스퀘어 지연"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:766
+msgid "Set the text for the \"next\" direction item."
+msgstr "'다음' 방향 항목에 대한 텍스트 설정"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:764
+msgid "Next Text"
+msgstr "다음 텍스트"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:753
+msgid "Set the text for the \"previous\" direction item."
+msgstr "'이전' 방향 항목에 대한 텍스트 설정"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:751
+msgid "Previous Text"
+msgstr "이전 텍스트"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:728
+#: admin/views/pages/parts/slider-settings.php:613
+msgid "Vertical"
+msgstr "수직"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:721
+#: admin/views/pages/parts/slider-settings.php:606
+msgid "Horizontal"
+msgstr "수평"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:712
+#: admin/views/pages/parts/slider-settings.php:597
+msgid "Slide Direction"
+msgstr "슬라이드 방향"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:690
+#: admin/views/pages/parts/slider-settings-legacy.php:706
+msgid "Number of squares"
+msgstr "제곱의 수"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:673
+#: admin/views/pages/parts/slider-settings-legacy.php:675
+msgid "Number of Slices"
+msgstr "슬라이스 수"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:635
+#: admin/views/pages/parts/slider-settings.php:564
+msgid "How long to display each slide, in milliseconds."
+msgstr "각 슬라이드를 표시하는 시간(밀리초)"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:633
+#: admin/views/pages/parts/slider-settings.php:562
+msgid "Slide Delay"
+msgstr "슬라이드 지연"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:607
+#: admin/views/pages/parts/slider-settings.php:536
+msgid "Reverse the animation direction."
+msgstr "애니메이션 방향 반전"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:602
+#: admin/views/pages/parts/slider-settings.php:531
+msgid "Reverse"
+msgstr "Reverse"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:594
+#: admin/views/pages/parts/slider-settings.php:523
+msgid "Pause the slideshow when hovering over slider, then resume when no longer hovering."
+msgstr "슬라이더 위로 마우스를 가져가면 슬라이드쇼를 일시 중지한 다음 더 이상 마우스를 가져가지 않으면 다시 시작합니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:589
+#: admin/views/pages/parts/slider-settings.php:518
+msgid "Hover Pause"
+msgstr "마우스 오버시  일시중지"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:581
+#: admin/views/pages/parts/slider-settings.php:510
+msgid "Randomize the order of the slides."
+msgstr "슬라이드 순서 무작위 지정"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:554
+#: admin/views/pages/parts/slider-settings.php:483
+msgid "Pixel margin between slides in carousel."
+msgstr "캐러셀에서 슬라이드 사이의 픽셀 여백입니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:551
+#: admin/views/pages/parts/slider-settings.php:480
+msgid "Carousel Margin"
+msgstr "캐러셀 여백"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:512
+#: admin/views/pages/parts/slider-settings.php:441
+msgid "Carousel Mode"
+msgstr "캐러셀 모드"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:491
+#: admin/views/pages/parts/slider-settings.php:420
+msgid "Smart Crop ensures your responsive slides are cropped to a ratio that results in a consistent slideshow size."
+msgstr "스마트 자르기를 사용하면 반응형 슬라이드가 일정한 비율로 잘려서 슬라이드쇼 크기가 일관되게 유지됩니다."
+
+#: admin/views/pages/parts/slider-settings-legacy.php:484
+#: admin/views/pages/parts/slider-settings.php:413
+msgid "Disabled (Smart Pad)"
+msgstr "비활성화됨(스마트 패드)"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:477
+#: admin/views/pages/parts/slider-settings.php:406
+msgid "Disabled"
+msgstr "비활성화됨"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:470
+#: admin/views/pages/parts/slider-settings.php:399
+msgid "Standard"
+msgstr "표준"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:463
+#: admin/views/pages/parts/slider-settings.php:392
+msgid "Smart Crop"
+msgstr "스마트 크롭"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:458
+#: admin/views/pages/parts/slider-settings.php:387
+msgid "Image Crop"
+msgstr "이미지 자르기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:424
+#: admin/views/pages/parts/slider-settings.php:353
+msgid "Transition between slides automatically."
+msgstr "자동으로 슬라이드 간 전환"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:419
+#: admin/views/pages/parts/slider-settings.php:348
+#: admin/assets/dist/js/app.js:2
+msgid "Auto Play"
+msgstr "자동 재생"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:406
+#: admin/views/pages/parts/slider-settings.php:335
+msgid "Center Align"
+msgstr "중앙 정렬"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:228
+#: admin/views/pages/parts/slider-settings.php:164
+msgid "Stretch the slideshow output to fill its parent container."
+msgstr "슬라이드쇼 출력을 늘려 상위 컨테이너를 채웁니다."
+
+#: admin/Table.php:70 admin/assets/dist/js/app.js:2
+msgid "Title"
+msgstr "제목"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:190
+#: admin/views/pages/parts/slider-settings.php:126
+#: admin/assets/dist/js/app.js:2
+msgid "Dots"
+msgstr "도트"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:156
+#: admin/views/pages/parts/slider-settings-legacy.php:187
+#: admin/views/pages/parts/slider-settings.php:92
+#: admin/views/pages/parts/slider-settings.php:123
+#: admin/assets/dist/js/app.js:2
+msgid "Hidden"
+msgstr "숨겨짐"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:178
+#: admin/views/pages/parts/slider-settings.php:114
+#: themes/bitono/customize.php:16 themes/clarity/customize.php:16
+#: themes/databold/customize.php:16 themes/draxler/customize.php:16
+#: admin/assets/dist/js/app.js:2
+msgid "Navigation"
+msgstr "네비게이션"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:150
+#: admin/views/pages/parts/slider-settings.php:86
+msgid "Show the Previous / Next arrows."
+msgstr "이전/다음 화살표 표시"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:147
+#: admin/views/pages/parts/slider-settings.php:83
+#: themes/bitono/customize.php:10 themes/clarity/customize.php:10
+#: themes/databold/customize.php:10 themes/draxler/customize.php:10
+msgid "Arrows"
+msgstr "화살표"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:140
+#: admin/views/pages/parts/slider-settings.php:76
+msgid "Slide"
+msgstr "Slide"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:136
+msgid "Box Rain Grow Reverse"
+msgstr "Box Rain Grow Reverse"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:128
+msgid "Box Rain Reverse"
+msgstr "Box Rain Reverse"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:124
+msgid "Box Rain"
+msgstr "Box Rain"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:120
+msgid "Box Random"
+msgstr "Box Random"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:116
+msgid "Slide in Left"
+msgstr "Slide in Left"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:112
+msgid "Slide in Right"
+msgstr "Slide in Right"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:104
+#: admin/views/pages/parts/slider-settings.php:72
+msgid "Fade"
+msgstr "Fade"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:108
+msgid "Fold"
+msgstr "접기"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:100
+msgid "Slice Up Down Left"
+msgstr "Slice Up Down Left"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:96
+msgid "Slide Up Down"
+msgstr "Slide Up Down"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:92
+msgid "Slice Up Left"
+msgstr "Slice Up Left"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:88
+msgid "Slice Up"
+msgstr "Slice Up"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:84
+msgid "Slice Down"
+msgstr "Slice Down"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:80
+msgid "Straight"
+msgstr "Straight"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:76
+msgid "Rain"
+msgstr "Rain"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:72
+msgid "Swirl"
+msgstr "Swirl"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:68
+#: admin/views/pages/parts/slider-settings-legacy.php:576
+#: admin/views/pages/parts/slider-settings.php:505
+msgid "Random"
+msgstr "Random"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:45
+#: admin/views/pages/parts/slider-settings.php:49
+msgid "Slideshow height"
+msgstr "슬라이드쇼 높이"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:43
+#: admin/views/pages/parts/slider-settings-legacy.php:704
+#: admin/views/pages/parts/slider-settings.php:47
+msgid "Height"
+msgstr "높이"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:33
+#: admin/views/pages/parts/slider-settings-legacy.php:46
+#: admin/views/pages/parts/slider-settings-legacy.php:558
+#: admin/views/pages/parts/slider-settings.php:37
+#: admin/views/pages/parts/slider-settings.php:50
+#: admin/views/pages/parts/slider-settings.php:487
+msgid "px"
+msgstr "픽셀"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:32
+#: admin/views/pages/parts/slider-settings.php:36
+#: admin/assets/js/gutenberg/components/block-edit.js:57
+#: admin/assets/js/gutenberg/components/block-edit.js:82
+msgid "Slideshow width"
+msgstr "슬라이드쇼 너비"
+
+#: admin/views/pages/parts/slider-settings-legacy.php:30
+#: admin/views/pages/parts/slider-settings-legacy.php:688
+#: admin/views/pages/parts/slider-settings.php:34
+msgid "Width"
+msgstr "너비"
+
+#: admin/views/pages/parts/toolbar.php:114 admin/assets/dist/js/app.js:2
+msgid "Save"
+msgstr "저장"
+
+#: admin/views/pages/settings.php:42
+msgid "Settings"
+msgstr "설정"
+
+#: admin/views/pages/parts/toolbar.php:29
+msgid "Add Slide"
+msgstr "슬라이드 추가"
+
+#: admin/views/pages/parts/toolbar.php:60
+msgid "Add a new slideshow"
+msgstr "새 슬라이드쇼 추가"
+
+#: ml-slider.php:680
+msgid "Image"
+msgstr "이미지"
+
+#: admin/Pages.php:157
+msgid "Caution: This setting is for advanced developers only. If you're unsure, leave it checked."
+msgstr "주의: 이 설정은 고급 개발자 전용입니다. 확실하지 않은 경우 선택된 상태로 두십시오."
+
+#: admin/Pages.php:147
+msgid "Select replacement image"
+msgstr "대체 이미지 선택"
+
+#: ml-slider.php:2368
+msgid "Documentation"
+msgstr "문서"
+
+#: inc/slide/metaslide.image.class.php:529
+msgid "Crop"
+msgstr "잘라내기"
+
+#: admin/views/slides/tabs/crop.php:18
+msgid "Bottom Right"
+msgstr "오른쪽 하단"
+
+#: admin/views/slides/tabs/crop.php:17
+msgid "Bottom Center"
+msgstr "하단 중앙"
+
+#: admin/views/slides/tabs/crop.php:16
+msgid "Bottom Left"
+msgstr "하단 왼쪽"
+
+#: admin/views/slides/tabs/crop.php:15
+msgid "Center Right"
+msgstr "가운데 오른쪽"
+
+#: admin/views/slides/tabs/crop.php:14
+msgid "Center Center"
+msgstr "정중앙"
+
+#: admin/views/slides/tabs/crop.php:13
+msgid "Center Left"
+msgstr "가운데 왼쪽"
+
+#: admin/views/slides/tabs/crop.php:12
+msgid "Top Right"
+msgstr "상단 우측"
+
+#: admin/views/slides/tabs/crop.php:11
+msgid "Top Center"
+msgstr "상단 중앙"
+
+#: admin/views/slides/tabs/crop.php:10
+msgid "Top Left"
+msgstr "상단 왼쪽"
+
+#: admin/views/slides/tabs/crop.php:6
+msgid "Crop Position"
+msgstr "자르기 위치"
+
+#: inc/slide/metaslide.image.class.php:496
+msgid "SEO"
+msgstr "SEO"
+
+#: inc/slide/metaslide.image.class.php:488
+msgid "General"
+msgstr "일반"
+
+#: admin/views/slides/tabs/seo.php:33
+msgid "Image Alt Text"
+msgstr "이미지 대체 텍스트"
+
+#: admin/views/slides/tabs/seo.php:7
+msgid "Image Title Text"
+msgstr "이미지 제목 텍스트"
+
+#: inc/slide/metaslide.image.class.php:473
+msgid "Warning: The image data does not exist. Please re-upload the image."
+msgstr "경고: 이미지 데이터가 존재하지 않습니다. 이미지를 다시 업로드해 주세요."
+
+#: admin/Pages.php:138
+msgid "New Window"
+msgstr "새창"
+
+#: admin/Pages.php:136
+msgid "URL"
+msgstr "URL"
+
+#: admin/Pages.php:137 admin/assets/dist/js/app.js:2
+msgid "Caption"
+msgstr "캡션"
+
+#: inc/slide/metaslide.image.class.php:391
+msgid "Image Slide"
+msgstr "이미지 슬라이드"
+
+#: inc/metaslider.widget.class.php:125 ml-slider.php:1978
+#: admin/assets/dist/js/app.js:2
+msgid "No slideshows found"
+msgstr "슬라이드쇼를 찾을 수 없습니다."
+
+#: inc/metaslider.widget.class.php:115
+msgid "Select Slider:"
+msgstr "슬라이더 선택:"
+
+#: inc/metaslider.widget.class.php:112
+msgid "Title:"
+msgstr "제목:"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: ml-slider.php ml-slider.php:526
+msgid "MetaSlider"
+msgstr "메타슬라이더"

