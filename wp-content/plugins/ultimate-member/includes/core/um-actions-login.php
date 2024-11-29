@@ -11,15 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 function um_submit_form_errors_hook_login( $submitted_data ) {
 	$user_password = $submitted_data['user_password'];
 
-	if ( isset( $submitted_data['username'] ) && $submitted_data['username'] == '' ) {
+	if ( isset( $submitted_data['username'] ) && '' === $submitted_data['username'] ) {
 		UM()->form()->add_error( 'username', __( 'Please enter your username or email', 'ultimate-member' ) );
 	}
 
-	if ( isset( $submitted_data['user_login'] ) && $submitted_data['user_login'] == '' ) {
+	if ( isset( $submitted_data['user_login'] ) && '' === $submitted_data['user_login'] ) {
 		UM()->form()->add_error( 'user_login', __( 'Please enter your username', 'ultimate-member' ) );
 	}
 
-	if ( isset( $submitted_data['user_email'] ) && $submitted_data['user_email'] == '' ) {
+	if ( isset( $submitted_data['user_email'] ) && ( '' === $submitted_data['user_email'] || ! is_email( $submitted_data['user_email'] ) ) ) {
 		UM()->form()->add_error( 'user_email', __( 'Please enter your email', 'ultimate-member' ) );
 	}
 
@@ -28,7 +28,7 @@ function um_submit_form_errors_hook_login( $submitted_data ) {
 		$field = 'username';
 		if ( is_email( $submitted_data['username'] ) ) {
 			$data = get_user_by('email', $submitted_data['username'] );
-			$user_name = isset( $data->user_login ) ? $data->user_login : null;
+			$user_name = isset( $data->user_login ) ? $data->user_login : '';
 		} else {
 			$user_name  = $submitted_data['username'];
 		}
@@ -36,7 +36,7 @@ function um_submit_form_errors_hook_login( $submitted_data ) {
 		$authenticate = $submitted_data['user_email'];
 		$field = 'user_email';
 		$data = get_user_by('email', $submitted_data['user_email'] );
-		$user_name = isset( $data->user_login ) ? $data->user_login : null;
+		$user_name = isset( $data->user_login ) ? $data->user_login : '';
 	} else {
 		$field = 'user_login';
 		$user_name = $submitted_data['user_login'];
@@ -129,17 +129,15 @@ function um_submit_form_errors_hook_logincheck( $submitted_data, $form_data ) {
 		wp_logout();
 	}
 
-	$user_id = ( isset( UM()->login()->auth_id ) ) ? UM()->login()->auth_id : '';
-	um_fetch_user( $user_id );
+	$user_id = isset( UM()->login()->auth_id ) ? UM()->login()->auth_id : '';
 
-	$status = um_user( 'account_status' ); // account status
+	$status = UM()->common()->users()->get_status( $user_id ); // account status
 	switch ( $status ) {
 		// If user can't log in to site...
 		case 'inactive':
 		case 'awaiting_admin_review':
 		case 'awaiting_email_confirmation':
 		case 'rejected':
-			um_reset_user();
 			// Not `um_safe_redirect()` because UM()->permalinks()->get_current_url() is situated on the same host.
 			wp_safe_redirect( add_query_arg( 'err', esc_attr( $status ), UM()->permalinks()->get_current_url() ) );
 			exit;
@@ -150,7 +148,6 @@ function um_submit_form_errors_hook_logincheck( $submitted_data, $form_data ) {
 		wp_safe_redirect( um_get_core_page( 'login' ) );
 		exit;
 	}
-
 }
 add_action( 'um_submit_form_errors_hook_logincheck', 'um_submit_form_errors_hook_logincheck', 9999, 2 );
 
@@ -160,7 +157,7 @@ add_action( 'um_submit_form_errors_hook_logincheck', 'um_submit_form_errors_hook
  * @param $user_id
  */
 function um_store_lastlogin_timestamp( $user_id ) {
-	update_user_meta( $user_id, '_um_last_login', current_time( 'timestamp' ) );
+	update_user_meta( $user_id, '_um_last_login', current_time( 'mysql', true ) );
 	// Flush user cache after updating last_login timestamp.
 	UM()->user()->remove_cache( $user_id );
 }
@@ -193,6 +190,16 @@ add_action( 'wp_login', 'um_store_lastlogin_timestamp_' );
 function um_user_login( $submitted_data ) {
 	// phpcs:disable WordPress.Security.NonceVerification -- already verified here
 	$rememberme = ( isset( $_REQUEST['rememberme'], $submitted_data['rememberme'] ) && 1 === (int) $submitted_data['rememberme'] ) ? 1 : 0;
+
+	$user_id = isset( UM()->login()->auth_id ) ? UM()->login()->auth_id : '';
+	if ( empty( $user_id ) ) {
+		// refresh page if the user_id is empty
+		// Not `um_safe_redirect()` because UM()->permalinks()->get_current_url() is situated on the same host.
+		wp_safe_redirect( UM()->permalinks()->get_current_url() );
+		exit;
+	}
+
+	um_fetch_user( $user_id );
 
 	// @todo check using the 'deny_admin_frontend_login' option
 	if ( false !== strrpos( um_user( 'wp_roles' ), 'administrator' ) && ( ! isset( $_GET['provider'] ) && UM()->options()->get( 'deny_admin_frontend_login' ) ) ) {

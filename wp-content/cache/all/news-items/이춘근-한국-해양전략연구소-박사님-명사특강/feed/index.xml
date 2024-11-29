@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 이춘근. 한국 해양전략연구소 박사님 명사특강	</title>
+	<atom:link href="https://www.hwanil.ms.kr/news-items/%ec%9d%b4%ec%b6%98%ea%b7%bc-%ed%95%9c%ea%b5%ad-%ed%95%b4%ec%96%91%ec%a0%84%eb%9e%b5%ec%97%b0%ea%b5%ac%ec%86%8c-%eb%b0%95%ec%82%ac%eb%8b%98-%eb%aa%85%ec%82%ac%ed%8a%b9%ea%b0%95/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/news-items/%ec%9d%b4%ec%b6%98%ea%b7%bc-%ed%95%9c%ea%b5%ad-%ed%95%b4%ec%96%91%ec%a0%84%eb%9e%b5%ec%97%b0%ea%b5%ac%ec%86%8c-%eb%b0%95%ec%82%ac%eb%8b%98-%eb%aa%85%ec%82%ac%ed%8a%b9%ea%b0%95/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Tue, 03 Apr 2018 05:17:59 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

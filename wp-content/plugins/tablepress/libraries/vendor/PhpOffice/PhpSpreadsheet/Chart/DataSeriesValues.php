@@ -19,58 +19,42 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Series Data Type.
-	 *
-	 * @var string
 	 */
-	private $dataType;
+	private string $dataType;
 
 	/**
 	 * Series Data Source.
-	 *
-	 * @var ?string
 	 */
-	private $dataSource;
+	private ?string $dataSource;
 
 	/**
 	 * Format Code.
-	 *
-	 * @var string
 	 */
-	private $formatCode;
+	private ?string $formatCode;
 
 	/**
 	 * Series Point Marker.
-	 *
-	 * @var string
 	 */
-	private $pointMarker;
+	private ?string $pointMarker;
 
-	/** @var ChartColor */
-	private $markerFillColor;
+	private ChartColor $markerFillColor;
 
-	/** @var ChartColor */
-	private $markerBorderColor;
+	private ChartColor $markerBorderColor;
 
 	/**
 	 * Series Point Size.
-	 *
-	 * @var int
 	 */
-	private $pointSize = 3;
+	private int $pointSize = 3;
 
 	/**
 	 * Point Count (The number of datapoints in the dataseries).
-	 *
-	 * @var int
 	 */
-	private $pointCount = 0;
+	private int $pointCount;
 
 	/**
 	 * Data Values.
-	 *
-	 * @var mixed[]
 	 */
-	private $dataValues = [];
+	private ?array $dataValues;
 
 	/**
 	 * Fill color (can be array with colors if dataseries have custom colors).
@@ -79,32 +63,31 @@ class DataSeriesValues extends Properties
 	 */
 	private $fillColor;
 
-	/** @var bool */
-	private $scatterLines = true;
+	private bool $scatterLines = true;
 
-	/** @var bool */
-	private $bubble3D = false;
+	private bool $bubble3D = false;
 
-	/** @var ?Layout */
-	private $labelLayout;
+	private ?Layout $labelLayout = null;
 
 	/** @var TrendLine[] */
-	private $trendLines = [];
+	private array $trendLines = [];
 
 	/**
 	 * Create a new DataSeriesValues object.
 	 *
-	 * @param string $dataType
-	 * @param string $dataSource
-	 * @param null|mixed $formatCode
-	 * @param int $pointCount
-	 * @param mixed $dataValues
-	 * @param null|mixed $marker
 	 * @param null|ChartColor|ChartColor[]|string|string[] $fillColor
-	 * @param string $pointSize
+	 * @param int|string $pointSize
 	 */
-	public function __construct($dataType = self::DATASERIES_TYPE_NUMBER, $dataSource = null, $formatCode = null, $pointCount = 0, $dataValues = [], $marker = null, $fillColor = null, $pointSize = '3')
-	{
+	public function __construct(
+		string $dataType = self::DATASERIES_TYPE_NUMBER,
+		?string $dataSource = null,
+		?string $formatCode = null,
+		int $pointCount = 0,
+		?array $dataValues = [],
+		?string $marker = null,
+		$fillColor = null,
+		$pointSize = 3
+	) {
 		parent::__construct();
 		$this->markerFillColor = new ChartColor();
 		$this->markerBorderColor = new ChartColor();
@@ -124,10 +107,8 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get Series Data Type.
-	 *
-	 * @return string
 	 */
-	public function getDataType()
+	public function getDataType(): string
 	{
 		return $this->dataType;
 	}
@@ -144,7 +125,7 @@ class DataSeriesValues extends Properties
 	 *
 	 * @return $this
 	 */
-	public function setDataType($dataType)
+	public function setDataType(string $dataType)
 	{
 		if (!in_array($dataType, self::DATA_TYPE_VALUES)) {
 			throw new Exception('Invalid datatype for chart data series values');
@@ -156,10 +137,8 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get Series Data Source (formula).
-	 *
-	 * @return ?string
 	 */
-	public function getDataSource()
+	public function getDataSource(): ?string
 	{
 		return $this->dataSource;
 	}
@@ -167,11 +146,9 @@ class DataSeriesValues extends Properties
 	/**
 	 * Set Series Data Source (formula).
 	 *
-	 * @param ?string $dataSource
-	 *
 	 * @return $this
 	 */
-	public function setDataSource($dataSource)
+	public function setDataSource(?string $dataSource)
 	{
 		$this->dataSource = $dataSource;
 
@@ -180,10 +157,8 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get Point Marker.
-	 *
-	 * @return string
 	 */
-	public function getPointMarker()
+	public function getPointMarker(): ?string
 	{
 		return $this->pointMarker;
 	}
@@ -191,11 +166,9 @@ class DataSeriesValues extends Properties
 	/**
 	 * Set Point Marker.
 	 *
-	 * @param string $marker
-	 *
 	 * @return $this
 	 */
-	public function setPointMarker($marker)
+	public function setPointMarker(string $marker)
 	{
 		$this->pointMarker = $marker;
 
@@ -234,10 +207,8 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get Series Format Code.
-	 *
-	 * @return string
 	 */
-	public function getFormatCode()
+	public function getFormatCode(): ?string
 	{
 		return $this->formatCode;
 	}
@@ -245,11 +216,9 @@ class DataSeriesValues extends Properties
 	/**
 	 * Set Series Format Code.
 	 *
-	 * @param string $formatCode
-	 *
 	 * @return $this
 	 */
-	public function setFormatCode($formatCode)
+	public function setFormatCode(string $formatCode)
 	{
 		$this->formatCode = $formatCode;
 
@@ -258,10 +227,8 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get Series Point Count.
-	 *
-	 * @return int
 	 */
-	public function getPointCount()
+	public function getPointCount(): int
 	{
 		return $this->pointCount;
 	}
@@ -279,10 +246,10 @@ class DataSeriesValues extends Properties
 	private function stringToChartColor(string $fillString): ChartColor
 	{
 		$value = $type = '';
-		if (substr($fillString, 0, 1) === '*') {
+		if (str_starts_with($fillString, '*')) {
 			$type = 'schemeClr';
 			$value = substr($fillString, 1);
-		} elseif (substr($fillString, 0, 1) === '/') {
+		} elseif (str_starts_with($fillString, '/')) {
 			$type = 'prstClr';
 			$value = substr($fillString, 1);
 		} elseif ($fillString !== '') {
@@ -338,7 +305,7 @@ class DataSeriesValues extends Properties
 	 *
 	 * @param ChartColor|ChartColor[]|string|string[] $color HEX color or array with HEX colors
 	 *
-	 * @return   DataSeriesValues
+	 * @return   $this
 	 */
 	public function setFillColor($color)
 	{
@@ -367,7 +334,7 @@ class DataSeriesValues extends Properties
 	 *
 	 * @return bool true if validation was successful
 	 */
-	private function validateColor($color)
+	private function validateColor(string $color): bool
 	{
 		if (!preg_match('/^[a-f0-9]{6}$/i', $color)) {
 			throw new Exception(sprintf('Invalid hex color for chart series (color: "%s")', $color));
@@ -378,8 +345,7 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get line width for series.
-	 *
-	 * @return null|float|int
+	 * @return float|int|null
 	 */
 	public function getLineWidth()
 	{
@@ -389,9 +355,8 @@ class DataSeriesValues extends Properties
 	/**
 	 * Set line width for the series.
 	 *
-	 * @param null|float|int $width
-	 *
 	 * @return $this
+	 * @param null|float|int $width
 	 */
 	public function setLineWidth($width)
 	{
@@ -402,10 +367,8 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Identify if the Data Series is a multi-level or a simple series.
-	 *
-	 * @return null|bool
 	 */
-	public function isMultiLevelSeries()
+	public function isMultiLevelSeries(): ?bool
 	{
 		if (!empty($this->dataValues)) {
 			return is_array(array_values($this->dataValues)[0]);
@@ -416,13 +379,11 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Return the level count of a multi-level Data Series.
-	 *
-	 * @return int
 	 */
-	public function multiLevelCount()
+	public function multiLevelCount(): int
 	{
 		$levelCount = 0;
-		foreach ($this->dataValues as $dataValueSet) {
+		foreach (($this->dataValues ?? []) as $dataValueSet) {
 			$levelCount = max($levelCount, count($dataValueSet));
 		}
 
@@ -431,21 +392,21 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Get Series Data Values.
-	 *
-	 * @return mixed[]
 	 */
-	public function getDataValues()
+	public function getDataValues(): ?array
 	{
 		return $this->dataValues;
 	}
 
 	/**
 	 * Get the first Series Data value.
-	 *
 	 * @return mixed
 	 */
 	public function getDataValue()
 	{
+		if ($this->dataValues === null) {
+			return null;
+		}
 		$count = count($this->dataValues);
 		if ($count == 0) {
 			return null;
@@ -459,11 +420,9 @@ class DataSeriesValues extends Properties
 	/**
 	 * Set Series Data Values.
 	 *
-	 * @param array $dataValues
-	 *
 	 * @return $this
 	 */
-	public function setDataValues($dataValues)
+	public function setDataValues(array $dataValues)
 	{
 		$this->dataValues = Functions::flattenArray($dataValues);
 		$this->pointCount = count($dataValues);
@@ -492,16 +451,18 @@ class DataSeriesValues extends Properties
 				unset($dataValue);
 			} else {
 				[$worksheet, $cellRange] = Worksheet::extractSheetTitle($this->dataSource, true);
-				$dimensions = Coordinate::rangeDimension(str_replace('$', '', $cellRange));
+				$dimensions = Coordinate::rangeDimension(str_replace('$', '', $cellRange ?? ''));
 				if (($dimensions[0] == 1) || ($dimensions[1] == 1)) {
 					$this->dataValues = Functions::flattenArray($newDataValues);
 				} else {
-					$newArray = array_values(array_shift(/** @scrutinizer ignore-type */ $newDataValues));
+					/** @var array<int, array> */
+					$newDataValuesx = $newDataValues;
+					$newArray = array_values(array_shift($newDataValuesx) ?? []);
 					foreach ($newArray as $i => $newDataSet) {
 						$newArray[$i] = [$newDataSet];
 					}
 
-					foreach ($newDataValues as $newDataSet) {
+					foreach ($newDataValuesx as $newDataSet) {
 						$i = 0;
 						foreach ($newDataSet as $newDataVal) {
 							array_unshift($newArray[$i++], $newDataVal);
@@ -540,17 +501,13 @@ class DataSeriesValues extends Properties
 
 	/**
 	 * Smooth Line. Must be specified for both DataSeries and DataSeriesValues.
-	 *
-	 * @var bool
 	 */
-	private $smoothLine;
+	private bool $smoothLine = false;
 
 	/**
 	 * Get Smooth Line.
-	 *
-	 * @return bool
 	 */
-	public function getSmoothLine()
+	public function getSmoothLine(): bool
 	{
 		return $this->smoothLine;
 	}
@@ -558,11 +515,9 @@ class DataSeriesValues extends Properties
 	/**
 	 * Set Smooth Line.
 	 *
-	 * @param bool $smoothLine
-	 *
 	 * @return $this
 	 */
-	public function setSmoothLine($smoothLine)
+	public function setSmoothLine(bool $smoothLine)
 	{
 		$this->smoothLine = $smoothLine;
 
@@ -591,5 +546,30 @@ class DataSeriesValues extends Properties
 	public function getTrendLines(): array
 	{
 		return $this->trendLines;
+	}
+
+	/**
+	 * Implement PHP __clone to create a deep clone, not just a shallow copy.
+	 */
+	public function __clone()
+	{
+		parent::__clone();
+		$this->markerFillColor = clone $this->markerFillColor;
+		$this->markerBorderColor = clone $this->markerBorderColor;
+		if (is_array($this->fillColor)) {
+			$fillColor = $this->fillColor;
+			$this->fillColor = [];
+			foreach ($fillColor as $color) {
+				$this->fillColor[] = clone $color;
+			}
+		} elseif ($this->fillColor instanceof ChartColor) {
+			$this->fillColor = clone $this->fillColor;
+		}
+		$this->labelLayout = ($this->labelLayout === null) ? null : clone $this->labelLayout;
+		$trendLines = $this->trendLines;
+		$this->trendLines = [];
+		foreach ($trendLines as $trendLine) {
+			$this->trendLines[] = clone $trendLine;
+		}
 	}
 }

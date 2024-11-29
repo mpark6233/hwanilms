@@ -226,6 +226,8 @@ function um_user_edit_profile( $args, $form_data ) {
 
 	// loop through fields
 	if ( ! empty( $fields ) ) {
+		$arr_restricted_fields = UM()->fields()->get_restricted_fields_for_edit( $user_id );
+
 		foreach ( $fields as $key => $array ) {
 			if ( ! isset( $array['type'] ) ) {
 				continue;
@@ -253,8 +255,7 @@ function um_user_edit_profile( $args, $form_data ) {
 			}
 
 			// fields that need to be disabled in edit mode (profile) (email, username, etc.)
-			$arr_restricted_fields = UM()->fields()->get_restricted_fields_for_edit( $user_id );
-			if ( in_array( $key, $arr_restricted_fields, true ) ) {
+			if ( is_array( $arr_restricted_fields ) && in_array( $key, $arr_restricted_fields, true ) ) {
 				continue;
 			}
 
@@ -306,7 +307,7 @@ function um_user_edit_profile( $args, $form_data ) {
 			//validation of correct values from options in wp-admin
 			$stripslashes = '';
 			if ( isset( $args['submitted'][ $key ] ) && is_string( $args['submitted'][ $key ] ) ) {
-				$stripslashes = stripslashes( $args['submitted'][ $key ] );
+				$stripslashes = wp_unslash( $args['submitted'][ $key ] );
 			}
 
 			if ( 'select' === $array['type'] ) {
@@ -361,7 +362,7 @@ function um_user_edit_profile( $args, $form_data ) {
 						// translators: %s: title.
 						$args['submitted'][ $key ] = sprintf( __( 'Your choosed %s', 'ultimate-member' ), $array['title'] );
 					} else {
-						if ( isset( $userinfo[ $key ] ) && $args['submitted'][ $key ] != $userinfo[ $key ] ) {
+						if ( isset( $userinfo[ $key ] ) && $args['submitted'][ $key ] !== $userinfo[ $key ] ) {
 							$to_update[ $key ] = $args['submitted'][ $key ];
 						} elseif ( '' !== $args['submitted'][ $key ] ) {
 							$to_update[ $key ] = $args['submitted'][ $key ];
@@ -584,31 +585,28 @@ function um_restore_default_roles( $user_id, $args, $to_update ) {
 }
 add_action( 'um_after_user_updated', 'um_restore_default_roles', 10, 3 );
 
-
 /**
  * If editing another user
  *
  * @param $args
  */
 function um_editing_user_id_input( $args ) {
-	if ( true === UM()->fields()->editing && 'profile' === UM()->fields()->set_mode && UM()->user()->target_id ) { ?>
-
+	if ( true === UM()->fields()->editing && 'profile' === UM()->fields()->set_mode && UM()->user()->target_id ) {
+		?>
 		<input type="hidden" name="user_id" id="user_id" value="<?php echo esc_attr( UM()->user()->target_id ); ?>" />
 		<input type="hidden" name="profile_nonce" id="profile_nonce" value="<?php echo esc_attr( UM()->form()->nonce ); ?>" />
-
-	<?php }
+		<?php
+	}
 }
 add_action( 'um_after_form_fields', 'um_editing_user_id_input' );
 
-
-/**
- * Remove Yoast from front end for the Profile page
- *
- * @see   https://gist.github.com/amboutwe/1c847f9c706ff6f8c9eca76abea23fb6
- * @since 2.1.6
- */
-if ( !function_exists( 'um_profile_remove_wpseo' ) ) {
-
+if ( ! function_exists( 'um_profile_remove_wpseo' ) ) {
+	/**
+	 * Remove Yoast from front end for the Profile page
+	 *
+	 * @see   https://gist.github.com/amboutwe/1c847f9c706ff6f8c9eca76abea23fb6
+	 * @since 2.1.6
+	 */
 	function um_profile_remove_wpseo() {
 		if ( um_is_core_page( 'user' ) && um_get_requested_user() ) {
 
@@ -631,10 +629,8 @@ if ( !function_exists( 'um_profile_remove_wpseo' ) ) {
 			}
 		}
 	}
-
 }
 add_action( 'get_header', 'um_profile_remove_wpseo', 8 );
-
 
 /**
  * The profile page SEO tags
@@ -645,10 +641,9 @@ add_action( 'get_header', 'um_profile_remove_wpseo', 8 );
  */
 function um_profile_dynamic_meta_desc() {
 	if ( um_is_core_page( 'user' ) && um_get_requested_user() ) {
-
 		$user_id = um_get_requested_user();
 
-		if ( $user_id !== um_user('ID') ) {
+		if ( um_user( 'ID' ) !== $user_id ) {
 			um_fetch_user( $user_id );
 		}
 
@@ -678,48 +673,39 @@ function um_profile_dynamic_meta_desc() {
 		$url         = um_user_profile_url( $user_id );
 
 		/**
-		 * UM hook
+		 * Filters the profile SEO image size. Default 190. Available 'original'.
 		 *
-		 * @type filter
-		 * @title um_profile_dynamic_meta_image_size
-		 * @description Change the profile SEO image size. Default 190. Available 'original'.
-		 * @input_vars
-		 * [{"var":"$image_size","type":"int|string","desc":"Image size"},
-		 *  {"var":"$user_id","type":"int","desc":"User ID"}]
-		 * @change_log
-		 * ["Since: 2.5.5"]
-		 * @usage add_filter( 'um_profile_dynamic_meta_image_size', 'function_name', 10, 2 );
-		 * @example
-		 * <?php
-		 * add_filter( 'um_profile_dynamic_meta_image_size', 'my_profile_meta_image_size', 10, 2 );
-		 * function my_profile_meta_image_size( $image_size, $user_id ) {
-		 *   // your code here
-		 *   return $image_size;
+		 * @param {string} $image_size Image size.
+		 * @param {int}    $user_id    User ID.
+		 *
+		 * @return {array} Changed image type
+		 *
+		 * @since 2.5.5
+		 * @hook um_profile_dynamic_meta_image_size
+		 *
+		 * @example <caption>Change meta image to cover photo `cover_photo`.</caption>
+		 * function my_um_profile_dynamic_meta_image_size( $image_size, $user_id ) {
+		 *     return 'original';
 		 * }
-		 * ?>
+		 * add_filter( 'um_profile_dynamic_meta_image_size', 'my_um_profile_dynamic_meta_image_size', 10, 2 );
 		 */
 		$image_size = apply_filters( 'um_profile_dynamic_meta_image_size', 190, $user_id );
-
 		/**
-		 * UM hook
+		 * Filters the profile SEO image type. Default 'profile_photo'. Available 'cover_photo', 'profile_photo'.
 		 *
-		 * @type filter
-		 * @title um_profile_dynamic_meta_image_type
-		 * @description Change the profile SEO image type. Default 'profile_photo'. Available 'cover_photo', 'profile_photo', .
-		 * @input_vars
-		 * [{"var":"$image_type","type":"string","desc":"Image type - cover_photo or profile_photo"},
-		 *  {"var":"$user_id","type":"int","desc":"User ID"}]
-		 * @change_log
-		 * ["Since: 2.5.5"]
-		 * @usage add_filter( 'um_profile_dynamic_meta_image_type', 'function_name', 10, 2 );
-		 * @example
-		 * <?php
-		 * add_filter( 'um_profile_dynamic_meta_image_type', 'my_profile_meta_image_type', 10, 2 );
-		 * function my_profile_meta_image_type( $image_type, $user_id ) {
-		 *   // your code here
-		 *   return $image_type;
+		 * @param {string} $image_type Image type - cover_photo or profile_photo.
+		 * @param {int}    $user_id    User ID.
+		 *
+		 * @return {string} Changed image type
+		 *
+		 * @since 2.5.5
+		 * @hook um_profile_dynamic_meta_image_type
+		 *
+		 * @example <caption>Change meta image to cover photo `cover_photo`.</caption>
+		 * function my_um_profile_dynamic_meta_image_type( $image_type, $user_id ) {
+		 *     return 'cover_photo';
 		 * }
-		 * ?>
+		 * add_filter( 'um_profile_dynamic_meta_image_type', 'my_um_profile_dynamic_meta_image_type', 10, 2 );
 		 */
 		$image_type = apply_filters( 'um_profile_dynamic_meta_image_type', 'profile_photo', $user_id );
 
@@ -733,26 +719,56 @@ function um_profile_dynamic_meta_desc() {
 			} else {
 				$image = um_get_cover_uri( um_profile( 'cover_photo' ), null );
 			}
-		} else {
-			if ( is_numeric( $image_size ) ) {
-				$sizes = UM()->options()->get( 'photo_thumb_sizes' );
-				if ( is_array( $sizes ) ) {
-					$image_size = um_closest_num( $sizes, $image_size );
-				}
-				$image = um_get_user_avatar_url( $user_id, $image_size );
-			} else {
-				$image = um_get_user_avatar_url( $user_id, 'original' );
+		} elseif ( is_numeric( $image_size ) ) {
+			$sizes = UM()->options()->get( 'photo_thumb_sizes' );
+			if ( is_array( $sizes ) ) {
+				$image_size = um_closest_num( $sizes, $image_size );
 			}
+			$image = um_get_user_avatar_url( $user_id, $image_size );
+		} else {
+			$image = um_get_user_avatar_url( $user_id, 'original' );
 		}
 
+		$image      = current( explode( '?', $image ) ); // strip $_GET attributes from photo URL.
+		$image_url  = wp_parse_url( $image );
+		$image_name = explode( '/', $image_url['path'] );
+		$image_name = end( $image_name );
+		$image_info = wp_check_filetype( $image_name );
+
 		$person = array(
-			"@context"      => "http://schema.org",
-			"@type"         => "Person",
-			"name"          => esc_attr( $title ),
-			"description"   => esc_attr( stripslashes( $description ) ),
-			"image"         => esc_url( $image ),
-			"url"           => esc_url( $url ),
+			'@context'     => 'https://schema.org',
+			'@type'        => 'ProfilePage',
+			'dateCreated'  => um_user( 'user_registered' ),
+			'dateModified' => gmdate( 'Y-m-d H:i:s', um_user( 'last_update' ) ),
+			'mainEntity'   => array(
+				'@type'         => 'Person',
+				'name'          => esc_attr( $title ),
+				'alternateName' => um_user( 'user_login' ),
+				'description'   => esc_attr( stripslashes( $description ) ),
+				'image'         => esc_url( $image ),
+				'sameAs'        => array(
+					$url,
+				),
+			),
 		);
+		/**
+		 * Filters changing the schema.org of profile's person.
+		 *
+		 * @param {array} $person  Data of the profile person.
+		 * @param {int}   $user_id User ID.
+		 *
+		 * @return {array} Changed person's data.
+		 *
+		 * @since 2.8.7
+		 * @hook um_profile_dynamic_meta_profile_schema
+		 *
+		 * @example <caption>Change name of person.</caption>
+		 * function my_um_profile_dynamic_meta_profile_schema( $core_search_fields ) {
+		 *     $person['mainEntity']['name'] = 'John Doe';
+		 * }
+		 * add_filter( 'um_profile_dynamic_meta_profile_schema', 'my_um_profile_dynamic_meta_profile_schema' );
+		 */
+		$person = apply_filters( 'um_profile_dynamic_meta_profile_schema', $person, $user_id );
 
 		um_reset_user();
 		?>
@@ -770,14 +786,20 @@ function um_profile_dynamic_meta_desc() {
 		<meta property="og:image" content="<?php echo esc_url( $image ); ?>"/>
 		<meta property="og:image:alt" content="<?php esc_attr_e( 'Profile photo', 'ultimate-member' ); ?>"/>
 		<?php if ( is_numeric( $image_size ) ) { ?>
-		<meta property="og:image:height" content="<?php echo absint( $image_size ); ?>"/>
-		<meta property="og:image:width" content="<?php echo absint( $image_size ); ?>"/>
+			<meta property="og:image:height" content="<?php echo absint( $image_size ); ?>"/>
+			<meta property="og:image:width" content="<?php echo absint( $image_size ); ?>"/>
+		<?php } ?>
+		<?php if ( is_ssl() ) { ?>
+			<meta property="og:image:secure_url" content="<?php echo esc_url( $image ); ?>"/>
+		<?php } ?>
+		<?php if ( $image_info['type'] ) { ?>
+			<meta property="og:image:type" content="<?php echo esc_attr( $image_info['type'] ); ?>" />
 		<?php } ?>
 		<meta property="og:url" content="<?php echo esc_url( $url ); ?>"/>
 
 		<meta name="twitter:card" content="summary"/>
 		<?php if ( $twitter ) { ?>
-		<meta name="twitter:site" content="@<?php echo esc_attr( $twitter ); ?>"/>
+			<meta name="twitter:site" content="@<?php echo esc_attr( $twitter ); ?>"/>
 		<?php } ?>
 		<meta name="twitter:title" content="<?php echo esc_attr( $title ); ?>"/>
 		<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
@@ -785,14 +807,13 @@ function um_profile_dynamic_meta_desc() {
 		<meta name="twitter:image:alt" content="<?php esc_attr_e( 'Profile photo', 'ultimate-member' ); ?>"/>
 		<meta name="twitter:url" content="<?php echo esc_url( $url ); ?>"/>
 
-		<script type="application/ld+json"><?php echo json_encode( $person ); ?></script>
+		<script type="application/ld+json"><?php echo wp_json_encode( $person ); ?></script>
 
 		<!-- END - Ultimate Member profile SEO meta tags -->
 		<?php
 	}
 }
 add_action( 'wp_head', 'um_profile_dynamic_meta_desc', 20 );
-
 
 /**
  * Profile header cover
@@ -1021,7 +1042,7 @@ function um_profile_header( $args ) {
 		 */
 		do_action( 'um_pre_header_editprofile', $args ); ?>
 
-		<div class="um-profile-photo" data-user_id="<?php echo esc_attr( um_profile_id() ); ?>" <?php echo esc_html( UM()->fields()->aria_valid_attributes( UM()->fields()->is_error( 'profile_photo' ), 'profile_photo' ) ); ?>>
+		<div class="um-profile-photo" data-user_id="<?php echo esc_attr( um_profile_id() ); ?>" <?php echo wp_kses( UM()->fields()->aria_valid_attributes( UM()->fields()->is_error( 'profile_photo' ), 'profile_photo' ), UM()->get_allowed_html( 'templates' ) ); ?>>
 
 			<a href="<?php echo esc_url( um_user_profile_url() ); ?>" class="um-profile-photo-img" title="<?php echo esc_attr( um_user( 'display_name' ) ); ?>">
 				<?php if ( ! $default_size || $default_size == 'original' ) {
@@ -1167,8 +1188,8 @@ function um_profile_header( $args ) {
 						 * }
 						 * ?>
 						 */
-						do_action( 'um_after_profile_name_inline', $args ); ?>
-
+						do_action( 'um_after_profile_name_inline', $args, um_user( 'ID' ) );
+						?>
 					</div>
 				<?php } ?>
 
@@ -1194,7 +1215,7 @@ function um_profile_header( $args ) {
 				 * }
 				 * ?>
 				 */
-				do_action( 'um_after_profile_header_name_args', $args );
+				do_action( 'um_after_profile_header_name_args', $args, um_user( 'ID' ) );
 				/**
 				 * UM hook
 				 *
@@ -1282,7 +1303,7 @@ function um_profile_header( $args ) {
 						<textarea id="um-meta-bio" data-html="<?php echo esc_attr( $bio_html ); ?>"
 								data-character-limit="<?php echo esc_attr( $limit ); ?>"
 								placeholder="<?php esc_attr_e( 'Tell us a bit about yourself...', 'ultimate-member' ); ?>"
-								name="<?php echo esc_attr( $description_key ); ?>" <?php echo esc_html( UM()->fields()->aria_valid_attributes( UM()->fields()->is_error( $description_key ), 'um-meta-bio' ) ); ?>><?php echo esc_textarea( $description_value ); ?></textarea>
+								name="<?php echo esc_attr( $description_key ); ?>" <?php echo wp_kses( UM()->fields()->aria_valid_attributes( UM()->fields()->is_error( $description_key ), 'um-meta-bio' ), UM()->get_allowed_html( 'templates' ) ); ?>><?php echo esc_textarea( $description_value ); ?></textarea>
 						<span class="um-meta-bio-character um-right">
 							<span class="um-bio-limit"><?php echo esc_html( $limit ); ?></span>
 						</span>
@@ -1297,11 +1318,11 @@ function um_profile_header( $args ) {
 			}
 			?>
 
-			<div class="um-profile-status <?php echo esc_attr( um_user( 'account_status' ) ); ?>">
+			<div class="um-profile-status <?php echo esc_attr( UM()->common()->users()->get_status( um_user( 'ID' ) ) ); ?>">
 				<span>
 					<?php
 					// translators: %s: profile status.
-					echo esc_html( sprintf( __( 'This user account status is %s', 'ultimate-member' ), um_user( 'account_status_name' ) ) );
+					echo esc_html( sprintf( __( 'This user account status is %s', 'ultimate-member' ), UM()->common()->users()->get_status( um_user( 'ID' ), 'formatted' ) ) );
 					?>
 				</span>
 			</div>
@@ -1411,6 +1432,8 @@ function um_pre_profile_shortcode( $args ) {
 			}
 		}
 	}
+
+	UM()->fields()->set_mode = 'profile';
 }
 add_action( 'um_pre_profile_shortcode', 'um_pre_profile_shortcode' );
 
@@ -1578,7 +1601,8 @@ function um_submit_form_profile( $args, $form_data ) {
 	 * function my_user_edit_profile( $post, $form_data ) {
 	 *     // your code here
 	 * }
-	 * add_action( 'um_user_edit_profile', 'my_user_edit_profile', 10, 2 );
+	 * // Don't use priority >= 10 because there is native Ultimate Member handler on it.
+	 * add_action( 'um_user_edit_profile', 'my_user_edit_profile', 9, 2 );
 	 */
 	do_action( 'um_user_edit_profile', $args, $form_data );
 }

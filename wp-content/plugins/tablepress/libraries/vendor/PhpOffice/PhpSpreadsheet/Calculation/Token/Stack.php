@@ -7,24 +7,19 @@ use TablePress\PhpOffice\PhpSpreadsheet\Calculation\Engine\BranchPruner;
 
 class Stack
 {
-	/**
-	 * @var BranchPruner
-	 */
-	private $branchPruner;
+	private BranchPruner $branchPruner;
 
 	/**
 	 * The parser stack for formulae.
 	 *
 	 * @var mixed[]
 	 */
-	private $stack = [];
+	private array $stack = [];
 
 	/**
 	 * Count of entries in the parser stack.
-	 *
-	 * @var int
 	 */
-	private $count = 0;
+	private int $count = 0;
 
 	public function __construct(BranchPruner $branchPruner)
 	{
@@ -41,7 +36,6 @@ class Stack
 
 	/**
 	 * Push a new entry onto the stack.
-	 *
 	 * @param mixed $value
 	 */
 	public function push(string $type, $value, ?string $reference = null): void

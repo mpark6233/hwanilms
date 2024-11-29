@@ -7,18 +7,18 @@ use TablePress\PhpOffice\PhpSpreadsheet\Calculation\Engine\ArrayArgumentProcesso
 
 trait ArrayEnabled
 {
-	/**
-	 * @var ArrayArgumentHelper
-	 */
-	private static $arrayArgumentHelper;
+	private static bool $initializationNeeded = true;
+
+	private static ArrayArgumentHelper $arrayArgumentHelper;
 
 	/**
 	 * @param array|false $arguments Can be changed to array for Php8.1+
 	 */
 	private static function initialiseHelper($arguments): void
 	{
-		if (self::$arrayArgumentHelper === null) {
+		if (self::$initializationNeeded === true) {
 			self::$arrayArgumentHelper = new ArrayArgumentHelper();
+			self::$initializationNeeded = false;
 		}
 		self::$arrayArgumentHelper->initialise(($arguments === false) ? [] : $arguments);
 	}
@@ -43,7 +43,6 @@ trait ArrayEnabled
 	 *     and any of them can be an array argument.
 	 * Example use for:
 	 *         ROUND() or DATE().
-	 *
 	 * @param mixed ...$arguments
 	 */
 	protected static function evaluateArrayArguments(callable $method, ...$arguments): array
@@ -60,7 +59,6 @@ trait ArrayEnabled
 	 * Example use for:
 	 *         NETWORKDAYS() or CONCATENATE(), where the last argument is a matrix (or a series of values) that need
 	 *                                         to be treated as a such rather than as an array arguments.
-	 *
 	 * @param mixed ...$arguments
 	 */
 	protected static function evaluateArrayArgumentsSubset(callable $method, int $limit, ...$arguments): array
@@ -87,7 +85,6 @@ trait ArrayEnabled
 	 * Example use for:
 	 *         Z.TEST() or INDEX(), where the first argument 1 is a matrix that needs to be treated as a dataset
 	 *                   rather than as an array argument.
-	 *
 	 * @param mixed ...$arguments
 	 */
 	protected static function evaluateArrayArgumentsSubsetFrom(callable $method, int $start, ...$arguments): array
@@ -114,7 +111,6 @@ trait ArrayEnabled
 	 * Example use for:
 	 *         HLOOKUP() and VLOOKUP(), where argument 1 is a matrix that needs to be treated as a database
 	 *                                  rather than as an array argument.
-	 *
 	 * @param mixed ...$arguments
 	 */
 	protected static function evaluateArrayArgumentsIgnore(callable $method, int $ignore, ...$arguments): array

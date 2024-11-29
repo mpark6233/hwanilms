@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 명사특강(AI와 디지털트윈) 2022년 5월 13일	</title>
+	<atom:link href="https://www.hwanil.ms.kr/%eb%aa%85%ec%82%ac%ed%8a%b9%ea%b0%95ai%ec%99%80-%eb%94%94%ec%a7%80%ed%84%b8%ed%8a%b8%ec%9c%88-2022%eb%85%84-5%ec%9b%94-13%ec%9d%bc/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/%eb%aa%85%ec%82%ac%ed%8a%b9%ea%b0%95ai%ec%99%80-%eb%94%94%ec%a7%80%ed%84%b8%ed%8a%b8%ec%9c%88-2022%eb%85%84-5%ec%9b%94-13%ec%9d%bc/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Tue, 17 May 2022 07:49:40 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

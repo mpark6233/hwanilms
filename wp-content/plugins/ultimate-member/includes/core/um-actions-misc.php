@@ -168,13 +168,19 @@ function um_add_update_notice( $args ) {
 				$err = __( 'Your account has not been approved yet.', 'ultimate-member' );
 				break;
 			case 'awaiting_email_confirmation':
-				$err = __( 'Your account is awaiting e-mail verification.', 'ultimate-member' );
+				$err = __( 'Your account is awaiting email verification.', 'ultimate-member' );
 				break;
 			case 'rejected':
 				$err = __( 'Your membership request has been rejected.', 'ultimate-member' );
 				break;
 			case 'invalid_nonce':
 				$err = __( 'An error has been encountered. Probably page was cached. Please try again.', 'ultimate-member' );
+				break;
+			case 'activation_link_used':
+				$err = __( 'This activation link is expired or have already been used.', 'ultimate-member' );
+				break;
+			case 'activation_link_expired':
+				$err = __( 'This activation link is expired.', 'ultimate-member' );
 				break;
 		}
 	}

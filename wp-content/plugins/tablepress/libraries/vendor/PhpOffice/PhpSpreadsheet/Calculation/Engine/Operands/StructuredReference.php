@@ -7,6 +7,7 @@ use TablePress\PhpOffice\PhpSpreadsheet\Calculation\Exception;
 use TablePress\PhpOffice\PhpSpreadsheet\Cell\Cell;
 use TablePress\PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use TablePress\PhpOffice\PhpSpreadsheet\Worksheet\Table;
+use Stringable;
 
 final class StructuredReference implements Operand
 {
@@ -30,60 +31,30 @@ final class StructuredReference implements Operand
 
 	private const TABLE_REFERENCE = '/([\p{L}_\\\\][\p{L}\p{N}\._]+)?(\[(?:[^\]\[]+|(?R))*+\])/miu';
 
-	/**
-	 * @var string
-	 */
-	private $value;
+	private string $value;
 
-	/**
-	 * @var string
-	 */
-	private $tableName;
+	private string $tableName;
 
-	/**
-	 * @var \TablePress\PhpOffice\PhpSpreadsheet\Worksheet\Table
-	 */
-	private $table;
+	private Table $table;
 
-	/**
-	 * @var string
-	 */
-	private $reference;
+	private string $reference;
 
-	/**
-	 * @var int|null
-	 */
-	private $headersRow;
+	private ?int $headersRow;
 
-	/**
-	 * @var int
-	 */
-	private $firstDataRow;
+	private int $firstDataRow;
 
-	/**
-	 * @var int
-	 */
-	private $lastDataRow;
+	private int $lastDataRow;
 
-	/**
-	 * @var int|null
-	 */
-	private $totalsRow;
+	private ?int $totalsRow;
 
-	/**
-	 * @var mixed[]
-	 */
-	private $columns;
+	private array $columns;
 
 	public function __construct(string $structuredReference)
 	{
 		$this->value = $structuredReference;
 	}
 
-	/**
-	 * @return $this
-	 */
-	public static function fromParser(string $formula, int $index, array $matches): \TablePress\PhpOffice\PhpSpreadsheet\Calculation\Engine\Operands\Operand
+	public static function fromParser(string $formula, int $index, array $matches): self
 	{
 		$val = $matches[0];
 
@@ -98,7 +69,7 @@ final class StructuredReference implements Operand
 			}
 			$srStringRemainder = substr($srStringRemainder, 0, $closingPos + 1);
 			--$srCount;
-			if (strpos($srStringRemainder, self::OPEN_BRACE) !== false) {
+			if (str_contains($srStringRemainder, self::OPEN_BRACE)) {
 				++$srCount;
 			}
 			$val .= $srStringRemainder;
@@ -115,14 +86,19 @@ final class StructuredReference implements Operand
 	{
 		$this->getTableStructure($cell);
 		$cellRange = ($this->isRowReference()) ? $this->getRowReference($cell) : $this->getColumnReference();
+		$sheetName = '';
+		$worksheet = $this->table->getWorksheet();
+		if ($worksheet !== null && $worksheet !== $cell->getWorksheet()) {
+			$sheetName = "'" . $worksheet->getTitle() . "'!";
+		}
 
-		return $cellRange;
+		return $sheetName . $cellRange;
 	}
 
 	private function isRowReference(): bool
 	{
-		return strpos($this->value, '[@') !== false
-			|| strpos($this->value, '[' . self::ITEM_SPECIFIER_THIS_ROW . ']') !== false;
+		return str_contains($this->value, '[@')
+			|| str_contains($this->value, '[' . self::ITEM_SPECIFIER_THIS_ROW . ']');
 	}
 
 	/**
@@ -145,7 +121,12 @@ final class StructuredReference implements Operand
 		$this->totalsRow = ($this->table->getShowTotalsRow()) ? (int) $tableRange[1][1] : null;
 		$this->lastDataRow = ($this->table->getShowTotalsRow()) ? (int) $tableRange[1][1] - 1 : $tableRange[1][1];
 
-		$this->columns = $this->getColumns($cell, $tableRange);
+		$cellParam = $cell;
+		$worksheet = $this->table->getWorksheet();
+		if ($worksheet !== null && $worksheet !== $cell->getWorksheet()) {
+			$cellParam = $worksheet->getCell('A1');
+		}
+		$this->columns = $this->getColumns($cellParam, $tableRange);
 	}
 
 	/**
@@ -175,6 +156,13 @@ final class StructuredReference implements Operand
 	private function getTableByName(Cell $cell): Table
 	{
 		$table = $cell->getWorksheet()->getTableByName($this->tableName);
+
+		if ($table === null) {
+			$spreadsheet = $cell->getWorksheet()->getParent();
+			if ($spreadsheet !== null) {
+				$table = $spreadsheet->getTableByName($this->tableName);
+			}
+		}
 
 		if ($table === null) {
 			throw new Exception("Table {$this->tableName} for Structured Reference cannot be located");
@@ -212,7 +200,6 @@ final class StructuredReference implements Operand
 			$reference = $this->adjustRowReference($columnName, $reference, $cell, $columnId);
 		}
 
-		/** @var string $reference */
 		return $this->validateParsedReference(trim($reference, '[]@, '));
 	}
 
@@ -220,8 +207,8 @@ final class StructuredReference implements Operand
 	{
 		if ($columnName !== '') {
 			$cellReference = $columnId . $cell->getRow();
-			$pattern1 = '/\[' . preg_quote($columnName) . '\]/miu';
-			$pattern2 = '/@' . preg_quote($columnName) . '/miu';
+			$pattern1 = '/\[' . preg_quote($columnName, '/') . '\]/miu';
+			$pattern2 = '/@' . preg_quote($columnName, '/') . '/miu';
 			if (preg_match($pattern1, $reference) === 1) {
 				$reference = preg_replace($pattern1, $cellReference, $reference);
 			} elseif (preg_match($pattern2, $reference) === 1) {
@@ -294,9 +281,9 @@ final class StructuredReference implements Operand
 				return $this->firstDataRow;
 			case self::ITEM_SPECIFIER_TOTALS:
 				return $this->totalsRow ?? $this->lastDataRow;
+			default:
+				return $this->headersRow ?? $this->firstDataRow;
 		}
-
-		return $this->headersRow ?? $this->firstDataRow;
 	}
 
 	private function getMaximumRow(string $reference): int
@@ -309,9 +296,9 @@ final class StructuredReference implements Operand
 			case self::ITEM_SPECIFIER_ALL:
 			case self::ITEM_SPECIFIER_TOTALS:
 				return $this->totalsRow ?? $this->lastDataRow;
+			default:
+				return $this->totalsRow ?? $this->lastDataRow;
 		}
-
-		return $this->totalsRow ?? $this->lastDataRow;
 	}
 
 	public function value(): string
@@ -327,7 +314,6 @@ final class StructuredReference implements Operand
 		$rowsSelected = false;
 		foreach (self::ITEM_SPECIFIER_ROWS_SET as $rowReference) {
 			$pattern = '/\[' . $rowReference . '\]/mui';
-			/** @var string $reference */
 			if (preg_match($pattern, $reference) === 1) {
 				if (($rowReference === self::ITEM_SPECIFIER_HEADERS) && ($this->table->getShowHeaderRow() === false)) {
 					throw new Exception(
@@ -338,7 +324,7 @@ final class StructuredReference implements Operand
 				$rowsSelected = true;
 				$startRow = min($startRow, $this->getMinimumRow($rowReference));
 				$endRow = max($endRow, $this->getMaximumRow($rowReference));
-				$reference = preg_replace($pattern, '', $reference);
+				$reference = preg_replace($pattern, '', $reference) ?? '';
 			}
 		}
 		if ($rowsSelected === false) {
@@ -354,11 +340,11 @@ final class StructuredReference implements Operand
 	{
 		$columnsSelected = false;
 		foreach ($this->columns as $columnId => $columnName) {
-			$columnName = str_replace("\u{a0}", ' ', $columnName);
+			$columnName = str_replace("\u{a0}", ' ', $columnName ?? '');
 			$cellFrom = "{$columnId}{$startRow}";
 			$cellTo = "{$columnId}{$endRow}";
 			$cellReference = ($cellFrom === $cellTo) ? $cellFrom : "{$cellFrom}:{$cellTo}";
-			$pattern = '/\[' . preg_quote($columnName) . '\]/mui';
+			$pattern = '/\[' . preg_quote($columnName, '/') . '\]/mui';
 			if (preg_match($pattern, $reference) === 1) {
 				$columnsSelected = true;
 				$reference = preg_replace($pattern, $cellReference, $reference);
@@ -370,5 +356,10 @@ final class StructuredReference implements Operand
 		}
 
 		return $reference;
+	}
+
+	public function __toString(): string
+	{
+		return $this->value;
 	}
 }

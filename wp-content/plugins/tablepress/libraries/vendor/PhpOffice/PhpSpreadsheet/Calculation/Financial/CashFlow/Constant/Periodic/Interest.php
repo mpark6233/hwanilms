@@ -29,7 +29,6 @@ class Interest
 	 * @param mixed $presentValue Present Value
 	 * @param mixed $futureValue Future Value
 	 * @param mixed $type Payment type: 0 = at the end of each period, 1 = at the beginning of each period
-	 *
 	 * @return float|string
 	 */
 	public static function payment(
@@ -88,7 +87,6 @@ class Interest
 	 * @param mixed $period is the period to calculate the interest rate.  It must be betweeen 1 and number_payments.
 	 * @param mixed $numberOfPeriods is the number of payments for the annuity
 	 * @param mixed $principleRemaining is the loan amount or present value of the payments
-	 *
 	 * @return float|string
 	 */
 	public static function schedulePayment($interestRate, $period, $numberOfPeriods, $principleRemaining)
@@ -152,7 +150,6 @@ class Interest
 	 *                      1               At the beginning of the period.
 	 * @param mixed $guess Your guess for what the rate will be.
 	 *                          If you omit guess, it is assumed to be 10 percent.
-	 *
 	 * @return float|string
 	 */
 	public static function rate(
@@ -171,7 +168,7 @@ class Interest
 		$guess = ($guess === null) ? 0.1 : Functions::flattenSingleValue($guess);
 
 		try {
-			$numberOfPeriods = CashFlowValidations::validateInt($numberOfPeriods);
+			$numberOfPeriods = CashFlowValidations::validateFloat($numberOfPeriods);
 			$payment = CashFlowValidations::validateFloat($payment);
 			$presentValue = CashFlowValidations::validatePresentValue($presentValue);
 			$futureValue = CashFlowValidations::validateFutureValue($futureValue);
@@ -199,8 +196,10 @@ class Interest
 		return $close ? $rate : ExcelError::NAN();
 	}
 
-	/** @return float|string */
-	private static function rateNextGuess(float $rate, int $numberOfPeriods, float $payment, float $presentValue, float $futureValue, int $type)
+	/**
+	 * @return float|string
+	 */
+	private static function rateNextGuess(float $rate, float $numberOfPeriods, float $payment, float $presentValue, float $futureValue, int $type)
 	{
 		if ($rate == 0.0) {
 			return ExcelError::NAN();

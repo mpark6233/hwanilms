@@ -2,7 +2,7 @@
 
 function bellows_menu_toggle( $menu_id, $content, $btn_class, $args ){
 	$content = apply_filters( 'bellows_menu_toggle_content', $content, $menu_id, $args );
-	$btn = '<button class="bellows-menu-toggle '.$btn_class.'" aria-controls="'.$menu_id.'">'.$content.'</button>';
+	$btn = '<button class="bellows-menu-toggle '.esc_attr($btn_class).'" aria-controls="'.esc_attr($menu_id).'">'.$content.'</button>';
 	return apply_filters( 'bellows_menu_toggle', $btn, $menu_id, $args );
 }
 
@@ -13,23 +13,15 @@ function bellows_menu_toggle( $menu_id, $content, $btn_class, $args ){
  * 
  * 
  */
-function bellows( $config_id = 'main' , $menu_args = array() ){
+function bellows( $config_id = 'main' , $menu_args = [] ){
+
+	$config_id = bellows_validate_config_id( $config_id );
 
 	_BELLOWS()->set_current_config_id( $config_id );
 
 	$menu_args['bellows_source'] = 'menu'; // Default source
 	$args = bellows_get_nav_menu_args( $config_id , $menu_args );
-
-	// Should the toggle and menu be printed
-	$print = isset( $args['echo'] ) ? $args['echo'] : true;
-
-	// Get the toggle based on config settings
-	$toggle = bellows_menu_toggle_default( $args['container_id'], $config_id, $args );
-
-	// If we're printing, print the toggle.
-	if( $print ){
-		echo $toggle;
-	}
+	$toggle = bellows_output_responsive_toggle($config_id, $args);
 
 	// Generate the menu (wp_nav_menu will print if we're printing)
 	$menu = wp_nav_menu( $args );
@@ -46,10 +38,9 @@ function bellows_shortcode( $atts, $content = null ){
 		'config_id'			=> 'main',
 		'theme_location' 	=> '',
 		'menu'				=> '',
-
-
 	), $atts));
 
+	
 	$args = array();
 	$args['echo'] = false;
 
@@ -69,7 +60,16 @@ function bellows_shortcode( $atts, $content = null ){
 /**
  * Numeric menu ID is required
  */
-function bellows_section( $config_id = 'main' , $menu_args = array(), $section_args ){
+function bellows_section( string $config_id, array $menu_args, array $section_args ){
+
+	$config_id = bellows_validate_config_id( $config_id );
+
+	if( !BELLOWS_PRO ){
+		return bellows_admin_notice(
+			'Upgrade to <a href="' . BELLOWS_PRO_URL . '">Bellows Pro</a> to use the Bellows Menu Section feature.' ,
+			false
+		);
+	}
 
 	if( !isset( $menu_args['menu'] ) ){
 		return '<!-- No menu ID passed, cannot generate Bellows Section -->';
@@ -85,16 +85,18 @@ function bellows_section( $config_id = 'main' , $menu_args = array(), $section_a
 	$args = bellows_get_nav_menu_args( $config_id , $menu_args );
 	$args['container_id'] = 'bellows-'.$config_id.'-'.sanitize_key( $menu_args['menu'] ).'-section-'.$section_args['root'];
 
-	// Should the toggle and menu be printed
-	$print = isset( $args['echo'] ) ? $args['echo'] : true;
+	// // Should the toggle and menu be printed
+	// $print = isset( $args['echo'] ) ? $args['echo'] : true;
 
-	// Get the toggle based on config settings
-	$toggle = bellows_menu_toggle_default( $args['container_id'], $config_id, $args );
+	// // Get the toggle based on config settings
+	// $toggle = bellows_menu_toggle_default( $args['container_id'], $config_id, $args );
 
-	// If we're printing, print the toggle.
-	if( $print ){
-		echo $toggle;
-	}
+	// // If we're printing, print the toggle.
+	// if( $print ){
+	// 	echo $toggle;
+	// }
+
+	$toggle = bellows_output_responsive_toggle($config_id, $args);
 
 	// Generate the menu (wp_nav_menu will print if we're printing)
 	add_filter( 'wp_nav_menu_objects' , 'bellows_filter_section' , 10, 2 );
@@ -108,14 +110,14 @@ function bellows_section( $config_id = 'main' , $menu_args = array(), $section_a
 add_shortcode( 'bellows_section' , 'bellows_section_shortcode' );
 function bellows_section_shortcode( $atts, $content = null ){
 
-	extract( shortcode_atts( array(
+	extract( shortcode_atts( [
 		'config_id'			=> 'main',
 		'menu'				=> '',
 		'root'				=> '',
 		'include_root'		=> 'false',
-	), $atts));
+	], $atts));
 
-	$args = array();
+	$args = [];
 	$args['echo'] = false;
 
 
@@ -125,10 +127,10 @@ function bellows_section_shortcode( $atts, $content = null ){
 
 	$include_root = strtolower( $include_root ) === 'true' ? true : false;
 
-	$section_args = array(
+	$section_args = [
 		'root'	=> $root,
 		'include_root' => $include_root,
-	);
+	];
 
 	return bellows_section( $config_id , $args, $section_args );
 
@@ -144,6 +146,8 @@ function bellows_terms( $config_id = 'main' , $term_args = array() , $menu_args 
 			false
 		);
 	}
+
+	$config_id = bellows_validate_config_id( $config_id );
 
 	// If 'taxonomies' is passed, convert to 'taxonomy'
 	if( isset( $term_args['taxonomies'] ) && !isset( $term_args['taxonomy'] ) ){
@@ -163,6 +167,17 @@ function bellows_terms( $config_id = 'main' , $term_args = array() , $menu_args 
 		'counts'		=> false,
 	);
 	$term_args = wp_parse_args( $term_args, $term_args_defaults );
+
+	// Set up meta_term_order custom meta query if that's the selected orderby field
+	if( $term_args['orderby'] === 'meta_term_order' ){
+		// Set up custom meta query
+		$term_args['meta_query'] = [
+			'meta_term_order' => [
+				'key' => 'order',
+				'type' => 'NUMERIC',
+			]
+		];
+	}
 	
 
 	_BELLOWS()->set_current_config_id( $config_id );
@@ -182,6 +197,8 @@ function bellows_terms( $config_id = 'main' , $term_args = array() , $menu_args 
 	$menu_args = bellows_get_nav_menu_args( $config_id , $menu_args );
 	// bellp( $menu_args );
 
+	$toggle = bellows_output_responsive_toggle($config_id, $menu_args);
+
 	//add_filter( 'wp_get_nav_menu_items' , 'bellows_populate_terms' , 10, 3 );
 	add_filter( 'wp_nav_menu_objects' , 'bellows_populate_terms' , 10, 2 );
 	$menu = wp_nav_menu( $menu_args );
@@ -190,7 +207,7 @@ function bellows_terms( $config_id = 'main' , $term_args = array() , $menu_args 
 
 	//TODO: ECHO OR RETURN CHECK
 
-	return $menu;
+	return $toggle . $menu;
 }
 
 
@@ -260,6 +277,8 @@ function bellows_posts( $config_id = 'main' , $post_args = array() , $menu_args 
 		);
 	}
 
+	$config_id = bellows_validate_config_id( $config_id );
+
 	$post_arg_defaults = array(
 		'post_type'		=> 'page',
 		'post_parent'	=> '', //0,
@@ -325,6 +344,8 @@ function bellows_posts( $config_id = 'main' , $post_args = array() , $menu_args 
 
 	$menu_args = bellows_get_nav_menu_args( $config_id , $menu_args );
 
+	$toggle = bellows_output_responsive_toggle($config_id, $menu_args);
+
 	//bellp( get_term( 73, 'nav_menu' ) );
 
 	// bellp( $post_args );
@@ -338,7 +359,7 @@ function bellows_posts( $config_id = 'main' , $post_args = array() , $menu_args 
 	//remove_filter( 'wp_get_nav_menu_items' , 'bellows_populate_terms' , 10, 3 );
 
 	//TODO: ECHO OR RETURN CHECK
-	return $menu;
+	return $toggle.$menu;
 
 }
 

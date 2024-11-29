@@ -1,9 +1,11 @@
 <?php
 namespace um\admin\core;
 
+use WP_Post;
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! class_exists( 'um\admin\core\Admin_Columns' ) ) {
 
@@ -14,11 +16,10 @@ if ( ! class_exists( 'um\admin\core\Admin_Columns' ) ) {
 	 */
 	class Admin_Columns {
 
-
 		/**
 		 * Admin_Columns constructor.
 		 */
-		function __construct() {
+		public function __construct() {
 
 			add_filter( 'manage_edit-um_form_columns', array( &$this, 'manage_edit_um_form_columns' ) );
 			add_action( 'manage_um_form_posts_custom_column', array( &$this, 'manage_um_form_posts_custom_column' ), 10, 3 );
@@ -31,74 +32,42 @@ if ( ! class_exists( 'um\admin\core\Admin_Columns' ) ) {
 			// Add a post display state for special UM pages.
 			add_filter( 'display_post_states', array( &$this, 'add_display_post_states' ), 10, 2 );
 
-			add_filter( 'post_row_actions', array( &$this, 'remove_bulk_actions_um_form_inline' ) );
-
-			add_filter( 'manage_users_columns', array( &$this, 'manage_users_columns' ) );
-
-			add_filter( 'manage_users_custom_column', array( &$this, 'manage_users_custom_column' ), 10, 3 );
+			add_filter( 'post_row_actions', array( &$this, 'remove_bulk_actions_um_form_inline' ), 10, 2 );
 		}
-
-
-		/**
-		 * Filter: Add column 'Status'
-		 *
-		 * @param array $columns
-		 *
-		 * @return array
-		 */
-		public function manage_users_columns( $columns ) {
-			$columns['account_status'] = __( 'Status', 'ultimate-member' );
-			return $columns;
-		}
-
-
-		/**
-		 * Filter: Show column 'Status'
-		 *
-		 * @param string $val
-		 * @param string $column_name
-		 * @param int $user_id
-		 *
-		 * @return string
-		 */
-		public function manage_users_custom_column( $val, $column_name, $user_id ) {
-			if ( $column_name == 'account_status' ) {
-				um_fetch_user( $user_id );
-				$value = um_user( 'account_status_name' );
-				um_reset_user();
-				return $value;
-			}
-			return $val;
-		}
-
 
 		/**
 		 * This will remove the "Edit" bulk action, which is actually quick edit.
 		 *
 		 * @param array $actions
+		 * @param WP_Post $post
 		 *
-		 * @return array;
+		 * @return array
 		 */
-		function remove_bulk_actions_um_form_inline( $actions ) {
-			if ( UM()->admin()->is_plugin_post_type() ) {
+		public function remove_bulk_actions_um_form_inline( $actions, $post ) {
+			$remove_quick_edit = array(
+				'um_form',
+				'um_directory',
+			);
+			$remove_quick_edit = apply_filters( 'um_cpt_remove_quick_edit', $remove_quick_edit );
+
+			if ( in_array( $post->post_type, $remove_quick_edit, true ) ) {
 				unset( $actions['inline hide-if-no-js'] );
-				return $actions;
 			}
+
 			return $actions;
 		}
-
 
 		/**
 		 * Custom row actions
 		 *
 		 * @param array $actions
-		 * @param \WP_Post $post
+		 * @param WP_Post $post
 		 *
 		 * @return mixed
 		 */
-		function post_row_actions( $actions, $post ) {
+		public function post_row_actions( $actions, $post ) {
 			//check for your post type
-			if ( $post->post_type == "um_form" ) {
+			if ( 'um_form' === $post->post_type ) {
 				$actions['um_duplicate'] = '<a href="' . esc_url( $this->duplicate_uri( $post->ID ) ) . '">' . __( 'Duplicate', 'ultimate-member' ) . '</a>';
 			}
 			return $actions;
@@ -232,14 +201,14 @@ if ( ! class_exists( 'um\admin\core\Admin_Columns' ) ) {
 		 * Add a post display state for special UM pages in the page list table.
 		 *
 		 * @param array $post_states An array of post display states.
-		 * @param \WP_Post $post The current post object.
+		 * @param WP_Post $post The current post object.
 		 *
 		 * @return mixed
 		 */
 		public function add_display_post_states( $post_states, $post ) {
 
 			foreach ( UM()->config()->core_pages as $page_key => $page_value ) {
-				$page_id = UM()->options()->get( UM()->options()->get_core_page_id( $page_key ) );
+				$page_id = UM()->options()->get( UM()->options()->get_predefined_page_option_key( $page_key ) );
 
 				if ( $page_id == $post->ID ) {
 					$post_states[ 'um_core_page_' . $page_key ] = sprintf( 'UM %s', $page_value['title'] );

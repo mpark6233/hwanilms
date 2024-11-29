@@ -26,7 +26,7 @@ class VLookup extends LookupBase
 	 */
 	public static function lookup($lookupValue, $lookupArray, $indexNumber, $notExactMatch = true)
 	{
-		if (is_array($lookupValue)) {
+		if (is_array($lookupValue) || is_array($indexNumber)) {
 			return self::evaluateArrayArgumentsIgnore([self::class, __FUNCTION__], 1, $lookupValue, $lookupArray, $indexNumber, $notExactMatch);
 		}
 
@@ -49,7 +49,7 @@ class VLookup extends LookupBase
 		$firstColumn = array_shift($columnKeys) ?? 1;
 
 		if (!$notExactMatch) {
-			/** @var callable */
+			/** @var callable $callable */
 			$callable = [self::class, 'vlookupSort'];
 			uasort($lookupArray, $callable);
 		}
@@ -88,15 +88,15 @@ class VLookup extends LookupBase
 
 		$rowNumber = null;
 		foreach ($lookupArray as $rowKey => $rowData) {
-			$bothNumeric = is_numeric($lookupValue) && is_numeric($rowData[$column]);
-			$bothNotNumeric = !is_numeric($lookupValue) && !is_numeric($rowData[$column]);
+			$bothNumeric = self::numeric($lookupValue) && self::numeric($rowData[$column]);
+			$bothNotNumeric = !self::numeric($lookupValue) && !self::numeric($rowData[$column]);
 			$cellDataLower = StringHelper::strToLower((string) $rowData[$column]);
 
 			// break if we have passed possible keys
 			if (
-				$notExactMatch &&
-				(($bothNumeric && ($rowData[$column] > $lookupValue)) ||
-				($bothNotNumeric && ($cellDataLower > $lookupLower)))
+				$notExactMatch
+				&& (($bothNumeric && ($rowData[$column] > $lookupValue))
+				|| ($bothNotNumeric && ($cellDataLower > $lookupLower)))
 			) {
 				break;
 			}
@@ -113,5 +113,13 @@ class VLookup extends LookupBase
 		}
 
 		return $rowNumber;
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	private static function numeric($value): bool
+	{
+		return is_int($value) || is_float($value);
 	}
 }

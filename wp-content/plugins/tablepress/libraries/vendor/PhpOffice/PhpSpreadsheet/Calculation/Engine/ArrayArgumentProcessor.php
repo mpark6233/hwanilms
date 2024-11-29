@@ -6,10 +6,7 @@ use TablePress\PhpOffice\PhpSpreadsheet\Calculation\Functions;
 
 class ArrayArgumentProcessor
 {
-	/**
-	 * @var ArrayArgumentHelper
-	 */
-	private static $arrayArgumentHelper;
+	private static ArrayArgumentHelper $arrayArgumentHelper;
 
 	/**
 	 * @param mixed ...$arguments
@@ -42,14 +39,15 @@ class ArrayArgumentProcessor
 		$matrixPair = self::$arrayArgumentHelper->getMatrixPair();
 		if ($matrixPair !== []) {
 			if (
-				(self::$arrayArgumentHelper->isVector($matrixPair[0]) === true &&
-					self::$arrayArgumentHelper->isVector($matrixPair[1]) === false) ||
-				(self::$arrayArgumentHelper->isVector($matrixPair[0]) === false &&
-					self::$arrayArgumentHelper->isVector($matrixPair[1]) === true)
+				(self::$arrayArgumentHelper->isVector($matrixPair[0]) === true
+					&& self::$arrayArgumentHelper->isVector($matrixPair[1]) === false)
+				|| (self::$arrayArgumentHelper->isVector($matrixPair[0]) === false
+					&& self::$arrayArgumentHelper->isVector($matrixPair[1]) === true)
 			) {
 				// Logic for a matrix and a vector (row or column)
 				return self::evaluateVectorMatrixPair($method, $matrixPair, ...$arguments);
 			}
+
 			// Logic for matrix/matrix, column vector/column vector or row vector/row vector
 			return self::evaluateMatrixPair($method, $matrixPair, ...$arguments);
 		}
@@ -155,7 +153,6 @@ class ArrayArgumentProcessor
 
 	/**
 	 * Note, offset is from 1 (for the first argument) rather than from 0.
-	 *
 	 * @param mixed ...$arguments
 	 */
 	private static function evaluateNthArgumentAsArray(callable $method, int $nthArgument, ...$arguments): array

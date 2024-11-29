@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 7	</title>
+	<atom:link href="https://www.hwanil.ms.kr/news-items/%EB%B6%80%ED%99%9C%EC%A0%88-%EC%9E%A5%EC%8B%9D-%EB%A7%8C%EB%93%A4%EA%B8%B0/7-3/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/news-items/%eb%b6%80%ed%99%9c%ec%a0%88-%ec%9e%a5%ec%8b%9d-%eb%a7%8c%eb%93%a4%ea%b8%b0/7-3/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Tue, 03 Apr 2018 00:53:25 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

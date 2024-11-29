@@ -2,6 +2,8 @@
 
 namespace TablePress\PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
+use Stringable;
+
 class BaseParserClass
 {
 	/**
@@ -10,7 +12,7 @@ class BaseParserClass
 	protected static function boolean($value): bool
 	{
 		if (is_object($value)) {
-			$value = (string) $value; // @phpstan-ignore-line
+			$value = ((is_object($value) && method_exists($value, '__toString'))) ? ((string) $value) : 'true';
 		}
 
 		if (is_numeric($value)) {

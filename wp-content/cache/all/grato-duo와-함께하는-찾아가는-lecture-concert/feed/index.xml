@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: Grato Duo와 함께하는 찾아가는 Lecture Concert	</title>
+	<atom:link href="https://www.hwanil.ms.kr/grato-duo%ec%99%80-%ed%95%a8%ea%bb%98%ed%95%98%eb%8a%94-%ec%b0%be%ec%95%84%ea%b0%80%eb%8a%94-lecture-concert/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/grato-duo%ec%99%80-%ed%95%a8%ea%bb%98%ed%95%98%eb%8a%94-%ec%b0%be%ec%95%84%ea%b0%80%eb%8a%94-lecture-concert/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Wed, 11 Dec 2019 06:58:37 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

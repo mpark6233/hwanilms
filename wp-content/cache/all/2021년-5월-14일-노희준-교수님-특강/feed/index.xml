@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 2021년 5월 14일 노희준 교수님 특강	</title>
+	<atom:link href="https://www.hwanil.ms.kr/2021%eb%85%84-5%ec%9b%94-14%ec%9d%bc-%eb%85%b8%ed%9d%ac%ec%a4%80-%ea%b5%90%ec%88%98%eb%8b%98-%ed%8a%b9%ea%b0%95/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/2021%eb%85%84-5%ec%9b%94-14%ec%9d%bc-%eb%85%b8%ed%9d%ac%ec%a4%80-%ea%b5%90%ec%88%98%eb%8b%98-%ed%8a%b9%ea%b0%95/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Thu, 27 May 2021 19:06:02 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

@@ -112,7 +112,7 @@ abstract class Date_Based {
 		'events_page_tribe-app-shop', // App shop.
 		'toplevel_page_tec-events', // New Events Welcome.
 		'tribe_events_page_tec-events-settings', // New Events Settings.
-		'tribe_events_page_tec-events-help', // New Events Help.
+		'tribe_events_page_tec-events-help-hub', // New Events Help.
 		'tribe_events_page_tec-troubleshooting', // New Events Troubleshooting.
 		'tickets_page_tec-tickets-settings', // New Tickets Settings.
 		'toplevel_page_tec-tickets', // New Tickets Welcome.
@@ -277,11 +277,13 @@ abstract class Date_Based {
 	 *
 	 * @since 4.14.2
 	 *
-	 * @return int $start_time The date & time the notice should start displaying, as a Unix timestamp.
+	 * @return \Tribe\Utils\Date_I18n - Date Object
 	 */
 	public function get_start_time() {
 		$date = Dates::build_date_object( $this->start_date, 'UTC' );
-		$date = $date->setTime( $this->start_time, 0 );
+		if ( $this->start_time !== null ) {
+			$date = $date->setTime( $this->start_time, 0 );
+		}
 
 		/**
 		 * Allow filtering of the start date DateTime object,
@@ -301,11 +303,13 @@ abstract class Date_Based {
 	 *
 	 * @since 4.14.2
 	 *
-	 * @return int $end_time The date & time the notice should stop displaying, or shift to the extension datetime as a Unix timestamp.
+	 * @return \Tribe\Utils\Date_I18n - Date Object
 	 */
 	public function get_end_time() {
 		$date = Dates::build_date_object( $this->end_date, 'UTC' );
-		$date = $date->setTime( $this->end_time, 0 );
+		if ( $this->end_time !== null ) {
+			$date = $date->setTime( $this->end_time, 0 );
+		}
 
 		/**
 		* Allow filtering of the end date DateTime object,
@@ -320,8 +324,6 @@ abstract class Date_Based {
 		return $date;
 	}
 
-
-
 	/**
 	 * Unix time for notice extension end.
 	 *
@@ -330,8 +332,15 @@ abstract class Date_Based {
 	 * @return int $end_time The date & time the notice should stop displaying, as a Unix timestamp.
 	 */
 	public function get_extension_time() {
+		if ( $this->extension_date === null ) {
+			return null;
+		}
+
 		$date = Dates::build_date_object( $this->extension_date, 'UTC' );
-		$date = $date->setTime( $this->extension_time, 0 );
+
+		if ( $this->extension_time !== null ) {
+			$date = $date->setTime( $this->extension_time, 0 );
+		}
 
 		/**
 		* Allow filtering of the extension date DateTime object,

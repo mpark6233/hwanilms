@@ -79,19 +79,14 @@ class StudentT
 			return ExcelError::NAN();
 		}
 
-		$callback = function ($value) use ($degrees) {
-			return self::distribution($value, $degrees, 2);
-		};
+		$callback = fn ($value) => self::distribution($value, $degrees, 2);
 
 		$newtonRaphson = new NewtonRaphson($callback);
 
 		return $newtonRaphson->execute($probability);
 	}
 
-	/**
-	 * @return float
-	 */
-	private static function calculateDistribution(float $value, int $degrees, int $tails)
+	private static function calculateDistribution(float $value, int $degrees, int $tails): float
 	{
 		//    tdist, which finds the probability that corresponds to a given value
 		//    of t with k degrees of freedom. This algorithm is translated from a

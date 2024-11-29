@@ -74,6 +74,8 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			add_shortcode( 'um_show_content', array( &$this, 'um_shortcode_show_content_for_role' ) );
 			add_shortcode( 'ultimatemember_searchform', array( &$this, 'ultimatemember_searchform' ) );
 
+			add_shortcode( 'um_author_profile_link', array( &$this, 'author_profile_link' ) );
+
 			add_filter( 'body_class', array( &$this, 'body_class' ), 0 );
 
 			add_filter( 'um_shortcode_args_filter', array( &$this, 'display_logout_form' ), 99 );
@@ -242,15 +244,14 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			}
 		}
 
-
 		/**
-		 * Extend body classes
+		 * Extend body classes.
 		 *
-		 * @param $classes
+		 * @param array $classes
 		 *
 		 * @return array
 		 */
-		function body_class( $classes ) {
+		public function body_class( $classes ) {
 			$array = UM()->config()->permalinks;
 			if ( ! $array ) {
 				return $classes;
@@ -258,7 +259,7 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 
 			foreach ( $array as $slug => $info ) {
 				if ( um_is_core_page( $slug ) ) {
-
+					$classes[] = 'um-page';
 					$classes[] = 'um-page-' . $slug;
 
 					if ( is_user_logged_in() ) {
@@ -266,7 +267,6 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 					} else {
 						$classes[] = 'um-page-loggedout';
 					}
-
 				}
 			}
 
@@ -392,21 +392,18 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			return $classes;
 		}
 
-
 		/**
 		 * Logged-in only content
 		 *
-		 * @param array $args
+		 * @param array  $args
 		 * @param string $content
 		 *
 		 * @return string
 		 */
-		function um_loggedin( $args = array(), $content = "" ) {
-			ob_start();
-
+		public function um_loggedin( $args = array(), $content = '' ) {
 			$args = shortcode_atts(
 				array(
-					'lock_text' => __( 'This content has been restricted to logged in users only. Please <a href="{login_referrer}">login</a> to view this content.', 'ultimate-member' ),
+					'lock_text' => __( 'This content has been restricted to logged-in users only. Please <a href="{login_referrer}">login</a> to view this content.', 'ultimate-member' ),
 					'show_lock' => 'yes',
 				),
 				$args,
@@ -414,52 +411,111 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			);
 
 			if ( ! is_user_logged_in() ) {
+				// Hide content for not logged-in users. Maybe display locked content notice.
 				if ( 'no' === $args['show_lock'] ) {
-					echo '';
-				} else {
-					$args['lock_text'] = $this->convert_locker_tags( $args['lock_text'] );
-					UM()->get_template( 'login-to-view.php', '', $args, true );
+					return '';
 				}
-			} else {
-				if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-					echo do_shortcode( $this->convert_locker_tags( wpautop( $content ) ) );
-				} else {
-					echo apply_shortcodes( $this->convert_locker_tags( wpautop( $content ) ) );
-				}
+
+				$args['lock_text'] = $this->convert_locker_tags( $args['lock_text'] );
+				return UM()->get_template( 'login-to-view.php', '', $args );
 			}
 
-			$output = ob_get_clean();
+			$prepared_content = wp_kses( apply_shortcodes( $this->convert_locker_tags( wpautop( $content ) ) ), UM()->get_allowed_html( 'templates' ) );
 
-			return htmlspecialchars_decode( $output, ENT_NOQUOTES );
+			/**
+			 * Filters prepared inner content via Ultimate Member handlers in [um_loggedin] shortcode.
+			 *
+			 * @since 2.8.7
+			 * @hook  um_loggedin_inner_content
+			 *
+			 * @param {string} $prepared_content Prepared inner content via Ultimate Member handlers.
+			 * @param {string} $content          Original inner content.
+			 *
+			 * @return {string} Prepared inner content.
+			 *
+			 * @example <caption>Change inner content with own handlers.</caption>
+			 * function my_um_loggedin_inner_content( $prepared_content, $content ) {
+			 *     $prepared_content = esc_html( $content );
+			 *     return $prepared_content;
+			 * }
+			 * add_filter( 'um_loggedin_inner_content', 'my_um_loggedin_inner_content', 10, 2 );
+			 */
+			return apply_filters( 'um_loggedin_inner_content', $prepared_content, $content );
 		}
-
 
 		/**
 		 * Logged-out only content
 		 *
-		 * @param array $args
+		 * @param array  $args
 		 * @param string $content
 		 *
 		 * @return string
 		 */
-		function um_loggedout( $args = array(), $content = '' ) {
-			ob_start();
-
-			// Hide for logged in users
+		public function um_loggedout( $args = array(), $content = '' ) {
 			if ( is_user_logged_in() ) {
-				echo '';
-			} else {
-				if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-					echo do_shortcode( wpautop( $content ) );
-				} else {
-					echo apply_shortcodes( wpautop( $content ) );
-				}
+				// Hide for logged-in users
+				return '';
 			}
-
-			$output = ob_get_clean();
-			return $output;
+			return apply_shortcodes( $this->convert_locker_tags( wpautop( $content ) ) );
 		}
 
+		/**
+		 * Display post author's link to UM User Profile.
+		 *
+		 * @since 2.8.2
+		 *
+		 * Example 1: [um_author_profile_link] current post author User Profile URL
+		 * Example 2: [um_author_profile_link title="User profile" user_id="29"]
+		 * Example 3: [um_author_profile_link title="User profile" user_id="29"]Visit Author Profile[/um_author_profile_link]
+		 * Example 4: [um_author_profile_link raw="1"] for result like http://localhost:8000/user/janedoe/
+		 *
+		 * @param array  $attr {
+		 *     Attributes of the shortcode.
+		 *
+		 *     @type string $class   A link class.
+		 *     @type string $title   A link text.
+		 *     @type int    $user_id User ID. Author ID if empty.
+		 *     @type bool   $raw     Get raw URL or link layout. `false` by default.
+		 * }
+		 * @param string $content
+		 * @return string Profile link HTML or profile link URL if the link text is empty.
+		 */
+		public function author_profile_link( $attr = array(), $content = '' ) {
+			$default_user_id = 0;
+			if ( is_singular() ) {
+				$default_user_id = get_post()->post_author;
+			} elseif ( is_author() ) {
+				$default_user_id = get_the_author_meta( 'ID' );
+			}
+
+			$defaults_atts = array(
+				'class'   => 'um-link um-profile-link',
+				'title'   => __( 'Go to profile', 'ultimate-member' ),
+				'user_id' => $default_user_id,
+				'raw'     => false,
+			);
+
+			$atts = shortcode_atts( $defaults_atts, $attr, 'um_author_profile_link' );
+
+			if ( empty( $atts['user_id'] ) ) {
+				return '';
+			}
+
+			$user_id = absint( $atts['user_id'] );
+			$url     = um_user_profile_url( $user_id );
+			if ( empty( $url ) ) {
+				return '';
+			}
+
+			if ( ! empty( $atts['raw'] ) ) {
+				return $url;
+			}
+
+			$title     = ! empty( $atts['title'] ) ? $atts['title'] : __( 'Go to profile', 'ultimate-member' );
+			$link_html = empty( $content ) ? $title : $content;
+
+			return '<a class="' . esc_attr( $atts['class'] ) . '" href="' . esc_url( $url ) . '" title="' . esc_attr( $title ) . '">' . wp_kses_post( $link_html ) . '</a>';
+		}
 
 		/**
 		 * @param array $args
@@ -616,6 +672,22 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			$args['form_id']  = ! empty( $args['form_id'] ) ? absint( $args['form_id'] ) : '';
 			$args['is_block'] = (bool) $args['is_block'];
 
+			$form_post = get_post( $args['form_id'] );
+			// Invalid post ID. Maybe post doesn't exist.
+			if ( empty( $form_post ) ) {
+				return '';
+			}
+
+			// Invalid post type. It can be only `um_form` or `um_directory`
+			$post_types = array( 'um_form' );
+			if ( UM()->options()->get( 'members_page' ) ) {
+				$post_types[] = 'um_directory';
+			}
+
+			if ( ! in_array( $form_post->post_type, $post_types, true ) ) {
+				return '';
+			}
+
 			/**
 			 * Filters variable for enable singleton shortcode loading on the same page.
 			 * Note: Set it to `false` if you don't need to render the same form twice or more on the same page.
@@ -673,6 +745,8 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 				return '';
 			}
 
+			UM()->fields()->set_id = absint( $this->form_id );
+
 			// get data into one global array
 			$post_data = UM()->query()->post_data( $this->form_id );
 			$args      = array_merge( $args, $post_data );
@@ -716,11 +790,7 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 
 			if ( 'directory' === $args['mode'] ) {
 				wp_enqueue_script( 'um_members' );
-				if ( is_rtl() ) {
-					wp_enqueue_style( 'um_members_rtl' );
-				} else {
-					wp_enqueue_style( 'um_members' );
-				}
+				wp_enqueue_style( 'um_members' );
 			}
 
 			if ( 'directory' !== $args['mode'] ) {
@@ -1137,9 +1207,9 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 		 *
 		 * @return mixed|string
 		 */
-		function convert_locker_tags( $str ) {
-			add_filter( 'um_template_tags_patterns_hook', array( &$this, 'add_placeholder' ), 10, 1 );
-			add_filter( 'um_template_tags_replaces_hook', array( &$this, 'add_replace_placeholder' ), 10, 1 );
+		public function convert_locker_tags( $str ) {
+			add_filter( 'um_template_tags_patterns_hook', array( &$this, 'add_placeholder' ) );
+			add_filter( 'um_template_tags_replaces_hook', array( &$this, 'add_replace_placeholder' ) );
 			return um_convert_tags( $str, array(), false );
 		}
 
@@ -1264,18 +1334,22 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 		 * @param  string $content
 		 * @return string
 		 */
-		function um_shortcode_show_content_for_role( $atts = array() , $content = '' ) {
+		public function um_shortcode_show_content_for_role( $atts = array(), $content = '' ) {
 			global $user_ID;
 
 			if ( ! is_user_logged_in() ) {
-				return;
+				return '';
 			}
 
-			$a = shortcode_atts( array(
-				'roles' => '',
-				'not' => '',
-				'is_profile' => false,
-			), $atts );
+			$a = shortcode_atts(
+				array(
+					'roles'      => '',
+					'not'        => '',
+					'is_profile' => false,
+				),
+				$atts,
+				'um_show_content'
+			);
 
 			if ( $a['is_profile'] ) {
 				um_fetch_user( um_profile_id() );
@@ -1286,38 +1360,25 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 			$current_user_roles = um_user( 'roles' );
 
 			if ( ! empty( $a['not'] ) && ! empty( $a['roles'] ) ) {
-				if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-					return do_shortcode( $this->convert_locker_tags( $content ) );
-				} else {
-					return apply_shortcodes( $this->convert_locker_tags( $content ) );
-				}
+				return apply_shortcodes( $this->convert_locker_tags( $content ) );
 			}
 
 			if ( ! empty( $a['not'] ) ) {
-				$not_in_roles = explode( ",", $a['not'] );
+				$not_in_roles = explode( ',', $a['not'] );
 
 				if ( is_array( $not_in_roles ) && ( empty( $current_user_roles ) || count( array_intersect( $current_user_roles, $not_in_roles ) ) <= 0 ) ) {
-					if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-						return do_shortcode( $this->convert_locker_tags( $content ) );
-					} else {
-						return apply_shortcodes( $this->convert_locker_tags( $content ) );
-					}
+					return apply_shortcodes( $this->convert_locker_tags( $content ) );
 				}
 			} else {
-				$roles = explode( ",", $a['roles'] );
+				$roles = explode( ',', $a['roles'] );
 
 				if ( ! empty( $current_user_roles ) && is_array( $roles ) && count( array_intersect( $current_user_roles, $roles ) ) > 0 ) {
-					if ( version_compare( get_bloginfo('version'),'5.4', '<' ) ) {
-						return do_shortcode( $this->convert_locker_tags( $content ) );
-					} else {
-						return apply_shortcodes( $this->convert_locker_tags( $content ) );
-					}
+					return apply_shortcodes( $this->convert_locker_tags( $content ) );
 				}
 			}
 
 			return '';
 		}
-
 
 		/**
 		 * @param array $args
@@ -1371,36 +1432,36 @@ if ( ! class_exists( 'um\core\Shortcodes' ) ) {
 
 			$search_value = array_values( $query );
 
-			$template = UM()->get_template( 'searchform.php', '', array( 'query' => $query, 'search_value' => $search_value[0], 'members_page' => um_get_core_page( 'members' ) ) );
-
-			return $template;
+			$t_args = array(
+				'query'        => $query,
+				'search_value' => $search_value[0],
+				'members_page' => um_get_core_page( 'members' ),
+			);
+			return UM()->get_template( 'searchform.php', '', $t_args );
 		}
-
 
 		/**
 		 * UM Placeholders for login referrer
 		 *
-		 * @param $placeholders
+		 * @param array $placeholders
 		 *
 		 * @return array
 		 */
-		function add_placeholder( $placeholders ) {
+		public function add_placeholder( $placeholders ) {
 			$placeholders[] = '{login_referrer}';
 			return $placeholders;
 		}
 
-
 		/**
 		 * UM Replace Placeholders for login referrer
 		 *
-		 * @param $replace_placeholders
+		 * @param array $replace_placeholders
 		 *
 		 * @return array
 		 */
-		function add_replace_placeholder( $replace_placeholders ) {
+		public function add_replace_placeholder( $replace_placeholders ) {
 			$replace_placeholders[] = um_dynamic_login_page_redirect();
 			return $replace_placeholders;
 		}
-
 	}
 }

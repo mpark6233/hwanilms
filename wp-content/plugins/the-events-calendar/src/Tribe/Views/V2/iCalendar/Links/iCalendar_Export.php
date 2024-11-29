@@ -28,10 +28,21 @@ class iCalendar_Export extends Link_Abstract {
 	 * {@inheritDoc}
 	 */
 	public function register() {
-		$this->label = __( 'Export .ics file', 'the-events-calendar' );
-		$this->single_label = $this->label;
-
 		add_filter( 'tec_views_v2_subscribe_link_ics_visibility', [ $this, 'filter_tec_views_v2_subscribe_link_ics_visibility'], 10, 2 );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function label(): string {
+		return __( 'Export .ics file', 'the-events-calendar' );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function single_label(): string {
+		return $this->label();
 	}
 
 	/**
@@ -58,9 +69,7 @@ class iCalendar_Export extends Link_Abstract {
 			return add_query_arg( [ 'ical' => 1 ], get_the_permalink() );
 		}
 
-		$template_vars = $view->get_template_vars();
-
-		$ical = ! empty( $template_vars['ical'] ) ? $template_vars['ical'] : $view->get_ical_data();
+		$ical = $view->get_ical_data();
 
 		if ( empty( $ical->display_link ) ) {
 			return '';

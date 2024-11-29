@@ -122,15 +122,17 @@ class BellowsWalker extends Walker_Nav_Menu {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param object $item   Menu item data object.
-	 * @param int    $depth  Depth of menu item. Used for padding.
-	 * @param array  $args   An array of arguments. @see wp_nav_menu()
-	 * @param int    $id     Current item ID.
+	 * @param string   $output            Used to append additional content (passed by reference).
+	 * @param WP_Post  $item       		  Menu item data object.
+	 * @param int      $depth             Depth of menu item. Used for padding.
+	 * @param stdClass $args              An object of wp_nav_menu() arguments.
+	 * @param int      $id				  Optional. ID of the current menu item. Default 0.
 	 */
-	public function start_el( &$output, $item, $depth = 0, $args = array(), $id = 0 ) {
+	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
 
-		$target_classes = array( 'bellows-target' );
+		$item_output = '';
+
+		$target_classes = [ 'bellows-target' ];
 
 		$config_id = isset( $args->bellows_config ) ? $args->bellows_config : '';
 
@@ -410,7 +412,6 @@ class BellowsWalker extends Walker_Nav_Menu {
 				$title = do_shortcode( $title );
 			}
 
-			$item_output = '';
 
 			//Only print target if there's something inside it
 			if( $title || $icon || $img || $description ){

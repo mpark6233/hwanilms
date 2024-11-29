@@ -31,7 +31,7 @@ class Extract
 		}
 
 		try {
-			$value = Helpers::extractString($value);
+			$value = Helpers::extractString($value, true);
 			$chars = Helpers::extractInt($chars, 0, 1);
 		} catch (CalcExp $e) {
 			return $e->getMessage();
@@ -61,7 +61,7 @@ class Extract
 		}
 
 		try {
-			$value = Helpers::extractString($value);
+			$value = Helpers::extractString($value, true);
 			$start = Helpers::extractInt($start, 1);
 			$chars = Helpers::extractInt($chars, 0);
 		} catch (CalcExp $e) {
@@ -90,7 +90,7 @@ class Extract
 		}
 
 		try {
-			$value = Helpers::extractString($value);
+			$value = Helpers::extractString($value, true);
 			$chars = Helpers::extractInt($chars, 0, 1);
 		} catch (CalcExp $e) {
 			return $e->getMessage();
@@ -122,7 +122,7 @@ class Extract
 	 *                             The default is a #N/A Error
 	 *                          Or can be an array of values
 	 *
-	 * @return mixed|mixed[] the string extracted from text before the delimiter; or the $ifNotFound value
+	 * @return array|string the string extracted from text before the delimiter; or the $ifNotFound value
 	 *         If an array of values is passed for any of the arguments, then the returned result
 	 *            will also be an array with matching dimensions
 	 */
@@ -132,7 +132,13 @@ class Extract
 			return self::evaluateArrayArgumentsIgnore([self::class, __FUNCTION__], 1, $text, $delimiter, $instance, $matchMode, $matchEnd, $ifNotFound);
 		}
 
-		$text = Helpers::extractString($text ?? '');
+		try {
+			$text = Helpers::extractString($text ?? '', true);
+			Helpers::extractString(Functions::flattenSingleValue($delimiter ?? ''), true);
+		} catch (CalcExp $e) {
+			return $e->getMessage();
+		}
+
 		$instance = (int) $instance;
 		$matchMode = (int) $matchMode;
 		$matchEnd = (int) $matchEnd;
@@ -180,7 +186,7 @@ class Extract
 	 *                             The default is a #N/A Error
 	 *                          Or can be an array of values
 	 *
-	 * @return mixed|mixed[] the string extracted from text before the delimiter; or the $ifNotFound value
+	 * @return array|string the string extracted from text before the delimiter; or the $ifNotFound value
 	 *         If an array of values is passed for any of the arguments, then the returned result
 	 *            will also be an array with matching dimensions
 	 */
@@ -190,7 +196,13 @@ class Extract
 			return self::evaluateArrayArgumentsIgnore([self::class, __FUNCTION__], 1, $text, $delimiter, $instance, $matchMode, $matchEnd, $ifNotFound);
 		}
 
-		$text = Helpers::extractString($text ?? '');
+		try {
+			$text = Helpers::extractString($text ?? '', true);
+			Helpers::extractString(Functions::flattenSingleValue($delimiter ?? ''), true);
+		} catch (CalcExp $e) {
+			return $e->getMessage();
+		}
+
 		$instance = (int) $instance;
 		$matchMode = (int) $matchMode;
 		$matchEnd = (int) $matchEnd;
@@ -217,14 +229,11 @@ class Extract
 	}
 
 	/**
-	 * @param null|array|string $delimiter
-	 * @param int $matchMode
-	 * @param int $matchEnd
+	 * @param null|mixed[]|string $delimiter
+	 * @return mixed[]|string
 	 * @param mixed $ifNotFound
-	 *
-	 * @return array|string
 	 */
-	private static function validateTextBeforeAfter(string $text, $delimiter, int $instance, $matchMode, $matchEnd, $ifNotFound)
+	private static function validateTextBeforeAfter(string $text, $delimiter, int $instance, int $matchMode, int $matchEnd, $ifNotFound)
 	{
 		$flags = self::matchFlags($matchMode);
 		$delimiter = self::buildDelimiter($delimiter);
@@ -260,9 +269,7 @@ class Extract
 		if (is_array($delimiter)) {
 			$delimiter = Functions::flattenArray($delimiter);
 			$quotedDelimiters = array_map(
-				function ($delimiter) {
-					return preg_quote($delimiter ?? '');
-				},
+				fn ($delimiter): string => preg_quote($delimiter ?? '', '/'),
 				$delimiter
 			);
 			$delimiters = implode('|', $quotedDelimiters);
@@ -270,7 +277,7 @@ class Extract
 			return '(' . $delimiters . ')';
 		}
 
-		return '(' . preg_quote($delimiter ?? '') . ')';
+		return '(' . preg_quote($delimiter ?? '', '/') . ')';
 	}
 
 	private static function matchFlags(int $matchMode): string

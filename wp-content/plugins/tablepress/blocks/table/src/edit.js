@@ -24,7 +24,8 @@ import block from '../block.json';
 /**
  * Internal dependencies.
  */
-import { shortcode_attrs_to_string } from './_common-functions';
+import { shortcode_attrs_to_string } from './common/functions';
+import TablePress_Table_Icon from './icon';
 
 /**
  * Load CSS code that only applies inside the block editor.
@@ -42,7 +43,7 @@ const ComboboxControl_options = Object.entries( tp.tables ).map( ( [ id, name ] 
 /**
  * Custom component for the "Manage your tables." link.
  */
-const ManageTablesLink = function() {
+const ManageTablesLink = function () {
 	return (
 		'' !== tp.url &&
 			<ExternalLink href={ tp.url }>
@@ -58,9 +59,9 @@ const ManageTablesLink = function() {
  * @param {Object}   params               Function parameters.
  * @param {Object}   params.attributes    Block attributes.
  * @param {Function} params.setAttributes Function to set block attributes.
- * @return {WPElement} Element to render.
+ * @return {Element} Element to render.
  */
-export default function TablePressTableEdit( { attributes, setAttributes } ) {
+const TablePressTableEdit = ( { attributes, setAttributes } ) => {
 	const blockProps = useBlockProps();
 
 	let blockMarkup;
@@ -70,7 +71,10 @@ export default function TablePressTableEdit( { attributes, setAttributes } ) {
 				{ tp.load_block_preview &&
 					<ServerSideRender
 						block={ block.name }
-						attributes={ attributes }
+						attributes={ {
+							id: attributes.id,
+							parameters: `block_preview=true ${ attributes.parameters }`.trim(), // Set the `block_preview` parameter to allow detecting that this is a block preview.
+						} }
 						className="render-wrapper"
 					/>
 				}
@@ -88,7 +92,7 @@ export default function TablePressTableEdit( { attributes, setAttributes } ) {
 		blockMarkup = (
 			<div { ...blockProps }>
 				<Placeholder
-					icon={ <Icon icon="list-view" /> }
+					icon={ <Icon icon={ TablePress_Table_Icon } /> }
 					label={ __( 'TablePress table', 'tablepress' ) }
 					instructions={ instructions }
 				>
@@ -107,6 +111,7 @@ export default function TablePressTableEdit( { attributes, setAttributes } ) {
 					{ 0 < ComboboxControl_options.length
 						?
 						<ComboboxControl
+							__nextHasNoMarginBottom
 							label={ __( 'Table:', 'tablepress' ) }
 							help={
 								<>
@@ -134,6 +139,7 @@ export default function TablePressTableEdit( { attributes, setAttributes } ) {
 			{ attributes.id && tp.tables.hasOwnProperty( attributes.id ) &&
 				<InspectorAdvancedControls>
 					<TextControl
+						__nextHasNoMarginBottom
 						label={ __( 'Configuration parameters:', 'tablepress' ) }
 						help={ __( 'These additional parameters can be used to modify specific table features.', 'tablepress' ) + ' ' + __( 'See the TablePress Documentation for more information.', 'tablepress' ) }
 						value={ attributes.parameters }
@@ -163,7 +169,9 @@ export default function TablePressTableEdit( { attributes, setAttributes } ) {
 	return (
 		<>
 			{ blockMarkup }
-			{ sidebarMarkup}
+			{ sidebarMarkup }
 		</>
 	);
-}
+};
+
+export default TablePressTableEdit;

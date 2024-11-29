@@ -542,7 +542,7 @@ class  WPBC_Settings_API_General extends WPBC_Settings_API {
 
         // <editor-fold     defaultstate="collapsed"                        desc=" A v a i l a b i l i t y "  >
         
-        //  Unavailable week days  /////////////////////////////////////////////
+        //  Unavailable Weekdays  /////////////////////////////////////////////
 
         $this->fields['booking_unavailable_day_html_prefix'] = array(   
                                     'type'          => 'pure_html'
@@ -551,7 +551,7 @@ class  WPBC_Settings_API_General extends WPBC_Settings_API {
                                                             <th scope="row">
                                                                 <label class="wpbc-form-checkbox" for="' 
                                                                                 // . esc_attr( 'unavailable_day0' ) 
-                                                                . '">' . wp_kses_post(  __('Unavailable week days' ,'booking') ) 
+                                                                . '">' . wp_kses_post(  __('Unavailable Weekdays' ,'booking') ) 
                                                                 . '</label>
                                                             </th>
                                                             <td><fieldset>'
@@ -581,7 +581,7 @@ class  WPBC_Settings_API_General extends WPBC_Settings_API {
                                     'type'          => 'pure_html'
                                     , 'group'       => 'availability'
                                     , 'html'        => '    </fieldset><p class="description">' 
-                                                            . __('Check unavailable days in calendars. This option will overwrite all other settings.' ,'booking') 
+                                                            . __('Select weekdays to be marked as unavailable in calendars. This setting will override all other availability settings.' ,'booking') 
                                                             . '</p>
                                                             </td>
                                                         </tr>'            
@@ -1663,17 +1663,6 @@ if(1){
                                 'type'          => 'select'
                                 , 'default'     => $default_options_values['booking_user_role_prices']            //'editor'
                                 , 'title'       => __('Prices', 'booking')
-                                , 'description' => ''
-                                , 'options'     => $field_options
-                                , 'group'       => 'permissions'
-                                , 'is_demo_safe' => wpbc_is_this_demo()
-                        );
-		//FixIn: 9.8.15.2.6
-		if ( WPBC_customize_plugin )
-            $this->fields['booking_user_role_customize_plugin'] = array(
-                                'type'          => 'select'
-                                , 'default'     => $default_options_values['booking_user_role_customize_plugin']            //'editor'
-                                , 'title'       => __('Customize', 'booking')
                                 , 'description' => ''
                                 , 'options'     => $field_options
                                 , 'group'       => 'permissions'

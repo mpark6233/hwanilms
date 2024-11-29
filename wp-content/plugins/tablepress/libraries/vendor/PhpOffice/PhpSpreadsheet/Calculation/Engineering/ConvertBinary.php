@@ -15,7 +15,7 @@ class ConvertBinary extends ConvertBase
 	 * Excel Function:
 	 *        BIN2DEC(x)
 	 *
-	 * @param array|string $value The binary number (as a string) that you want to convert. The number
+	 * @param array|bool|float|int|string $value The binary number (as a string) that you want to convert. The number
 	 *                                cannot contain more than 10 characters (10 bits). The most significant
 	 *                                bit of number is the sign bit. The remaining 9 bits are magnitude bits.
 	 *                                Negative numbers are represented using two's-complement notation.
@@ -40,7 +40,7 @@ class ConvertBinary extends ConvertBase
 			return $e->getMessage();
 		}
 
-		if (strlen($value) == 10) {
+		if (strlen($value) == 10 && $value[0] === '1') {
 			//    Two's Complement
 			$value = substr($value, -9);
 
@@ -58,14 +58,14 @@ class ConvertBinary extends ConvertBase
 	 * Excel Function:
 	 *        BIN2HEX(x[,places])
 	 *
-	 * @param array|string $value The binary number (as a string) that you want to convert. The number
+	 * @param array|bool|float|int|string $value The binary number (as a string) that you want to convert. The number
 	 *                                cannot contain more than 10 characters (10 bits). The most significant
 	 *                                bit of number is the sign bit. The remaining 9 bits are magnitude bits.
 	 *                                Negative numbers are represented using two's-complement notation.
 	 *                                If number is not a valid binary number, or if number contains more than
 	 *                                10 characters (10 bits), BIN2HEX returns the #NUM! error value.
 	 *                      Or can be an array of values
-	 * @param array|int $places The number of characters to use. If places is omitted, BIN2HEX uses the
+	 * @param null|array|float|int|string $places The number of characters to use. If places is omitted, BIN2HEX uses the
 	 *                                minimum number of characters necessary. Places is useful for padding the
 	 *                                return value with leading 0s (zeros).
 	 *                                If places is not an integer, it is truncated.
@@ -91,7 +91,7 @@ class ConvertBinary extends ConvertBase
 			return $e->getMessage();
 		}
 
-		if (strlen($value) == 10) {
+		if (strlen($value) == 10 && $value[0] === '1') {
 			$high2 = substr($value, 0, 2);
 			$low8 = substr($value, 2);
 			$xarr = ['00' => '00000000', '01' => '00000001', '10' => 'FFFFFFFE', '11' => 'FFFFFFFF'];
@@ -111,14 +111,14 @@ class ConvertBinary extends ConvertBase
 	 * Excel Function:
 	 *        BIN2OCT(x[,places])
 	 *
-	 * @param array|string $value The binary number (as a string) that you want to convert. The number
+	 * @param array|bool|float|int|string $value The binary number (as a string) that you want to convert. The number
 	 *                                cannot contain more than 10 characters (10 bits). The most significant
 	 *                                bit of number is the sign bit. The remaining 9 bits are magnitude bits.
 	 *                                Negative numbers are represented using two's-complement notation.
 	 *                                If number is not a valid binary number, or if number contains more than
 	 *                                10 characters (10 bits), BIN2OCT returns the #NUM! error value.
 	 *                      Or can be an array of values
-	 * @param array|int $places The number of characters to use. If places is omitted, BIN2OCT uses the
+	 * @param null|array|float|int|string $places The number of characters to use. If places is omitted, BIN2OCT uses the
 	 *                                minimum number of characters necessary. Places is useful for padding the
 	 *                                return value with leading 0s (zeros).
 	 *                                If places is not an integer, it is truncated.
@@ -144,7 +144,7 @@ class ConvertBinary extends ConvertBase
 			return $e->getMessage();
 		}
 
-		if (strlen($value) == 10 && substr($value, 0, 1) === '1') { //    Two's Complement
+		if (strlen($value) == 10 && $value[0] === '1') { //    Two's Complement
 			return str_repeat('7', 6) . strtoupper(decoct((int) bindec("11$value")));
 		}
 		$octVal = (string) decoct((int) bindec($value));

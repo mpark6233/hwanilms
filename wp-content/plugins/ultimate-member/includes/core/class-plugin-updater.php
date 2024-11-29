@@ -179,6 +179,10 @@ if ( ! class_exists( 'um\core\Plugin_Updater' ) ) {
 					'key'   => 'stripe',
 					'title' => 'Stripe',
 				),
+				'um-zapier/um-zapier.php'                 => array(
+					'key'   => 'zapier',
+					'title' => 'Zapier',
+				),
 			);
 
 			$active_um_plugins = array();
@@ -246,7 +250,7 @@ if ( ! class_exists( 'um\core\Plugin_Updater' ) ) {
 				return;
 			}
 
-			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 			$api_params = array(
 				'edd_action' => 'check_licenses',

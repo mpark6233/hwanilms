@@ -4,41 +4,31 @@ namespace TablePress\PhpOffice\PhpSpreadsheet\Style\ConditionalFormatting;
 
 class ConditionalFormatValueObject
 {
-	/** @var mixed */
-	private $type;
-
-	/** @var mixed */
-	private $value;
-
-	/** @var mixed */
-	private $cellFormula;
+	private string $type;
 
 	/**
-	 * ConditionalFormatValueObject constructor.
-	 *
-	 * @param mixed $type
-	 * @param mixed $value
-	 * @param null|mixed $cellFormula
+	 * @var float|int|string|null
 	 */
-	public function __construct($type, $value = null, $cellFormula = null)
+	private $value;
+
+	private ?string $cellFormula;
+
+	/**
+	 * @param null|float|int|string $value
+	 */
+	public function __construct(string $type, $value = null, ?string $cellFormula = null)
 	{
 		$this->type = $type;
 		$this->value = $value;
 		$this->cellFormula = $cellFormula;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getType()
+	public function getType(): string
 	{
 		return $this->type;
 	}
 
-	/**
-	 * @param mixed $type
-	 */
-	public function setType($type): self
+	public function setType(string $type): self
 	{
 		$this->type = $type;
 
@@ -46,7 +36,7 @@ class ConditionalFormatValueObject
 	}
 
 	/**
-	 * @return mixed
+	 * @return float|int|string|null
 	 */
 	public function getValue()
 	{
@@ -54,7 +44,7 @@ class ConditionalFormatValueObject
 	}
 
 	/**
-	 * @param mixed $value
+	 * @param null|float|int|string $value
 	 */
 	public function setValue($value): self
 	{
@@ -63,18 +53,12 @@ class ConditionalFormatValueObject
 		return $this;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getCellFormula()
+	public function getCellFormula(): ?string
 	{
 		return $this->cellFormula;
 	}
 
-	/**
-	 * @param mixed $cellFormula
-	 */
-	public function setCellFormula($cellFormula): self
+	public function setCellFormula(?string $cellFormula): self
 	{
 		$this->cellFormula = $cellFormula;
 

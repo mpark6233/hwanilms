@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 	</title>
+	<atom:link href="https://www.hwanil.ms.kr/event/%EC%B0%A8%EC%A1%B0%EB%B0%A5-%EC%82%AC%EA%B0%81%EC%96%B4%EB%AC%B5%EA%B5%AD-%EC%88%9C%EB%8C%80%EC%95%BC%EC%B1%84%EB%B3%B6%EC%9D%8C-%ED%95%B4%EB%AC%BC%ED%8C%8C%EC%A0%84-%EA%B3%84%EB%9E%80%EC%B0%9C/feed/" rel="self" type="application/rss+xml" />
+	<link></link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Wed, 27 Nov 2024 23:24:36 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

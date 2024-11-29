@@ -23,18 +23,16 @@ class Matrix
 	 */
 	public static function isRowVector(array $values): bool
 	{
-		return count($values, COUNT_RECURSIVE) > 1 &&
-			(count($values, COUNT_NORMAL) === 1 || count($values, COUNT_RECURSIVE) === count($values, COUNT_NORMAL));
+		return count($values, COUNT_RECURSIVE) > 1
+			&& (count($values, COUNT_NORMAL) === 1 || count($values, COUNT_RECURSIVE) === count($values, COUNT_NORMAL));
 	}
 
 	/**
 	 * TRANSPOSE.
 	 *
 	 * @param array|mixed $matrixData A matrix of values
-	 *
-	 * @return array
 	 */
-	public static function transpose($matrixData)
+	public static function transpose($matrixData): array
 	{
 		$returnMatrix = [];
 		if (!is_array($matrixData)) {
@@ -83,7 +81,6 @@ class Matrix
 		}
 
 		$rowNum = $rowNum ?? 0;
-		$originalColumnNum = $columnNum;
 		$columnNum = $columnNum ?? 0;
 
 		try {
@@ -91,6 +88,17 @@ class Matrix
 			$columnNum = LookupRefValidations::validatePositiveInt($columnNum);
 		} catch (Exception $e) {
 			return $e->getMessage();
+		}
+
+		if (is_array($matrix) && count($matrix) === 1 && $rowNum > 1) {
+			$matrixKey = array_keys($matrix)[0];
+			if (is_array($matrix[$matrixKey])) {
+				$tempMatrix = [];
+				foreach ($matrix[$matrixKey] as $key => $value) {
+					$tempMatrix[$key] = [$value];
+				}
+				$matrix = $tempMatrix;
+			}
 		}
 
 		if (!is_array($matrix) || ($rowNum > count($matrix))) {
@@ -103,9 +111,6 @@ class Matrix
 		if ($columnNum > count($columnKeys)) {
 			return ExcelError::REF();
 		}
-		if ($originalColumnNum === null && 1 < count($columnKeys)) {
-			return ExcelError::REF();
-		}
 
 		if ($columnNum === 0) {
 			return self::extractRowValue($matrix, $rowKeys, $rowNum);
@@ -114,9 +119,7 @@ class Matrix
 		$columnNum = $columnKeys[--$columnNum];
 		if ($rowNum === 0) {
 			return array_map(
-				function ($value) {
-					return [$value];
-				},
+				fn ($value): array => [$value],
 				array_column($matrix, $columnNum)
 			);
 		}
@@ -125,7 +128,9 @@ class Matrix
 		return $matrix[$rowNum][$columnNum];
 	}
 
-	/** @return mixed */
+	/**
+	 * @return mixed
+	 */
 	private static function extractRowValue(array $matrix, array $rowKeys, int $rowNum)
 	{
 		if ($rowNum === 0) {

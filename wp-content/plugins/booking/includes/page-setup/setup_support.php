@@ -13,6 +13,68 @@
 if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly
 
 
+/**
+ * Do we need to start 'Setup Wizard' ?
+ *
+ * @return bool
+ */
+function wpbc_setup_wizard_page__is_need_start(){
+
+	if ( wpbc_setup_wizard_page__is_all_steps_completed() ) {
+		return false;        // Wizard Completed!
+	}
+
+	// Some steps were not completed or wizard was not started at all
+
+	$days_num_ago = wpbc_how_old_in_days();
+
+	// No bookings, so maybe need to start
+	if ( - 1 === $days_num_ago ) {
+		return true;
+	}
+
+	// If older than 3 days ago,  then no need to  start !
+	if (  $days_num_ago < 3 ){
+		return true;
+	}
+
+	// No need to  start,  because this installation  already OLD
+	return false;
+}
+
+/**
+ * Do we need to Continue 'Setup Wizard' or all steps already  completed ?
+ *
+ * @return bool
+ */
+function wpbc_setup_wizard_page__is_all_steps_completed() {
+
+	$setup_steps = new WPBC_SETUP_WIZARD_STEPS();
+
+	$is_all_steps_completed =  $setup_steps->db__is_all_steps_completed();
+
+	return $is_all_steps_completed;
+}
+
+/**
+ * Is user  can  access Wizard Setup  page ?
+ * @return bool
+ */
+function wpbc_is_user_can_access_wizard_page() {
+	$is_user_can_access_wizard_page = true;
+	if ( class_exists( 'wpdev_bk_multiuser' ) ) {
+
+		$real_current_user_id = get_current_user_id();                                                                  // Is current user suer booking admin  and if this user was simulated log in
+		$is_user_super_admin  = apply_bk_filter( 'is_user_super_admin', $real_current_user_id );
+		if ( ! $is_user_super_admin ) {
+			$is_user_can_access_wizard_page = false;
+		}
+	}
+
+	return $is_user_can_access_wizard_page;
+}
+
+
 // =====================================================================================================================
 // ==  Shortcodes Content  ==
 // =====================================================================================================================
@@ -24,11 +86,23 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
  *
  * @return false|string
  */
-function wpbc_setup_wizard_page__get_shortcode_html( $resource_id = 1 ) {
+function wpbc_setup_wizard_page__get_shortcode_html( $resource_id = 1 , $is_show_only_calendar = false ) {
 
 	ob_start();
-	if ( 1 ) {
-		?><div style="width: auto;margin: auto;min-width: 341px;"><?php		//margin-top:-10px;
+	if ( $is_show_only_calendar ) {
+		// Center calendar
+		?><style type="text/css">
+			.wpbc_calendar_wraper {
+			  display: flex;
+			  flex-flow: column nowrap;
+			  align-items: center;
+			  justify-content: flex-start;
+			}
+			.wpbc_calendar_wraper div {
+				margin-bottom: 10px;
+			}
+		</style>
+		<div class="wpbc_shortcode_container"><?php
 			echo do_shortcode( '[bookingcalendar resource_id=' . $resource_id . ']' );
 		?></div><?php
 
@@ -42,9 +116,67 @@ function wpbc_setup_wizard_page__get_shortcode_html( $resource_id = 1 ) {
 		</script><?php
 
 	} else {
-		?><div style="width: 100%;margin-top:calc( -1.7em - calc(0.25em + 8px) );"><?php
+
+		// Help message
+		?><div class="wpbc-settings-notice notice-warning notice-helpful-info" style="padding: 8px 20px;font-size: 14px;margin: 0 auto;max-width: Min(54em,100%);">
+			<strong><?php _e('Note','booking'); ?>: </strong>
+			<?php
+				_e( 'This is a preview of your booking form.', 'booking' ); echo ' ';
+				_e( 'You can adjust settings in the widgets on the right side of the page.', 'booking' );
+				//echo '<a href="'. esc_attr( wpbc_get_settings_url() . '&scroll_to_section=wpbc_general_settings_availability_tab' ).'">Settings > Availability</a>';
+			?>
+		</div><?php
+
+		// If we use the [bookingcalendar] shortcode,  then  we remove this tag,  for ability to  select  dates in calendar.
+		?><script type="text/javascript">
+			jQuery( document ).ready( function () {
+				_wpbc.set_other_param( 'calendars__on_this_page', [] );
+				<?php if ( 'On' === get_bk_option( 'booking_timeslot_picker') ) { ?>
+				wpbc_hook__init_timeselector();
+				<?php } ?>
+				wpbc_hook__init_booking_form_wizard_buttons();
+			  	// wpbc__calendar__change_skin( '<?php echo WPBC_PLUGIN_URL . get_bk_option( 'booking_skin' ); ?>' );
+			  	// wpbc__css__change_skin( '<?php echo WPBC_PLUGIN_URL . get_bk_option( 'booking_timeslot_picker_skin' ); ?>' );
+				<?php if ('wpbc_theme_dark_1' === get_bk_option( 'booking_form_theme' ) ){  ?>
+				jQuery( '.wpbc_widget_preview_booking_form .wpbc_center_preview,.wpbc_widget_preview_booking_form .wpbc_container.wpbc_container_booking_form,.wpbc_widget_preview_booking_form .wpbc_widget_content' ).addClass( 'wpbc_theme_dark_1' );
+				<?php } ?>
+				if ( 'function' === typeof( wpbc_update_capacity_hint ) ) {
+					jQuery( '.booking_form_div' ).on( 'wpbc_booking_date_or_option_selected', function ( event, resource_id ) {
+						wpbc_update_capacity_hint( resource_id );
+					} );
+				}
+				//jQuery( 'body' ).on( 'wpbc_datepick_inline_calendar_loaded', function ( event, resource_id, jCalContainer, inst ) { });
+				// jQuery( 'body' ).off( 'wpbc_calendar_ajx__loaded_data' );
+				// jQuery( 'body' ).on( 'wpbc_calendar_ajx__loaded_data', function ( event, loaded_resource_id ){
+				// 	// wpbc_blink_element( '.wpbc_widget_change_form_structure', 3, 220 );
+				//  	wpbc_blink_element( '#ui_btn_cstm__set_booking_form_template_pro', 2, 220 );
+				//  	wpbc_blink_element( '#ui_btn_cstm__set_booking_form_template_apply', 4, 220 );
+				// });
+
+				// jQuery( 'body' ).on( 'wpbc_calendar_ajx__before_loaded_data', function( event, resource_id ) {
+				// 	wpbc_calendar__loading__stop( resource_id );
+				// } );
+			});
+			//if ( 'undefined' !== typeof _wpbc ) {
+			//	<?php
+    		//	echo "_wpbc.set_other_param( 'availability__week_days_unavailable', ["
+            //                                                        . ( ( get_bk_option( 'booking_unavailable_day0') == 'On' ) ? '0,' : '' )
+			//	                                                    . ( ( get_bk_option( 'booking_unavailable_day1') == 'On' ) ? '1,' : '' )
+			//	                                                    . ( ( get_bk_option( 'booking_unavailable_day2') == 'On' ) ? '2,' : '' )
+			//	                                                    . ( ( get_bk_option( 'booking_unavailable_day3') == 'On' ) ? '3,' : '' )
+			//	                                                    . ( ( get_bk_option( 'booking_unavailable_day4') == 'On' ) ? '4,' : '' )
+			//	                                                    . ( ( get_bk_option( 'booking_unavailable_day5') == 'On' ) ? '5,' : '' )
+			//	                                                    . ( ( get_bk_option( 'booking_unavailable_day6') == 'On' ) ? '6,' : '' )
+			//	                                                    . "999] ); ";
+			//	 ?>
+			//}
+		</script><?php
+
+		?><div class="wpbc_shortcode_container"><?php
 			echo do_shortcode( '[booking resource_id=' . $resource_id . ']' );
 		?></div><?php
+
+
 	}
 
 	return  ob_get_clean();
@@ -55,7 +187,7 @@ function wpbc_setup_wizard_page__get_shortcode_html( $resource_id = 1 ) {
 //TODO: Left Menu - TEMP . Delete it ?
 function wpbc_setup_wizard_page__get_left_navigation_menu_arr(){
 
-   $navigation_menu_arr = array();
+   	$navigation_menu_arr = array();
 
 	$navigation_menu_arr['general_info'] = array(
 												'title'  => __( 'General Info', 'booking' ),
@@ -71,12 +203,12 @@ function wpbc_setup_wizard_page__get_left_navigation_menu_arr(){
 													)
 
 											);
-	$navigation_menu_arr['calendar_days_selection'] = array(
+	$navigation_menu_arr['optional_other_settings'] = array(
 												'title'  => __( 'Bookings Type', 'booking' ),
 												'icon'   => 'wpbc-bi-calendar2-range 0wpbc_icn_radio_button_checked',
 												'class'  => '',
 												//'a_style'  => 'color: var(--wpbc_settings__nav_menu_left__active_border_color);',
-												'action' => "wpbc_ajx__setup_wizard_page__send_request_with_params( { 'current_step':'calendar_days_selection' } );"
+												'action' => "wpbc_ajx__setup_wizard_page__send_request_with_params( { 'current_step':'optional_other_settings' } );"
 											);
 	$navigation_menu_arr['next_step'] = array(
 												'title'  => '',//__( 'Bookings Type', 'booking' ),

@@ -2,6 +2,8 @@
 
 namespace Tribe\Service_Providers;
 
+use TEC\Common\Contracts\Service_Provider;
+
 /**
  * Class Tribe__Service_Providers__Tooltip
  *
@@ -9,7 +11,8 @@ namespace Tribe\Service_Providers;
  *
  * Handles the registration and creation of our async process handlers.
  */
-class Tooltip extends \tad_DI52_ServiceProvider {
+class Tooltip extends Service_Provider {
+
 
 	/**
 	 * Binds and sets up implementations.
@@ -37,16 +40,20 @@ class Tooltip extends \tad_DI52_ServiceProvider {
 	 * @since 4.9.8
 	 */
 	public function add_tooltip_assets() {
-		$main = \Tribe__Main::instance();
+		$main    = \Tribe__Main::instance();
+		$helpers = \Tribe__Admin__Helpers::instance();
 
 		tribe_asset(
 			$main,
 			'tribe-tooltip',
 			'tooltip.css',
 			[ 'tribe-common-skeleton-style' ],
-			null,
+			'admin_enqueue_scripts',
 			[
-				'groups' => 'tribe-tooltip',
+				'groups'       => 'tribe-tooltip',
+				'conditionals' => [
+					[ $helpers, 'is_screen' ],
+				],
 			]
 		);
 
@@ -55,9 +62,12 @@ class Tooltip extends \tad_DI52_ServiceProvider {
 			'tribe-tooltip-js',
 			'tooltip.js',
 			[ 'jquery', 'tribe-common' ],
-			null,
+			'admin_enqueue_scripts',
 			[
-				'groups' => 'tribe-tooltip'
+				'groups'       => 'tribe-tooltip',
+				'conditionals' => [
+					[ $helpers, 'is_screen' ],
+				],
 			]
 		);
 	}

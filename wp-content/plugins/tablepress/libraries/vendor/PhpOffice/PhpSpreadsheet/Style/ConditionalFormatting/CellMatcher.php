@@ -30,50 +30,23 @@ class CellMatcher
 		Conditional::CONDITION_UNIQUE => "COUNTIF('%s'!%s,%s)=1",
 	];
 
-	/**
-	 * @var Cell
-	 */
-	protected $cell;
+	protected Cell $cell;
 
-	/**
-	 * @var int
-	 */
-	protected $cellRow;
+	protected int $cellRow;
 
-	/**
-	 * @var Worksheet
-	 */
-	protected $worksheet;
+	protected Worksheet $worksheet;
 
-	/**
-	 * @var int
-	 */
-	protected $cellColumn;
+	protected int $cellColumn;
 
-	/**
-	 * @var string
-	 */
-	protected $conditionalRange;
+	protected string $conditionalRange;
 
-	/**
-	 * @var string
-	 */
-	protected $referenceCell;
+	protected string $referenceCell;
 
-	/**
-	 * @var int
-	 */
-	protected $referenceRow;
+	protected int $referenceRow;
 
-	/**
-	 * @var int
-	 */
-	protected $referenceColumn;
+	protected int $referenceColumn;
 
-	/**
-	 * @var Calculation
-	 */
-	protected $engine;
+	protected Calculation $engine;
 
 	public function __construct(Cell $cell, string $conditionalRange)
 	{
@@ -118,38 +91,24 @@ class CellMatcher
 			case Conditional::CONDITION_UNIQUE:
 				return $this->processDuplicatesComparison($conditional);
 			case Conditional::CONDITION_CONTAINSTEXT:
-				// Expression is NOT(ISERROR(SEARCH("<TEXT>",<Cell Reference>)))
 			case Conditional::CONDITION_NOTCONTAINSTEXT:
-				// Expression is ISERROR(SEARCH("<TEXT>",<Cell Reference>))
 			case Conditional::CONDITION_BEGINSWITH:
-				// Expression is LEFT(<Cell Reference>,LEN("<TEXT>"))="<TEXT>"
 			case Conditional::CONDITION_ENDSWITH:
-				// Expression is RIGHT(<Cell Reference>,LEN("<TEXT>"))="<TEXT>"
 			case Conditional::CONDITION_CONTAINSBLANKS:
-				// Expression is LEN(TRIM(<Cell Reference>))=0
 			case Conditional::CONDITION_NOTCONTAINSBLANKS:
-				// Expression is LEN(TRIM(<Cell Reference>))>0
 			case Conditional::CONDITION_CONTAINSERRORS:
-				// Expression is ISERROR(<Cell Reference>)
 			case Conditional::CONDITION_NOTCONTAINSERRORS:
-				// Expression is NOT(ISERROR(<Cell Reference>))
 			case Conditional::CONDITION_TIMEPERIOD:
-				// Expression varies, depending on specified timePeriod value, e.g.
-				// Yesterday FLOOR(<Cell Reference>,1)=TODAY()-1
-				// Today FLOOR(<Cell Reference>,1)=TODAY()
-				// Tomorrow FLOOR(<Cell Reference>,1)=TODAY()+1
-				// Last 7 Days AND(TODAY()-FLOOR(<Cell Reference>,1)<=6,FLOOR(<Cell Reference>,1)<=TODAY())
 			case Conditional::CONDITION_EXPRESSION:
 				return $this->processExpression($conditional);
+			default:
+				return false;
 		}
-
-		return false;
 	}
 
 	/**
-	 * @param mixed $value
-	 *
 	 * @return float|int|string
+	 * @param mixed $value
 	 */
 	protected function wrapValue($value)
 	{
@@ -171,6 +130,8 @@ class CellMatcher
 	 */
 	protected function wrapCellValue()
 	{
+		$this->cell = $this->worksheet->getCell([$this->cellColumn, $this->cellRow]);
+
 		return $this->wrapValue($this->cell->getCalculatedValue());
 	}
 
@@ -182,13 +143,13 @@ class CellMatcher
 		$column = $matches[6];
 		$row = $matches[7];
 
-		if (strpos($column, '$') === false) {
+		if (!str_contains($column, '$')) {
 			$column = Coordinate::columnIndexFromString($column);
 			$column += $this->cellColumn - $this->referenceColumn;
 			$column = Coordinate::stringFromColumnIndex($column);
 		}
 
-		if (strpos($row, '$') === false) {
+		if (!str_contains($row, '$')) {
 			$row += $this->cellRow - $this->referenceRow;
 		}
 
@@ -228,6 +189,7 @@ class CellMatcher
 			}
 		}
 		unset($value);
+
 		//    Then rebuild the condition string to return it
 		return implode(Calculation::FORMULA_STRING_QUOTE, $splitCondition);
 	}
@@ -277,7 +239,7 @@ class CellMatcher
 			self::COMPARISON_DUPLICATES_OPERATORS[$conditional->getConditionType()],
 			$worksheetName,
 			$this->conditionalRange,
-			$this->cellConditionCheck($this->cell->getCalculatedValue())
+			$this->cellConditionCheck($this->cell->getCalculatedValueString())
 		);
 
 		return $this->evaluateExpression($expression);
@@ -304,7 +266,7 @@ class CellMatcher
 		try {
 			$this->engine->flushInstance();
 			$result = (bool) $this->engine->calculateFormula($expression);
-		} catch (Exception $e) {
+		} catch (Exception $exception) {
 			return false;
 		}
 

@@ -5,36 +5,19 @@ namespace TablePress\PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard;
 use NumberFormatter;
 use TablePress\PhpOffice\PhpSpreadsheet\Exception;
 use TablePress\PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Stringable;
 
 abstract class NumberBase
 {
 	protected const MAX_DECIMALS = 30;
-
-	/**
-	 * @var int
-	 */
-	protected $decimals = 2;
-
-	/**
-	 * @var string|null
-	 */
-	protected $locale;
-
-	/**
-	 * @var string|null
-	 */
-	protected $fullLocale;
-
-	/**
-	 * @var string|null
-	 */
-	protected $localeFormat;
-
+	protected int $decimals = 2;
+	protected ?string $locale = null;
+	protected ?string $fullLocale = null;
+	protected ?string $localeFormat = null;
 	public function setDecimals(int $decimals = 2): void
 	{
 		$this->decimals = ($decimals > self::MAX_DECIMALS) ? self::MAX_DECIMALS : max($decimals, 0);
 	}
-
 	/**
 	 * Setting a locale will override any settings defined in this class.
 	 *
@@ -54,12 +37,10 @@ abstract class NumberBase
 			$this->localeFormat = $this->getLocaleFormat();
 		}
 	}
-
 	/**
 	 * Stub: should be implemented as a concrete method in concrete wizards.
 	 */
 	abstract protected function getLocaleFormat(): string;
-
 	/**
 	 * @throws Exception If the locale code is not a valid format
 	 */
@@ -71,7 +52,7 @@ abstract class NumberBase
 
 		['language' => $language, 'script' => $script, 'country' => $country] = $matches;
 		// Set case and separator to match standardised locale case
-		$language = strtolower($language ?? '');
+		$language = strtolower($language);
 		$script = ($script === null) ? null : ucfirst(strtolower($script));
 		$country = ($country === null) ? null : strtoupper($country);
 
@@ -79,12 +60,10 @@ abstract class NumberBase
 
 		return $country === null ? $language : "{$language}-{$country}";
 	}
-
 	public function format(): string
 	{
 		return NumberFormat::FORMAT_GENERAL;
 	}
-
 	public function __toString(): string
 	{
 		return $this->format();

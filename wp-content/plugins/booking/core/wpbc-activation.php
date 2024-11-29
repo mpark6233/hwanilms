@@ -946,10 +946,14 @@ function wpbc_get_default_options( $option_name = '', $is_get_multiuser_general_
     $is_demo = wpbc_is_this_demo();    
     $blg_title = str_replace( array( '"', "'" ), '', get_option( 'blogname' ) );
         
-    $default_options  = array();                                                 
+    $default_options  = array();
+
+	// If this option here, then system get this option from "Super Admin" options configuration for "Regular" users.
     $mu_option4delete = array();
 
 	//FixIn: 9.6.3.5
+	$default_options['booking_setup_wizard_page_steps_is_done'] = '';
+ $mu_option4delete[]='booking_setup_wizard_page_steps_is_done';
 
     $default_options['booking_admin_cal_count'] = ($is_demo) ? '3' : '2';       
  $mu_option4delete[]='booking_admin_cal_count';                                 // $multiuser_general_option[] = implode( '', array_keys( array_slice( $default_options, -1 ) ) );
@@ -1129,11 +1133,6 @@ if ( class_exists( 'wpdev_bk_biz_m' ) ) {
 		$default_options['booking_user_role_prices'] = ( $is_demo ) ? 'subscriber' : 'editor';
 	 $mu_option4delete[]='booking_user_role_prices';
 }
-//FixIn: 9.8.15.2.6
-if ( WPBC_customize_plugin ){
-		$default_options['booking_user_role_customize_plugin'] = ( $is_demo ) ? 'subscriber' : 'editor';
-	 $mu_option4delete[]='booking_user_role_customize_plugin';
-}
 
     // New admin ///////////////////////////////////////////////////////////////
     
@@ -1256,6 +1255,7 @@ if ( WPBC_customize_plugin ){
 
 	$default_options['booking_form_layout_width'] 		= '440';
 	$default_options['booking_form_layout_width_px_pr'] = 'px';
+	$default_options['booking_form_layout_max_cols'] = 1;
 
     ////////////////////////////////////////////////////////////////////////////
     // PS
@@ -1342,6 +1342,9 @@ if ( WPBC_customize_plugin ){
     if ( class_exists( 'wpdev_bk_biz_s' ) ) {
         
      //$mu_option4delete[]='booking_paypal_price_period';                         // No need to  delete,  this option, because different users can  have different settings. During init defined at ../booking/inc/gateways/page-gateways.php
+
+		$default_options['booking_gateways_order'] = 'stripe_v3,paypal_std_co,paypal,authorizenet,sage,bank_transfer,pay_cash,ipay88,ideal';   //     Default Original Payment Gateways
+	//$mu_option4delete[]='booking_gateways_order';        	// No need to delete ^
 
 		//FixIn: 8.1.3.29
 		$default_options['booking_ics_import_add_change_over_time'] = 'On';
@@ -1482,7 +1485,14 @@ if ( WPBC_customize_plugin ){
         $default_options['booking_is_show_availability_in_tooltips'] = 'On';                                            //FixIn: 8.1.3.8
      $mu_option4delete[]='booking_is_show_availability_in_tooltips';                 
         $default_options['booking_highlight_availability_word'] = __( 'Available: ', 'booking' );
-     $mu_option4delete[]='booking_highlight_availability_word';                 
+     $mu_option4delete[]='booking_highlight_availability_word';
+
+        $default_options['booking_is_show_availability_in_date_cell'] = 'Off';                                          //FixIn: 10.6.4.1
+     $mu_option4delete[]='booking_is_show_availability_in_date_cell';
+        $default_options['booking_highlight_availability_word_in_date_cell'] = __( 'available', 'booking' );
+     $mu_option4delete[]='booking_highlight_availability_word_in_date_cell';
+
+
         $default_options['booking_is_dissbale_booking_for_different_sub_resources'] = 'Off';
      $mu_option4delete[]='booking_is_dissbale_booking_for_different_sub_resources';                 
         $default_options['booking_is_resource_no_update__during_editing'] = 'On';										//FixIn: 9.4.2.3

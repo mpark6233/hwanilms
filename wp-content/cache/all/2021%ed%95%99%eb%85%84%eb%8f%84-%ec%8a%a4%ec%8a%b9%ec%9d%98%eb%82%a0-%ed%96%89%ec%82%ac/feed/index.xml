@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 	</title>
+	<atom:link href="https://www.hwanil.ms.kr/2021%25ed%2595%2599%25eb%2585%2584%25eb%258f%2584-%25ec%258a%25a4%25ec%258a%25b9%25ec%259d%2598%25eb%2582%25a0-%25ed%2596%2589%25ec%2582%25ac/feed/" rel="self" type="application/rss+xml" />
+	<link></link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Wed, 27 Nov 2024 23:24:36 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

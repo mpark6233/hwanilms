@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 멸치 해부 실험, 수질오염 측정(2020.08.04)	</title>
+	<atom:link href="https://www.hwanil.ms.kr/%eb%a9%b8%ec%b9%98-%ed%95%b4%eb%b6%80-%ec%8b%a4%ed%97%98-%ec%88%98%ec%a7%88%ec%98%a4%ec%97%bc-%ec%b8%a1%ec%a0%952020-08-04/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/%eb%a9%b8%ec%b9%98-%ed%95%b4%eb%b6%80-%ec%8b%a4%ed%97%98-%ec%88%98%ec%a7%88%ec%98%a4%ec%97%bc-%ec%b8%a1%ec%a0%952020-08-04/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Tue, 04 Aug 2020 09:32:22 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

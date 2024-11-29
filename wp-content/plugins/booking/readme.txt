@@ -4,8 +4,8 @@ Donate link: https://wpbookingcalendar.com/buy/
 Tags: booking calendar, bookings, booking, appointments, events
 Requires at least: 5.3
 Requires PHP: 5.6
-Tested up to: 6.6
-Stable tag: 10.6.1
+Tested up to: 6.7
+Stable tag: 10.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,22 @@ Plugin provides an **easy-to-use** booking system for displaying **calendar avai
 Moreover, with the ability to **sync bookings** with other services Booking Calendar offers you be up-to-date to avoid duplicate bookings.
 
 [Features](https://wpbookingcalendar.com/features/ "Features Overview of Booking Calendar") | [See Demos](https://wpbookingcalendar.com/demo/ "Live demos of premium versions") | [FAQ](https://wpbookingcalendar.com/FAQ/ "Booking Calendar - FAQ") | [Video Guides](https://wpbookingcalendar.com/help/ "Youtube Video Tutorials") | [Get Support](https://wpbookingcalendar.com/support/ "Get support for Booking Calendar plugin" )
+
+= New Setup Wizard! =
+> <strong>Easy Time Appointments Configuration for your Bookings</strong><br />
+> Set up **appointment booking system** in less than 2.5 minutes. Designed with a user-friendly flow, the wizard takes you step-by-step through key settings, including booking type selection, calendar appearance, availability preferences, and more. This step-by-step setup helps you get your booking system ready for your business quickly and easily.
+
+https://www.youtube.com/watch?v=GYJWZJBFwXw
+
+> <strong>Full Day Bookings - Setup Wizard</strong><br />
+> Easily configure Booking Calendar for full-day bookings with the new step-by-step Setup Wizard. Get your booking system ready for full day bookings in just a few minutes.
+
+https://www.youtube.com/watch?v=NJ88lGD5iJ0
+
+> <strong>Changeover Multi-Day Bookings - Setup Wizard (Pro)</strong><br />
+> Configure multi-day bookings with specific check-in and check-out days, clearly marked with diagonal or vertical lines. Perfect for bookings that require split days. <br>**Available Pro versions**.
+
+https://www.youtube.com/watch?v=uCQ9JmHR8w4
 
 = Perfect solution for any booking logic =
 
@@ -224,39 +240,40 @@ Administrators can manage all reservations from the modern and easy-to-use admin
 = Support Languages (local) =
 
 - English
-- Dutch 99.74% [ 2320 / 2326 ], fuzzy 4, not translated 2
-- French (France) 97.07% [ 2249 / 2317 ], fuzzy 60, not translated 8
-- Hungarian 96.95% [ 2255 / 2326 ], fuzzy 50, not translated 21
-- Korean 96.78% [ 2251 / 2326 ], fuzzy 48, not translated 27
-- German 96.35% [ 2241 / 2326 ], fuzzy 83, not translated 2
-- Spanish (Spain) 87.48% [ 2027 / 2317 ], fuzzy 123, not translated 167
-- Turkish 83.64% [ 1938 / 2317 ], fuzzy 241, not translated 138
-- Greek 83.21% [ 1928 / 2317 ], fuzzy 244, not translated 145
-- Danish 82.95% [ 1922 / 2317 ], fuzzy 258, not translated 137
-- Portuguese (Brazil) 82.89% [ 1928 / 2326 ], fuzzy 247, not translated 151
-- Italian 80.75% [ 1871 / 2317 ], fuzzy 154, not translated 292
-- Spanish (Mexico) 77.13% [ 1787 / 2317 ], fuzzy 338, not translated 192
-- Romanian 76.13% [ 1764 / 2317 ], fuzzy 346, not translated 207
-- Swedish 75.66% [ 1753 / 2317 ], fuzzy 360, not translated 204
-- Finnish 75.44% [ 1748 / 2317 ], fuzzy 364, not translated 205
-- Polish 74.97% [ 1737 / 2317 ], fuzzy 361, not translated 219
-- Norwegian (Bokmål) 74.49% [ 1726 / 2317 ], fuzzy 375, not translated 216
-- Arabic 73.5% [ 1703 / 2317 ], fuzzy 393, not translated 221
-- Russian 72.44% [ 1685 / 2326 ], fuzzy 635, not translated 6
-- Slovenian 72.42% [ 1678 / 2317 ], fuzzy 406, not translated 233
-- Chinese (Taiwan) 70.09% [ 1624 / 2317 ], fuzzy 458, not translated 235
-- Bulgarian 69.79% [ 1617 / 2317 ], fuzzy 435, not translated 265
-- Portuguese (Portugal) 68.19% [ 1580 / 2317 ], fuzzy 458, not translated 279
-- Chinese (China) 67.41% [ 1562 / 2317 ], fuzzy 445, not translated 310
-- Thai 65.6% [ 1520 / 2317 ], fuzzy 501, not translated 296
-- Hebrew 65.26% [ 1512 / 2317 ], fuzzy 489, not translated 316
-- Ukrainian 64.96% [ 1511 / 2326 ], fuzzy 492, not translated 323
-- Japanese 63.93% [ 1487 / 2326 ], fuzzy 24, not translated 815
-- Galician 63.79% [ 1478 / 2317 ], fuzzy 544, not translated 295
-- Slovak 59.26% [ 1373 / 2317 ], fuzzy 476, not translated 468
-- Catalan 57.92% [ 1342 / 2317 ], fuzzy 497, not translated 478
-- Croatian 57.53% [ 1333 / 2317 ], fuzzy 499, not translated 485
-- Czech 50.76% [ 1176 / 2317 ], fuzzy 562, not translated 579
+- German 99.35% [ 2459 / 2475 ], fuzzy 14, not translated 2
+- French (France) 95.5% [ 2355 / 2466 ], fuzzy 60, not translated 51
+- Dutch 95.07% [ 2353 / 2475 ], fuzzy 67, not translated 55
+- Hungarian 92.24% [ 2283 / 2475 ], fuzzy 119, not translated 73
+- Korean 92.2% [ 2282 / 2475 ], fuzzy 115, not translated 78
+- Spanish (Spain) 84.31% [ 2079 / 2466 ], fuzzy 176, not translated 211
+- Portuguese (Brazil) 79.6% [ 1970 / 2475 ], fuzzy 304, not translated 201
+- Greek 79.28% [ 1955 / 2466 ], fuzzy 312, not translated 199
+- Turkish 78.55% [ 1937 / 2466 ], fuzzy 326, not translated 203
+- Danish 77.9% [ 1921 / 2466 ], fuzzy 344, not translated 201
+- Italian 75.83% [ 1870 / 2466 ], fuzzy 239, not translated 357
+- Spanish (Mexico) 72.42% [ 1786 / 2466 ], fuzzy 424, not translated 256
+- Finnish 72.02% [ 1776 / 2466 ], fuzzy 430, not translated 260
+- Polish 71.7% [ 1768 / 2466 ], fuzzy 425, not translated 273
+- Romanian 71.49% [ 1763 / 2466 ], fuzzy 431, not translated 272
+- Swedish 71.05% [ 1752 / 2466 ], fuzzy 446, not translated 268
+- Norwegian (Bokmål) 69.95% [ 1725 / 2466 ], fuzzy 460, not translated 281
+- Russian 69.74% [ 1726 / 2475 ], fuzzy 692, not translated 57
+- Arabic 69.02% [ 1702 / 2466 ], fuzzy 479, not translated 285
+- Slovenian 68% [ 1677 / 2466 ], fuzzy 490, not translated 299
+- Chinese (Taiwan) 65.82% [ 1623 / 2466 ], fuzzy 542, not translated 301
+- Bulgarian 65.53% [ 1616 / 2466 ], fuzzy 519, not translated 331
+- Portuguese (Portugal) 65.04% [ 1604 / 2466 ], fuzzy 526, not translated 336
+- Chinese (China) 63.3% [ 1561 / 2466 ], fuzzy 530, not translated 375
+- Thai 61.6% [ 1519 / 2466 ], fuzzy 585, not translated 362
+- Hebrew 61.27% [ 1511 / 2466 ], fuzzy 573, not translated 382
+- Ukrainian 61.01% [ 1510 / 2475 ], fuzzy 576, not translated 389
+- Japanese 60% [ 1485 / 2475 ], fuzzy 105, not translated 885
+- Galician 59.94% [ 1478 / 2466 ], fuzzy 626, not translated 362
+- Slovak 55.6% [ 1371 / 2466 ], fuzzy 559, not translated 536
+- Catalan 54.34% [ 1340 / 2466 ], fuzzy 580, not translated 546
+- Croatian 53.97% [ 1331 / 2466 ], fuzzy 583, not translated 552
+- Czech 47.61% [ 1174 / 2466 ], fuzzy 643, not translated 649
+- Chinese (Hong Kong) 28.71% [ 708 / 2466 ], fuzzy 57, not translated 1701
 
 Please recheck the status of each translation, before using plugin.
 We open for your help in new translations or correcting existing ones. You can translate to new language or update exist one, using this [tutorial of translation](https://wpbookingcalendar.com/faq/make-translation-of-wp-plugin/)
@@ -289,6 +306,47 @@ Please see [Video Guides](https://wpbookingcalendar.com/help/).
 18. **Time-Slot Appointment Bookings in Legacy Calendar Theme**: Users can select **single day** in the calendar and **time slots** in the booking form.
 
 == Changelog ==
+= 10.8 =
+- Changes in **all** versions:
+ 	* **New** Added the ability to configure the booking form structure as a multi-step wizard in the Booking Calendar Free version. This feature enables users to complete the booking process in several steps for improved usability. (10.7.1.7)
+ 	* **New** Added the ability to define the number of columns in the booking form in the Booking Calendar Free version. Configure the column layout at WP Booking Calendar > Settings > Booking Form page under the "Form Layout" section. (10.7.1.6)
+ 	* **New** Added a 20-minute time-slot interval template for faster configuration of time slots. Access this feature on the WP Booking Calendar > Settings > Booking Form page.
+	* **Under hood** Enabled the use of 'allow_past' URL parameter to show past bookings and scroll through past months on the Booking > Add Booking page in the admin panel. (10.7.1.2)
+	* **Enhanced** Added new  skins: "Black-2", "Green-01", "Light-01", and "Traditional-times" to the legacy calendar skin group. (10.7.1.5)
+	* **Enhanced** Disabled auto-selection of legacy calendar skins. (10.7.1.5.1)
+- Changes in **Personal / Business Small / Business Medium / Business Large / MultiUser** versions:
+ 	* **New** Added a new **"Time-Based Appointments" form template** in a multi-step wizard style. Please reset your booking form by selecting this template from the dropdown list in the toolbar at Settings > Booking Form page. (10.7.1.4)
+ 	* **New** Introduced shortcodes [search_days_number] and [search_nights_number] for use in search results. Available on the WP Booking Calendar > Settings > Search page. (10.7.1.1)   *(Business Large, MultiUser)*
+
+= 10.7 =
+- Changes in **all** versions:
+ 	* **New** **Easy Setup Wizard** for quick booking calendar configuration of essential booking settings.
+ 	* **Enhanced** Step-by-step guide for booking types, calendar look, availability, and form settings.
+ 	* **Enhanced** Updated 'Get started' dialog at Booking Listing and Timeline View pages.
+ 	* **Added** Quick access to **Setup Wizard**, from Settings General page.
+ 	* **Fix** Showing warning message at some servers: "WPBC Error. JavaScript library "datepick" was not defined.". (10.6.6.1)
+ 	* **Fix** Resolved issue of generating payment request links at some servers. (10.6.6.3)
+
+= 10.6.5 =
+- Changes in **all** versions:
+	* **Fix** Notice: Function _load_textdomain_just_in_time was called incorrectly. in WordPress 6.7 RC1 (10.6.5.1)
+	* **Fix** Additional escaping of Send button title in booking form. Thank you for Dmitrii Ignatyev (cleantalk) (10.6.5.2)
+
+= 10.6.4 =
+- Changes in **all** versions:
+	* **Fix** Additional escaping of text  data at the Booking Confirmation section. Thank you for Dmitrii Ignatyev (cleantalk) (10.6.4.2)
+- Changes in **Personal / Business Small / Business Medium / Business Large / MultiUser** versions:
+ 	* **New** Ability to display the available number of booking resources (slots) in the date cells in the calendar(s). (10.6.4.1)
+
+= 10.6.3 =
+- Changes in **all** versions:
+	* **Fix** Resolving issue of showing booking titles in Timeline View in some situations of multiple bookings on the same date. (10.6.3.1)
+	* **Fix** Resolving issue in classic widgets for legacy themes of correctly escaping titles. Thank you for Dmitrii Ignatyev (cleantalk).
+
+= 10.6.2 =
+- Changes in **all** versions:
+	* **Fix** Remove the comments from the foreach() statement to prevent causing a false positive issues on hosting platform. (10.6.2.2)
+
 = 10.6.1 =
 - Changes in **all** versions:
 	* **Fix** Resolved XSS vulnerability relative date\time formats, if attacker has access to booking settings page. (10.6.1.2)
@@ -466,6 +524,12 @@ Please see [Video Guides](https://wpbookingcalendar.com/help/).
  - Get ready for our biggest update yet! Enjoy a new booking engine, improved performance, structured settings, an enhanced UI, and a smoother booking process with the new booking confirmation section. Paid versions bring features like time-slot capacity for multiple bookings per time-slot and more. Find more at [this page](https://wpbookingcalendar.com/updates/whats-new-in-booking-calendar-update-9-8/)
 
 == Upgrade Notice ==
+= 10.8 =
+Configure the booking form structure as a multi-step wizard to guide users through the booking process step-by-step and define the number of columns in the booking form (in free version).
+
+= 10.7 =
+Easy Setup Wizard for quick booking calendar configuration of essential booking settings.
+
 = 10.6 =
 Implemented a structured settings dashboard with brief descriptions for each feature. This update enhances user navigation, making it easier to locate and configure the desired settings.
 

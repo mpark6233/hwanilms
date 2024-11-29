@@ -1,30 +1,37 @@
 <?php
-/**
- * Main Tribe Common class.
- */
 
-// Don't load directly
-
+use TEC\Common\Libraries;
+use TEC\Common\Translations_Loader;
+use Tribe\Admin\Settings;
 use Tribe\DB_Lock;
 
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( class_exists( 'Tribe__Main' ) ) {
+if ( class_exists( 'Tribe__Main', false ) ) {
 	return;
 }
 
 class Tribe__Main {
-	const EVENTSERROROPT      = '_tribe_events_errors';
-	const OPTIONNAME          = 'tribe_events_calendar_options';
-	const OPTIONNAMENETWORK   = 'tribe_events_calendar_network_options';
-
-	const VERSION             = '4.15.4.1';
-	const FEED_URL            = 'https://theeventscalendar.com/feed/';
+	const EVENTSERROROPT    = '_tribe_events_errors';
+	const OPTIONNAME        = 'tribe_events_calendar_options';
+	const OPTIONNAMENETWORK = 'tribe_events_calendar_network_options';
+	const FEED_URL          = 'https://theeventscalendar.com/feed/';
+	const VERSION           = '6.3.2';
 
 	protected $plugin_context;
 	protected $plugin_context_class;
+
+	/**
+	 * Holds the path to the main file of the parent plugin.
+	 *
+	 * @since 5.1.0
+	 *
+	 * @var string
+	 */
+	protected $parent_plugin_file = '';
 
 	public static $tribe_url = 'http://tri.be/';
 	public static $tec_url   = 'https://theeventscalendar.com/';
@@ -32,6 +39,7 @@ class Tribe__Main {
 	public $plugin_dir;
 	public $plugin_path;
 	public $plugin_url;
+	public $parent_plugin_dir;
 
 	/**
 	 * Static Singleton Holder
@@ -67,9 +75,11 @@ class Tribe__Main {
 			return;
 		}
 
-		require_once realpath( dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/autoload.php' );
+		$vendor_folder = dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/';
+		require_once realpath( $vendor_folder . 'vendor-prefixed/autoload.php' );
+		require_once realpath( $vendor_folder . 'autoload.php' );
 
-		// the DI container class
+		// The DI container class.
 		require_once dirname( __FILE__ ) . '/Container.php';
 
 		if ( is_object( $context ) ) {
@@ -79,8 +89,8 @@ class Tribe__Main {
 
 		$this->plugin_path = trailingslashit( dirname( dirname( dirname( __FILE__ ) ) ) );
 		$this->plugin_dir  = trailingslashit( basename( $this->plugin_path ) );
-		$parent_plugin_dir = trailingslashit( plugin_basename( $this->plugin_path ) );
-		$this->plugin_url  = plugins_url( $parent_plugin_dir === $this->plugin_dir ? $this->plugin_dir : $parent_plugin_dir );
+		$this->parent_plugin_dir = trailingslashit( plugin_basename( $this->plugin_path ) );
+		$this->plugin_url  = plugins_url( $this->parent_plugin_dir === $this->plugin_dir ? $this->plugin_dir : $this->parent_plugin_dir );
 
 		$this->promoter_connector();
 
@@ -133,9 +143,15 @@ class Tribe__Main {
 			require_once dirname( __FILE__ ) . '/Autoloader.php';
 		}
 
+		// Aliases for backwards compatibility with our Extensions and Pods.
+		require_once realpath( dirname( dirname( __FILE__ ) ) . '/functions/aliases.php' );
+
 		$autoloader = Tribe__Autoloader::instance();
 
-		$prefixes = [ 'Tribe__' => dirname( __FILE__ ) ];
+		$prefixes = [
+				'TEC\\Common\\' => dirname( __DIR__ ) . '/Common',
+				'Tribe__'       => __DIR__,
+		];
 		$autoloader->register_prefixes( $prefixes );
 
 		foreach ( glob( $this->plugin_path . 'src/deprecated/*.php' ) as $file ) {
@@ -179,15 +195,19 @@ class Tribe__Main {
 	public function init_libraries() {
 		require_once $this->plugin_path . 'src/functions/utils.php';
 		require_once $this->plugin_path . 'src/functions/conditionals.php';
+		require_once $this->plugin_path . 'src/functions/transient.php';
 		require_once $this->plugin_path . 'src/functions/url.php';
 		require_once $this->plugin_path . 'src/functions/query.php';
 		require_once $this->plugin_path . 'src/functions/multibyte.php';
+		require_once $this->plugin_path . 'src/functions/files.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/general.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/date.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/html.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/post.php';
 
 		Tribe__Debug::instance();
+		tec_timed_option();
+
 		tribe( 'assets' );
 		tribe( 'assets.pipeline' );
 		tribe( 'settings.manager' );
@@ -212,8 +232,9 @@ class Tribe__Main {
 				[ 'tribe-select2', 'vendor/tribe-selectWoo/dist/js/selectWoo.full.js', [ 'jquery' ] ],
 				[ 'tribe-select2-css', 'vendor/tribe-selectWoo/dist/css/selectWoo.css' ],
 				[ 'tribe-utils-camelcase', 'utils-camelcase.js', [ 'underscore' ] ],
-				[ 'tribe-moment', 'vendor/momentjs/moment.js' ],
-				[ 'tribe-moment-locales', 'vendor/momentjs/locale.min.js' ],
+				[ 'tec-dayjs', 'vendor/dayjs/dayjs.min.js' ],
+				[ 'tec-dayjs-isoweek', 'vendor/dayjs/plugin/isoWeek.min.js', [ 'tec-dayjs' ] ],
+				[ 'tec-dayjs-customparseformat', 'vendor/dayjs/plugin/customParseFormat.min.js', [ 'tec-dayjs' ] ],
 				[ 'tribe-tooltipster', 'vendor/tooltipster/tooltipster.bundle.js', [ 'jquery' ] ],
 				[ 'tribe-tooltipster-css', 'vendor/tooltipster/tooltipster.bundle.css' ],
 				[ 'datatables-css', 'datatables.css' ],
@@ -228,6 +249,26 @@ class Tribe__Main {
 				[ 'tribe-attrchange', 'vendor/attrchange/js/attrchange.js' ],
 				[ 'tec-ky-module', 'vendor/ky/ky.js', [], null, [ 'module' => true ] ],
 				[ 'tec-ky', 'vendor/ky/tec-ky.js', [ 'tec-ky-module' ], null, [ 'module' => true ] ],
+			]
+		);
+
+		tribe_asset(
+			$this,
+			'tec-copy-to-clipboard',
+			'utils/tec-copy-to-clipboard.js',
+			'tribe-clipboard',
+			'admin_enqueue_scripts',
+			[
+				'localize' => [
+					'tribeCopyToClipboard',
+					[
+						'name' => 'tribeCopyToClipboard',
+						'data' => [
+							'clipboard_copied_text' => _x( 'Copied to Clipboard!', 'Copy to clipboard success message', 'tribe-common' ),
+							'clipboard_fail_text'   => _x( 'Failed to copy.', 'Copy to clipboard failed message', 'tribe-common' ),
+						],
+					],
+				],
 			]
 		);
 
@@ -248,13 +289,14 @@ class Tribe__Main {
 			[
 				[ 'tribe-ui', 'tribe-ui.css', [ 'tec-variables-full' ] ],
 				[ 'tribe-buttonset', 'buttonset.js', [ 'jquery', 'underscore' ] ],
-				[ 'tribe-common-admin', 'tribe-common-admin.css', [ 'tec-variables-full', 'tribe-dependency-style', 'tribe-bumpdown-css', 'tribe-buttonset-style', 'tribe-select2-css' ] ],
-				[ 'tribe-validation', 'validation.js', [ 'jquery', 'underscore', 'tribe-common', 'tribe-utils-camelcase', 'tribe-tooltipster' ] ],
+				[ 'tribe-common-admin', 'tribe-common-admin.css', [ 'editor-buttons', 'tec-variables-skeleton', 'tec-variables-full', 'tribe-dependency-style', 'tribe-bumpdown-css', 'tribe-buttonset-style', 'tribe-select2-css' ] ],
+				[ 'tribe-validation', 'validation.js', [ 'jquery', 'underscore', 'tribe-common', 'tribe-utils-camelcase', 'tribe-tooltipster', 'tec-dayjs', 'tec-dayjs-customparseformat' ] ],
 				[ 'tribe-validation-style', 'validation.css', [ 'tec-variables-full', 'tribe-tooltipster-css' ] ],
 				[ 'tribe-dependency', 'dependency.js', [ 'jquery', 'underscore', 'tribe-common' ] ],
 				[ 'tribe-dependency-style', 'dependency.css', [ 'tribe-select2-css' ] ],
 				[ 'tribe-pue-notices', 'pue-notices.js', [ 'jquery' ] ],
 				[ 'tribe-datepicker', 'datepicker.css' ],
+				[ 'tec-nav-modal', 'admin/settings-nav-modals.js', [ 'jquery' ] ],
 			],
 			'admin_enqueue_scripts',
 			[
@@ -286,6 +328,17 @@ class Tribe__Main {
 			]
 		);
 
+		tribe_asset(
+			$this,
+			'tec-admin-settings-image-field',
+			'admin-image-field.js',
+			[ 'jquery' ],
+			'in_admin_footer',
+			[
+				'conditionals' => [ tribe( Settings::class ), 'should_load_image_field_assets' ]
+			]
+		);
+
 		// Register the asset for Customizer controls.
 		tribe_asset(
 			$this,
@@ -293,6 +346,18 @@ class Tribe__Main {
 			'customizer-controls.css',
 			[ 'tec-variables-full' ],
 			'customize_controls_print_styles'
+		);
+
+		// Register the asset for color fields.
+		tribe_asset(
+			$this,
+			'tec-settings-color-field',
+			'admin-color-field.js',
+			[ 'jquery', 'wp-color-picker' ],
+			'admin_footer',
+			[
+				'conditionals' => [ tribe( Settings::class ), 'should_load_color_field_assets' ]
+			]
 		);
 
 		tribe( Tribe__Admin__Help_Page::class )->register_assets();
@@ -320,7 +385,7 @@ class Tribe__Main {
 	public function hook_load_text_domain() {
 		$loaded = $this->load_text_domain(
 			'tribe-common',
-			basename( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '/common/lang/'
+				basename( dirname( __FILE__, 4 ) ) . '/common/lang/'
 		);
 
 		/**
@@ -383,12 +448,12 @@ class Tribe__Main {
 				'monthNames'      => $datepicker_months,
 				'monthNamesShort' => $datepicker_months, // We deliberately use full month names here,
 				'monthNamesMin'   => array_values( Tribe__Date_Utils::get_localized_months_short() ),
- 				'nextText'        => esc_html__( 'Next', 'the-events-calendar' ),
-				'prevText'        => esc_html__( 'Prev', 'the-events-calendar' ),
-				'currentText'     => esc_html__( 'Today', 'the-events-calendar' ),
-				'closeText'       => esc_html__( 'Done', 'the-events-calendar' ),
-				'today'           => esc_html__( 'Today', 'the-events-calendar' ),
-				'clear'           => esc_html__( 'Clear', 'the-events-calendar' ),
+				'nextText'        => esc_html__( 'Next', 'tribe-common' ),
+				'prevText'        => esc_html__( 'Prev', 'tribe-common' ),
+				'currentText'     => esc_html__( 'Today', 'tribe-common' ),
+				'closeText'       => esc_html__( 'Done', 'tribe-common' ),
+				'today'           => esc_html__( 'Today', 'tribe-common' ),
+				'clear'           => esc_html__( 'Clear', 'tribe-common' ),
 			],
 		] );
 	}
@@ -403,6 +468,8 @@ class Tribe__Main {
 		// Register for the assets to be available everywhere
 		add_action( 'tribe_common_loaded', [ $this, 'load_assets' ], 1 );
 		add_action( 'init', [ $this, 'hook_load_text_domain' ] );
+		add_action( 'switch_locale', [ $this, 'hook_load_text_domain' ] );
+		add_action( 'restore_previous_locale', [ $this, 'hook_load_text_domain' ] );
 		add_action( 'init', [ $this, 'load_localize_data' ] );
 		add_action( 'plugins_loaded', [ 'Tribe__Admin__Notices', 'instance' ], 1 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'store_admin_notices' ] );
@@ -647,10 +714,11 @@ class Tribe__Main {
 	 * @return void Implementation of components loader doesn't return anything.
 	 */
 	public function bind_implementations() {
+		tribe_singleton( \TEC\Common\Storage\Timed_Option::class, \TEC\Common\Storage\Timed_Option::class );
 		tribe_singleton( 'settings.manager', 'Tribe__Settings_Manager' );
 		tribe_singleton( 'settings', 'Tribe__Settings', [ 'hook' ] );
 		tribe_singleton( 'ajax.dropdown', 'Tribe__Ajax__Dropdown', [ 'hook' ] );
-		tribe_singleton( 'assets', 'Tribe__Assets' );
+		tribe_singleton( 'assets', 'Tribe__Assets', [ 'hook' ] );
 		tribe_singleton( 'assets.pipeline', 'Tribe__Assets_Pipeline', [ 'hook' ] );
 		tribe_singleton( 'asset.data', 'Tribe__Asset__Data', [ 'hook' ] );
 		tribe_singleton( 'admin.helpers', 'Tribe__Admin__Helpers' );
@@ -667,7 +735,6 @@ class Tribe__Main {
 		tribe_singleton( 'post-transient', 'Tribe__Post_Transient' );
 		tribe_singleton( 'db', 'Tribe__Db' );
 		tribe_singleton( 'db-lock', DB_Lock::class );
-		tribe_singleton( 'freemius', 'Tribe__Freemius' );
 		tribe_singleton( 'customizer', 'Tribe__Customizer' );
 		tribe_singleton( Tribe__Dependency::class, Tribe__Dependency::class );
 		tribe_singleton( \Tribe\Admin\Troubleshooting::class, \Tribe\Admin\Troubleshooting::class, [ 'hook' ] );
@@ -676,6 +743,7 @@ class Tribe__Main {
 		tribe_singleton( Tribe__Admin__Help_Page::class, Tribe__Admin__Help_Page::class, [ 'hook' ] );
 		tribe_singleton( 'admin.pages', '\Tribe\Admin\Pages' );
 		tribe_singleton( 'admin.activation.page', 'Tribe__Admin__Activation_Page' );
+		tribe_singleton( Translations_Loader::class, Translations_Loader::class );
 
 		tribe_register_provider( Tribe__Editor__Provider::class );
 		tribe_register_provider( Tribe__Service_Providers__Debug_Bar::class );
@@ -690,7 +758,17 @@ class Tribe__Main {
 		tribe_register_provider( Tribe\Service_Providers\Widgets::class );
 		tribe_register_provider( Tribe\Service_Providers\Onboarding::class );
 		tribe_register_provider( Tribe\Admin\Notice\Service_Provider::class );
-		tribe_register_provider( Tribe\Admin\Conditional_Content\Service_Provider::class );
+		tribe_register_provider( \TEC\Common\Admin\Conditional_Content\Controller::class );
+		tribe_register_provider( Libraries\Provider::class );
+
+		// Load the new third-party integration system.
+		tribe_register_provider( TEC\Common\Integrations\Provider::class );
+		// Load Site Health and Telemetry.
+		tribe_register_provider( TEC\Common\Site_Health\Provider::class );
+		tribe_register_provider( TEC\Common\Telemetry\Provider::class );
+
+		// Load Help Hub.
+		tribe_register_provider( TEC\Common\Admin\Help_Hub\Provider::class );
 	}
 
 	/**
@@ -709,6 +787,37 @@ class Tribe__Main {
 			'determine_current_user',
 			tribe_callback( 'promoter.connector', 'authenticate_user_with_connector' )
 		);
+	}
+
+	/**
+	 * Get the common library's parent plugin file path.
+	 *
+	 * @since 5.1.0
+	 *
+	 * @return string The path to the parent plugin file.
+	 */
+	public function get_parent_plugin_file_path(): string {
+		/**
+		 * Allows plugins to hook in and declare themselves the parent of common.
+		 * Used by Telemetry to determine which plugin to associate with.
+		 *
+		 * @since 5.1.0
+		 *
+		 * @var string $parent_plugin_file The current path to the parent plugin file.
+		 *
+		 */
+		$paths = apply_filters( 'tec_common_parent_plugin_file', [] );
+
+		foreach( $paths as $path ) {
+			$path      = wp_normalize_path( $path );
+			$test_path = str_ireplace( '/common', '', $this->parent_plugin_dir );
+
+			if ( stripos( $path, $test_path ) ) {
+				return $path;
+			}
+		}
+
+		return '';
 	}
 
 

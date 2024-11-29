@@ -191,8 +191,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 					'premium-steel.css',
 					'standard.css',
 					'traditional-light.css',
-					//'traditional-times.css',
 					'traditional.css'
+					//FixIn: 10.7.1.5
+					, 'traditional-times.css'
+					, 'black-2.css'
+					, 'green-01.css'
+					, 'light-01.css'
 			);
 
 			return in_array( $skin_name, $legacy_skins );
@@ -386,7 +390,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 
 			$pages_where_load = array( 'post-new.php', 'page-new.php', 'post.php', 'page.php', 'widgets.php', 'customize.php' );
 
-			if ( in_array( basename( $_SERVER['PHP_SELF'] ), $pages_where_load ) ) {
+			if ( ( in_array( basename( $_SERVER['PHP_SELF'] ), $pages_where_load ) )
+				 || ( wpbc_is_setup_wizard_page() )
+			) {
 				return true;
 			}
 
@@ -432,6 +438,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 							   wpbc_can_i_load_on__resources_page()
 						&& ( ! wpbc_can_i_load_on__searchable_resources_page() )
 					)
+				|| wpbc_is_setup_wizard_page()
+				// || wpbc_is_bookings_page()		//FixIn: 10.6.6.2
 			){
 				return true;
 			} else {

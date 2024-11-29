@@ -3,7 +3,7 @@
 /**
  * Parameters usually  defined in   Ajax Response or Front-End 	for  == _wpbc_settings.get_all_params__setup_wizard():
  *
- * In 	Front-End side as  JavaScript 		::		wpbc_ajx__setup_wizard_page__send_request_with_params( {  'current_step': 'calendar_days_selection', 'do_action': 'none', 'ui_clicked_element_id': 'btn__toolbar__buttons_prior'  } );
+ * In 	Front-End side as  JavaScript 		::		wpbc_ajx__setup_wizard_page__send_request_with_params( {  'current_step': 'optional_other_settings', 'do_action': 'none', 'ui_clicked_element_id': 'btn__toolbar__buttons_prior'  } );
  *
  * After Ajax response in setup_ajax.js  as ::		_wpbc_settings.set_params_arr__setup_wizard( response_data[ 'ajx_data' ] );
  *
@@ -40,7 +40,7 @@ function wpbc_ajx__setup_wizard_page__send_request_with_params ( params_arr ){
 	wpbc_ajx__setup_wizard_page__send_request();
 }
 // Example 1:  wpbc_ajx__setup_wizard_page__send_request_with_params( {  'page_num': page_number  } );
-// Example 2:  wpbc_ajx__setup_wizard_page__send_request_with_params( {  'current_step': 'calendar_days_selection', 'do_action': 'none', 'ui_clicked_element_id': 'btn__toolbar__buttons_prior'  } );
+// Example 2:  wpbc_ajx__setup_wizard_page__send_request_with_params( {  'current_step': 'optional_other_settings', 'do_action': 'none', 'ui_clicked_element_id': 'btn__toolbar__buttons_prior'  } );
 
 
 // =====================================================================================================================
@@ -90,7 +90,10 @@ function wpbc_setup_wizard_page__update_plugin_menu_progress( plugin_menu__setup
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// ==  Steps Number Functions  ==
+// ==  Steps Number Functions ==
+// 					Gets data in   			_wpbc_settings.get_all_params__setup_wizard().steps
+// 					which  defined in   	setup_ajax.php     															Ajax
+// 					as 						$data_arr ['steps'] =  new WPBC_SETUP_WIZARD_STEPS();  $this->get_steps_arr();  			from 		setup_steps.php		structure.
 // ---------------------------------------------------------------------------------------------------------------------
 
 function wpbc_setup_wizard_page__get_steps_count() {
@@ -120,8 +123,9 @@ function wpbc_setup_wizard_page__update_steps_status( steps_is_done_arr ){
 	var params_arr = _wpbc_settings.get_all_params__setup_wizard().steps
 
 	_.each( steps_is_done_arr, function ( p_val, p_key, p_data ) {
-
-		params_arr[ p_key ].is_done = ( true === steps_is_done_arr[ p_key ] );
+		if ( "undefined" !== typeof ( params_arr[ p_key ] ) ) {
+			params_arr[ p_key ].is_done = (true === steps_is_done_arr[ p_key ]);
+		}
 	} );
 
 	return params_arr;

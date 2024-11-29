@@ -6,6 +6,8 @@ require_once( BELLOWS_DIR . 'includes/widget.php' );
 
 function bellows_get_nav_menu_args( $config_id , $args = array() ){
 
+	// Config ID should be pre-validated
+
 	$args['container']			= bellows_op( 'container_tag' , $config_id );
 	$args['container_class']	= 'bellows bellows-nojs';
 	$args['menu_class']			= 'bellows-nav';
@@ -42,7 +44,7 @@ function bellows_get_nav_menu_args( $config_id , $args = array() ){
 	$args['__bellows_menu_id'] = $nav_menu_id;
 	_BELLOWS()->count_menu_instance( $nav_menu_id );
 
-	//ID
+	//ID (Config ID is pre-validated and pre-escaped)
 	$args['container_id']		= 'bellows-'.$config_id.'-'.sanitize_key( $nav_menu_id );
 	if( $theme_location ){
 		$args['container_id'].='-'.sanitize_key( $theme_location );
@@ -59,7 +61,7 @@ function bellows_get_nav_menu_args( $config_id , $args = array() ){
 	}
 
 	//Config
-	$args['container_class']	.= ' bellows-'.$config_id;
+	$args['container_class']	.= ' bellows-'.$config_id; // Already escaped
 
 	//Source
 	$args['container_class']	.= ' bellows-source-'.$args['bellows_source'];
@@ -72,6 +74,9 @@ function bellows_get_nav_menu_args( $config_id , $args = array() ){
 
 	//Tree
 	$args['container_class']	.= ' bellows-type-' . bellows_op( 'menu_type', $config_id );
+
+	// Expand Current
+	$args['container_class']	.= bellows_op( 'current_expansion' , $config_id ) === 'on' ? ' bellows-expand-current' : '';
 
 	//Mobile collapse
 	if( bellows_op( 'mobile_collapse', $config_id ) === 'on' ){
@@ -248,6 +253,51 @@ function bellows_force_refilter($args){
 	return $args;
 }
 
+
+function bellows_output_responsive_toggle($config_id, $args){
+	// Should the toggle and menu be printed
+	$print = isset( $args['echo'] ) ? $args['echo'] : true;
+
+	// Get the toggle based on config settings
+	$toggle = bellows_menu_toggle_default( $args['container_id'], $config_id, $args );
+
+	// If we're printing, print the toggle.
+	if( $print ){
+		echo $toggle;
+	}
+
+	return $toggle;
+}
+
+
+/**
+ * Validates that the passed config ID matches an existing configuration, 
+ * after escaping unsafe characters that may have been passed
+ * 
+ * If the config is invalid, returns the default configuration
+ * 
+ */
+function bellows_validate_config_id( $config_id, $default = 'main' ){
+
+	// Escape the string to defend against XSS attacks
+	$config_id = esc_attr( $config_id );
+
+	// If this is the main ID, we don't actually need to query the DB, as this always exists
+	if( $config_id === 'main' ){
+		return $config_id;
+	}
+
+	// Find the valid configurations
+	$valid_configs = bellows_get_menu_configurations();
+
+	// If the ID matches a valid configuration, we're good to go
+	if( in_array( $config_id, $valid_configs ) ){
+		return $config_id;
+	}
+
+	// If not, return a valid config (main by default)
+	return $default;
+}
 
 
 function bellp( $d ){

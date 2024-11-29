@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 2019학년도 두드림 학교 운영	</title>
+	<atom:link href="https://www.hwanil.ms.kr/news-items/2019%ed%95%99%eb%85%84%eb%8f%84-%eb%91%90%eb%93%9c%eb%a6%bc-%ed%95%99%ea%b5%90-%ec%9a%b4%ec%98%81/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/news-items/2019%ed%95%99%eb%85%84%eb%8f%84-%eb%91%90%eb%93%9c%eb%a6%bc-%ed%95%99%ea%b5%90-%ec%9a%b4%ec%98%81/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Fri, 29 Mar 2019 04:05:21 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

@@ -8,8 +8,7 @@ use TablePress\PhpOffice\PhpSpreadsheet\Calculation\Information\ExcelError;
 
 class Depreciation
 {
-	/** @var float */
-	private static $zeroPointZero = 0.0;
+	private static float $zeroPointZero = 0.0;
 
 	/**
 	 * DB.
@@ -33,8 +32,7 @@ class Depreciation
 	 *                          depreciation. Period must use the same units as life.
 	 * @param mixed $month Number of months in the first year. If month is omitted,
 	 *                         it defaults to 12.
-	 *
-	 * @return float|string
+	 * @return float|int|string
 	 */
 	public static function DB($cost, $salvage, $life, $period, $month = 12)
 	{
@@ -99,7 +97,6 @@ class Depreciation
 	 * @param mixed $factor The rate at which the balance declines.
 	 *                                If factor is omitted, it is assumed to be 2 (the
 	 *                                double-declining balance method).
-	 *
 	 * @return float|string
 	 */
 	public static function DDB($cost, $salvage, $life, $period, $factor = 2.0)
@@ -208,7 +205,9 @@ class Depreciation
 		return $syd;
 	}
 
-	/** @param mixed $cost */
+	/**
+	 * @param mixed $cost
+	 */
 	private static function validateCost($cost, bool $negativeValueAllowed = false): float
 	{
 		$cost = FinancialValidations::validateFloat($cost);
@@ -219,7 +218,9 @@ class Depreciation
 		return $cost;
 	}
 
-	/** @param mixed $salvage */
+	/**
+	 * @param mixed $salvage
+	 */
 	private static function validateSalvage($salvage, bool $negativeValueAllowed = false): float
 	{
 		$salvage = FinancialValidations::validateFloat($salvage);
@@ -230,7 +231,9 @@ class Depreciation
 		return $salvage;
 	}
 
-	/** @param mixed $life */
+	/**
+	 * @param mixed $life
+	 */
 	private static function validateLife($life, bool $negativeValueAllowed = false): float
 	{
 		$life = FinancialValidations::validateFloat($life);
@@ -241,7 +244,9 @@ class Depreciation
 		return $life;
 	}
 
-	/** @param mixed $period */
+	/**
+	 * @param mixed $period
+	 */
 	private static function validatePeriod($period, bool $negativeValueAllowed = false): float
 	{
 		$period = FinancialValidations::validateFloat($period);
@@ -252,7 +257,9 @@ class Depreciation
 		return $period;
 	}
 
-	/** @param mixed $month */
+	/**
+	 * @param mixed $month
+	 */
 	private static function validateMonth($month): int
 	{
 		$month = FinancialValidations::validateInt($month);
@@ -263,7 +270,9 @@ class Depreciation
 		return $month;
 	}
 
-	/** @param mixed $factor */
+	/**
+	 * @param mixed $factor
+	 */
 	private static function validateFactor($factor): float
 	{
 		$factor = FinancialValidations::validateFloat($factor);

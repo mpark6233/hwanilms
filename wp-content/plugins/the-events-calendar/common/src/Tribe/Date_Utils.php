@@ -246,14 +246,14 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		/**
 		 * Returns the date only.
 		 *
-		 * @param int|string $date        The date (timestamp or string).
-		 * @param bool       $isTimestamp Is $date in timestamp format?
-		 * @param string|null $format The format used
+		 * @param int|string  $date         The date (timestamp or string). If an empty or null date is provided it will default to 'now'.
+		 * @param bool        $is_timestamp Whether or not $date is in timestamp format.
+		 * @param string|null $format       The format used.
 		 *
 		 * @return string The date only in DB format.
 		 */
-		public static function date_only( $date, $isTimestamp = false, $format = null ) {
-			$date = $isTimestamp ? $date : strtotime( $date );
+		public static function date_only( $date, $is_timestamp = false, $format = null ) {
+			$date = $is_timestamp ? $date : strtotime( $date ?? 'now' );
 
 			if ( is_null( $format ) ) {
 				$format = self::DBDATEFORMAT;
@@ -400,7 +400,7 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 * @return int The timestamp of the date that fits the qualifications.
 		 */
 		public static function get_last_day_of_week_in_month( $curdate, $day_of_week ) {
-			$nextdate = mktime( date( 'H', $curdate ), date( 'i', $curdate ), date( 's', $curdate ), date( 'n', $curdate ), self::get_last_day_of_month( $curdate ), date( 'Y', $curdate ) );;
+			$nextdate = mktime( date( 'H', $curdate ), date( 'i', $curdate ), date( 's', $curdate ), date( 'n', $curdate ), self::get_last_day_of_month( $curdate ), date( 'Y', $curdate ) );// phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 
 			while ( date( 'N', $nextdate ) != $day_of_week && $day_of_week != - 1 ) {
 				$nextdate = strtotime( date( self::DBDATETIMEFORMAT, $nextdate ) . ' - 1 day' );
@@ -462,16 +462,26 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 * Accepts a string representing a date/time and attempts to convert it to
 		 * the specified format, returning an empty string if this is not possible.
 		 *
-		 * @param $dt_string
-		 * @param $new_format
+		 * @since 5.1.5 Make use of `wp_date` for i18n.
+		 * @since 5.2.2 Adding timezone param.
+		 *
+		 * @param string|int  $dt_string  The date or timestamp to be converted.
+		 * @param string      $new_format The date format to convert to.
+		 * @param null|string $timezone   Optional timezone the date string is in.
 		 *
 		 * @return string
 		 */
-		public static function reformat( $dt_string, $new_format ) {
-			$timestamp = self::is_timestamp( $dt_string ) ? $dt_string : strtotime( $dt_string );
-			$revised   = date( $new_format, $timestamp );
+		public static function reformat( $dt_string, $new_format, $timezone = null ): string {
+			$timestamp = $dt_string;
+			$timezone  = $timezone ? new DateTimeZone( $timezone ) : wp_timezone();
+			if ( ! self::is_timestamp( $timestamp ) ) {
+				$date = new DateTime( $timestamp, $timezone );
+			} else {
+				$date = DateTime::createFromFormat( 'U', $timestamp );
+				$date->setTimezone( $timezone );
+			}
 
-			return $revised ? $revised : '';
+			return $date->format( $new_format );
 		}
 
 		/**
@@ -570,6 +580,78 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 				|| true === $all_day_value
 				|| 1 == $all_day_value
 			);
+		}
+
+		/**
+		 * Determine if "now" is between two dates.
+		 *
+		 * @since 5.0.2
+		 *
+		 * @param string|DateTime|int $start_date A `strtotime` parsable string, a DateTime object or a timestamp.
+		 * @param string|DateTime|int $end_date   A `strtotime` parsable string, a DateTime object or a timestamp.
+		 * @param string|DateTime|int $now        A `strtotime` parsable string, a DateTime object or a timestamp. Defaults to 'now'.
+		 *
+		 * @return boolean Whether the current datetime (or passed "now") is between the passed start and end dates.
+		 */
+		public static function is_now( $start_date, $end_date, $now = 'now' ) : bool {
+			$now        = self::build_date_object( $now );
+			$start_date = self::build_date_object( $start_date );
+			$end_date   = self::build_date_object( $end_date );
+
+			// If the dates are identical, bail early.
+			if ( $start_date === $end_date ) {
+				return false;
+			}
+
+			// Handle dates passed out of chronological order.
+			[ $start_date, $end_date ] = self::sort( [ $start_date, $end_date ] );
+
+			// If span starts after now, return false.
+			if ( $start_date > $now ) {
+				return false;
+			}
+
+			// If span ends on or before now, return false.
+			if ( $end_date <= $now ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * Sort an array of dates.
+		 *
+		 * @since 5.0.2
+		 *
+		 * @param mixed  $dates     A single array of dates, or dates passed as individual params.
+		 *                          Individual dates can be a `strtotime` parsable string, a DateTime object or a timestamp.
+		 * @param string $direction 'ASC' or 'DESC' for ascending/descending sorting. Defaults to 'ASC'.
+		 *
+		 * @return array<DateTime> A sorted array of DateTime objects.
+		 */
+		public static function sort( array $dates, string $direction = 'ASC' ) :array {
+			// If we get passed a single array, break it out of the containing array.
+			if ( is_array( $dates[0] ) ) {
+				$dates = $dates[0];
+			}
+
+			// Ensure we're always dealing with date objects here.
+			$dates = array_map(
+				function( $date ) {
+					return self::build_date_object( $date );
+				},
+				$dates
+			);
+
+			// If anything other than 'DESC' gets passed (or nothing) we sort ascending.
+			if ( 'DESC' === $direction ) {
+				rsort( $dates );
+			} else {
+				sort( $dates );
+			}
+
+			return $dates;
 		}
 
 		/**
@@ -1241,7 +1323,7 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 *
 		 * @since 4.9.5
 		 *
-		 * @param string|DateTime|int      $datetime      A `strtotime` parse-able string, a DateTime object or
+		 * @param string|DateTime|int      $datetime      A `strtotime` parsable string, a DateTime object or
 		 *                                                a timestamp; defaults to `now`.
 		 * @param string|DateTimeZone|null $timezone      A timezone string, UTC offset or DateTimeZone object;
 		 *                                                defaults to the site timezone; this parameter is ignored
@@ -1249,7 +1331,7 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 * @param bool                     $with_fallback Whether to return a DateTime object even when the date data is
 		 *                                                invalid or not; defaults to `true`.
 		 *
-		 * @return DateTime|false A DateTime object built using the specified date, time and timezone; if `$with_fallback`
+		 * @return DateTime|Date_i18n|false A DateTime|Date_i18n object built using the specified date, time and timezone; if `$with_fallback`
 		 *                        is set to `false` then `false` will be returned if a DateTime object could not be built.
 		 */
 		public static function build_date_object( $datetime = 'now', $timezone = null, $with_fallback = true ) {
@@ -1302,7 +1384,7 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 *
 		 * @param string $date The date string that should validated.
 		 *
-		 * @return bool Whether the date string can be used to build DateTime objects, and is thus parse-able by functions
+		 * @return bool Whether the date string can be used to build DateTime objects, and is thus parsable by functions
 		 *              like `strtotime`, or not.
 		 */
 		public static function is_valid_date( $date ) {
@@ -1540,7 +1622,7 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 *
 		 * @since 4.10.2
 		 *
-		 * @param string|DateTime|int      $datetime      A `strtotime` parse-able string, a DateTime object or
+		 * @param string|DateTime|int      $datetime      A `strtotime` parsable string, a DateTime object or
 		 *                                                a timestamp; defaults to `now`.
 		 * @param string|DateTimeZone|null $timezone      A timezone string, UTC offset or DateTimeZone object;
 		 *                                                defaults to the site timezone; this parameter is ignored
@@ -1588,7 +1670,7 @@ if ( ! class_exists( 'Tribe__Date_Utils' ) ) {
 		 *
 		 * @since 4.10.2
 		 *
-		 * @param string|DateTime|int      $datetime      A `strtotime` parse-able string, a DateTime object or
+		 * @param string|DateTime|int      $datetime      A `strtotime` parsable string, a DateTime object or
 		 *                                                a timestamp; defaults to `now`.
 		 * @param string|DateTimeZone|null $timezone      A timezone string, UTC offset or DateTimeZone object;
 		 *                                                defaults to the site timezone; this parameter is ignored

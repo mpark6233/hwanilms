@@ -1,21 +1,21 @@
 <?php
 /**
- * ${CARET}
+ * Registers and hooks the default log handler.
  *
- * @since   4.9.16
+ * @since 4.9.16
  *
  * @package Tribe\Log
  */
 
-
 namespace Tribe\Log;
 
 
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Logger;
+use TEC\Common\Contracts\Service_Provider as Provider_Contract;
+use TEC\Common\Monolog\Handler\ErrorLogHandler;
+use TEC\Common\Monolog\Handler\NullHandler;
+use TEC\Common\Monolog\Logger;
 
-class Service_Provider extends \tad_DI52_ServiceProvider {
-
+class Service_Provider extends Provider_Contract {
 	/**
 	 * Binds and sets up implementations.
 	 *
@@ -59,6 +59,35 @@ class Service_Provider extends \tad_DI52_ServiceProvider {
 	 * @return Logger
 	 */
 	public function build_logger() {
+		/*
+		 * Disable logging by either setting the `TEC_DISABLE_LOGGING` constant or by setting the
+		 * `TRIBE_DISABLE_LOGGING` environment variable to a truthy value. Use the environment variable
+		 * in the context of integration tests.
+		 */
+		$logger_disabled = ( defined( 'TEC_DISABLE_LOGGING' ) && TEC_DISABLE_LOGGING )
+		                   || ! empty( $_ENV['TEC_DISABLE_LOGGING'] )
+		                   || getenv( 'TEC_DISABLE_LOGGING' );
+
+		/**
+		 * Allow filtering the logger enabled status.
+		 *
+		 * @since 5.0.10
+		 *
+		 * @param bool $logger_disabled Whether the logger should be disabled or not.
+		 */
+		$logger_disabled = apply_filters( 'tec_disable_logging', $logger_disabled );
+
+		if ( $logger_disabled ) {
+			// Logging is disabled, still build a logger to allow fine usage of it and make sure it exists.
+			$logger = new Monolog_Logger( Monolog_Logger::DEFAULT_CHANNEL );
+
+			// Set the handlers to one NullHandler: setting them to an empty array would make it use the STDERR one.
+			return $logger->setHandlers( [ new NullHandler() ] );
+		}
+
+		// Provide more information in debug mode.
+		$level_threshold = defined( 'WP_DEBUG' ) && WP_DEBUG ? Logger::DEBUG : Logger::WARNING;
+
 		/**
 		 * Filters the level of the messages that will be logged.
 		 *
@@ -68,9 +97,9 @@ class Service_Provider extends \tad_DI52_ServiceProvider {
 		 *
 		 * @param int  The threshold level; if the level of a message is this level or above, then it will be logged.
 		 *
-		 * @see   \Monolog\Logger for possible levels.
+		 * @see   \TEC\Common\Monolog\Logger for possible levels.
 		 */
-		$level_threshold = apply_filters( 'tribe_log_level', Logger::WARNING );
+		$level_threshold = apply_filters( 'tribe_log_level', $level_threshold );
 
 		$error_log_handler = new ErrorLogHandler( ErrorLogHandler::OPERATING_SYSTEM, $level_threshold );
 
@@ -121,7 +150,7 @@ class Service_Provider extends \tad_DI52_ServiceProvider {
 	 * @param string     $message The message to log.
 	 * @param array      $context An array of values to define the context.
 	 *
-	 * @see   \Monolog\Logger for the log level constants and names.
+	 * @see   \TEC\Common\Monolog\Logger for the log level constants and names.
 	 */
 	public function dispatch_log( $level = 'debug', $message = '', array $context = [] ) {
 		// Goes from something like `debug` to `100`.

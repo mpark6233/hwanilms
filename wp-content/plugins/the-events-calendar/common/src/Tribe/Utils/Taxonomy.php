@@ -112,7 +112,13 @@ class Taxonomy {
 			$term    = get_term_by( $term_by, $param, $taxonomy );
 
 			if ( ! $term instanceof \WP_Term ) {
-				return false;
+
+				// Check if the term is a numeric string.
+				$term = get_term_by( 'slug', $param, $taxonomy );
+
+				if ( ! $term instanceof \WP_Term ) {
+					return false;
+				}
 			}
 
 			return $term->term_id;
@@ -122,5 +128,84 @@ class Taxonomy {
 		$terms = array_unique( $terms );
 
 		return $terms;
+	}
+
+
+	/**
+	 * Primes the term cache for the specified posts to optimize taxonomy + terms queries.
+	 *
+	 * This method is particularly useful when dealing with templates that use `get_post_class`,
+	 * as it reduces the inefficiency of taxonomy and terms queries. By performing a single query
+	 * to build the cache for all posts involved in the template rendering, it significantly reduces
+	 * the number of queries (approximately 2 queries per post).
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param array $posts           An array of post objects or post IDs. If empty, the method returns an empty array.
+	 * @param array $taxonomies      An array of taxonomy names to prime the cache for. Defaults to 'post_tag' and 'Tribe__Events__Main::TAXONOMY'.
+	 * @param bool  $prime_term_meta Whether to prime term meta caches. Defaults to false.
+	 *
+	 * @return array<int, array> An associative array in the format [ post_id => [taxonomy => term_ids[]] ]. Returns an empty array if no posts are passed.
+	 */
+	public static function prime_term_cache( array $posts = [], array $taxonomies = [ 'post_tag', \Tribe__Events__Main::TAXONOMY ], bool $prime_term_meta = false ): array {
+		// Early return if the $posts array is empty.
+		if ( empty( $posts ) ) {
+			return [];
+		}
+
+		$first = reset( $posts );
+		$is_numeric = ( ! $first instanceof \WP_Post );
+		if ( $is_numeric ) {
+			$ids = $posts;
+		} else {
+			$ids = wp_list_pluck( $posts, 'ID' );
+		}
+		$cache = [];
+
+		// Build the base cache.
+		foreach ( $ids as $id ) {
+			foreach ( $taxonomies as $taxonomy ) {
+				$cache[ $id ][ $taxonomy ] = [];
+			}
+		}
+
+		$args  = [
+			'fields'     => 'all_with_object_id',
+			'object_ids' => $ids,
+			'taxonomy'   => $taxonomies,
+		];
+		$terms = get_terms( $args );
+
+		// Drop invalid results.
+		$valid_terms = array_filter( (array) $terms, static function ( $term ) {
+			return $term instanceof \WP_Term;
+		} );
+
+		$term_ids = wp_list_pluck( $valid_terms, 'term_id' );
+
+		foreach ( $valid_terms as $term ) {
+			$cache[ $term->object_id ][ $term->taxonomy ][] = $term->term_id;
+		}
+
+		foreach ( $cache as $id => $object_taxonomies ) {
+			// Skip when invalid object id is passed.
+			if ( empty( $id ) ) {
+				continue;
+			}
+
+			foreach ( $object_taxonomies as $taxonomy => $term_ids ) {
+				// Skip when invalid taxonomy is passed.
+				if ( empty( $taxonomy ) ) {
+					continue;
+				}
+
+				// Do not skip when `term_ids` are empty.
+				wp_cache_add( $id, $term_ids, $taxonomy . '_relationships' );
+			}
+		}
+
+		_prime_term_caches( $term_ids, $prime_term_meta );
+
+		return $cache;
 	}
 }

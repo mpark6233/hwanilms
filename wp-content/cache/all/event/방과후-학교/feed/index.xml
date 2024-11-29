@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 방과후 학교 시작 2023/3/13	</title>
+	<atom:link href="https://www.hwanil.ms.kr/event/%eb%b0%a9%ea%b3%bc%ed%9b%84-%ed%95%99%ea%b5%90/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/event/%eb%b0%a9%ea%b3%bc%ed%9b%84-%ed%95%99%ea%b5%90/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Fri, 28 Apr 2023 00:01:13 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>

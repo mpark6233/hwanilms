@@ -4,44 +4,30 @@ namespace TablePress\PhpOffice\PhpSpreadsheet\Cell;
 
 use TablePress\PhpOffice\PhpSpreadsheet\Exception;
 use TablePress\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Stringable;
 
 class CellAddress
 {
-	/**
-	 * @var ?Worksheet
-	 */
-	protected $worksheet;
-
-	/**
-	 * @var string
-	 */
-	protected $cellAddress;
-
-	/**
-	 * @var string
-	 */
-	protected $columnName;
-
-	/**
-	 * @var int
-	 */
-	protected $columnId;
-
-	/**
-	 * @var int
-	 */
-	protected $rowId;
-
+	protected ?Worksheet $worksheet;
+	protected string $cellAddress;
+	protected string $columnName = '';
+	protected int $columnId;
+	protected int $rowId;
 	public function __construct(string $cellAddress, ?Worksheet $worksheet = null)
 	{
 		$this->cellAddress = str_replace('$', '', $cellAddress);
 		[$this->columnId, $this->rowId, $this->columnName] = Coordinate::indexesFromString($this->cellAddress);
 		$this->worksheet = $worksheet;
 	}
-
+	public function __destruct()
+	{
+		unset($this->worksheet);
+	}
 	/**
-	 * @param mixed $columnId
-	 * @param mixed $rowId
+	 * @phpstan-assert int|numeric-string $columnId
+	 * @phpstan-assert int|numeric-string $rowId
+	 * @param int|string $columnId
+	 * @param int|string $rowId
 	 */
 	private static function validateColumnAndRow($columnId, $rowId): void
 	{
@@ -49,35 +35,26 @@ class CellAddress
 			throw new Exception('Row and Column Ids must be positive integer values');
 		}
 	}
-
 	/**
-	 * @param mixed $columnId
-	 * @param mixed $rowId
+	 * @param int|string $columnId
+	 * @param int|string $rowId
 	 */
 	public static function fromColumnAndRow($columnId, $rowId, ?Worksheet $worksheet = null): self
 	{
 		self::validateColumnAndRow($columnId, $rowId);
 
-		/** @phpstan-ignore-next-line */
-		return new static(Coordinate::stringFromColumnIndex($columnId) . ((string) $rowId), $worksheet);
+		return new self(Coordinate::stringFromColumnIndex($columnId) . $rowId, $worksheet);
 	}
-
 	public static function fromColumnRowArray(array $array, ?Worksheet $worksheet = null): self
 	{
 		[$columnId, $rowId] = $array;
 
-		return static::fromColumnAndRow($columnId, $rowId, $worksheet);
+		return self::fromColumnAndRow($columnId, $rowId, $worksheet);
 	}
-
-	/**
-	 * @param mixed $cellAddress
-	 */
-	public static function fromCellAddress($cellAddress, ?Worksheet $worksheet = null): self
+	public static function fromCellAddress(string $cellAddress, ?Worksheet $worksheet = null): self
 	{
-		/** @phpstan-ignore-next-line */
-		return new static($cellAddress, $worksheet);
+		return new self($cellAddress, $worksheet);
 	}
-
 	/**
 	 * The returned address string will contain the worksheet name as well, if available,
 	 *     (ie. if a Worksheet was provided to the constructor).
@@ -93,12 +70,10 @@ class CellAddress
 
 		return $this->cellAddress;
 	}
-
 	public function worksheet(): ?Worksheet
 	{
 		return $this->worksheet;
 	}
-
 	/**
 	 * The returned address string will contain just the column/row address,
 	 *     (even if a Worksheet was provided to the constructor).
@@ -108,22 +83,18 @@ class CellAddress
 	{
 		return $this->cellAddress;
 	}
-
 	public function rowId(): int
 	{
 		return $this->rowId;
 	}
-
 	public function columnId(): int
 	{
 		return $this->columnId;
 	}
-
 	public function columnName(): string
 	{
 		return $this->columnName;
 	}
-
 	public function nextRow(int $offset = 1): self
 	{
 		$newRowId = $this->rowId + $offset;
@@ -131,14 +102,12 @@ class CellAddress
 			$newRowId = 1;
 		}
 
-		return static::fromColumnAndRow($this->columnId, $newRowId);
+		return self::fromColumnAndRow($this->columnId, $newRowId);
 	}
-
 	public function previousRow(int $offset = 1): self
 	{
 		return $this->nextRow(0 - $offset);
 	}
-
 	public function nextColumn(int $offset = 1): self
 	{
 		$newColumnId = $this->columnId + $offset;
@@ -146,20 +115,18 @@ class CellAddress
 			$newColumnId = 1;
 		}
 
-		return static::fromColumnAndRow($newColumnId, $this->rowId);
+		return self::fromColumnAndRow($newColumnId, $this->rowId);
 	}
-
 	public function previousColumn(int $offset = 1): self
 	{
 		return $this->nextColumn(0 - $offset);
 	}
-
 	/**
 	 * The returned address string will contain the worksheet name as well, if available,
 	 *     (ie. if a Worksheet was provided to the constructor).
 	 *     e.g. "'Mark''s Worksheet'!C5".
 	 */
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->fullCellAddress();
 	}

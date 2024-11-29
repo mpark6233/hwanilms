@@ -71,6 +71,9 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 			add_action( 'admin_head', array( &$this, 'admin_head' ), 9 );
 			add_action( 'admin_footer', array( &$this, 'load_modal_content' ), 9 );
 
+			add_action( 'admin_init', array( &$this, 'remove_meta_box' ), 0 );
+			add_filter( 'enter_title_here', array( &$this, 'enter_title_here' ), 10, 2 );
+
 			add_action( 'load-post.php', array( &$this, 'add_metabox' ), 9 );
 			add_action( 'load-post-new.php', array( &$this, 'add_metabox' ), 9 );
 
@@ -85,6 +88,34 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 			add_filter( 'um_member_directory_meta_value_before_save', array( UM()->member_directory(), 'before_save_data' ), 10, 3 );
 		}
 
+		public function remove_meta_box() {
+			remove_meta_box( 'submitdiv', 'um_form', 'core' );
+			remove_meta_box( 'slugdiv', 'um_form', 'core' );
+
+			remove_meta_box( 'submitdiv', 'um_directory', 'core' );
+			remove_meta_box( 'slugdiv', 'um_directory', 'core' );
+		}
+
+		/**
+		 * Enter title placeholder
+		 *
+		 * @param string  $title
+		 * @param WP_Post $post
+		 *
+		 * @return string
+		 */
+		public function enter_title_here( $title, $post ) {
+			if ( ! isset( $post->post_type ) ) {
+				return $title;
+			}
+
+			if ( 'um_directory' === $post->post_type ) {
+				$title = __( 'e.g. Member Directory', 'ultimate-member' );
+			} elseif ( 'um_form' === $post->post_type ) {
+				$title = __( 'e.g. New Registration Form', 'ultimate-member' );
+			}
+			return $title;
+		}
 
 		/**
 		 * Hide Woocommerce Shop page restrict content metabox
@@ -144,32 +175,28 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 			return false;
 		}
 
-
 		/**
 		 * Runs on admin head
 		 */
-		function admin_head(){
+		public function admin_head() {
 			global $post;
-			if ( UM()->admin()->is_plugin_post_type() && isset($post->ID) ){
-				$this->postmeta = $this->get_custom_post_meta($post->ID);
+			if ( isset( $post->ID ) && UM()->admin()->screen()->is_own_post_type() ) {
+				$this->postmeta = $this->get_custom_post_meta( $post->ID );
 			}
 		}
-
 
 		/**
 		 * Init the metaboxes
 		 */
-		function add_metabox() {
+		public function add_metabox() {
 			global $current_screen;
 
-			if ( $current_screen->id == 'um_form' ) {
-				add_action( 'add_meta_boxes', array(&$this, 'add_metabox_form'), 1 );
-				add_action( 'save_post', array(&$this, 'save_metabox_form'), 10, 2 );
-			}
-
-			if ( $current_screen->id == 'um_directory' ) {
-				add_action( 'add_meta_boxes', array(&$this, 'add_metabox_directory'), 1 );
-				add_action( 'save_post', array(&$this, 'save_metabox_directory'), 10, 2 );
+			if ( 'um_form' === $current_screen->id ) {
+				add_action( 'add_meta_boxes', array( &$this, 'add_metabox_form' ), 1 );
+				add_action( 'save_post', array( &$this, 'save_metabox_form' ), 10, 2 );
+			} elseif ( 'um_directory' === $current_screen->id ) {
+				add_action( 'add_meta_boxes', array( &$this, 'add_metabox_directory' ), 1 );
+				add_action( 'save_post', array( &$this, 'save_metabox_directory' ), 10, 2 );
 			}
 
 			//restrict content metabox
@@ -439,7 +466,7 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 				array(
 					'id'          => '_um_access_hide_from_queries',
 					'type'        => 'checkbox',
-					'label'       => UM()->options()->get( 'disable_restriction_pre_queries' ) ? __( 'Hide from queries', 'ultimate-member' ) : __( 'Would you like to display 404 error on the term\'s archive page and terms\' posts single pages when users haven\'t access?', 'ultimate-member' ),
+					'label'       => UM()->options()->get( 'disable_restriction_pre_queries' ) ? __( 'Hide from queries', 'ultimate-member' ) : __( 'Would you like to display a 404 page for users who do not have access to this term on the term\'s archive page and terms\' posts single pages?', 'ultimate-member' ),
 					'description' => UM()->options()->get( 'disable_restriction_pre_queries' ) ? __( 'Exclude only from WP queries results', 'ultimate-member' ) : __( 'Recommended to be enabled. Restricted term\'s archive page and all terms\' posts will be hidden by exclusion from WP Query. The safest and most effective method that hides post and its comments from all requests, RSS feeds, etc. on your site', 'ultimate-member' ),
 					'value'       => 1,
 					'conditional' => array( '_um_accessible', '!=', '0' ),
@@ -591,7 +618,7 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 				array(
 					'id'          => '_um_access_hide_from_queries',
 					'type'        => 'checkbox',
-					'label'       => UM()->options()->get( 'disable_restriction_pre_queries' ) ? __( 'Hide from queries', 'ultimate-member' ) : __( 'Would you like to display 404 error on the term\'s archive page and terms\' posts single pages when users haven\'t access?', 'ultimate-member' ),
+					'label'       => UM()->options()->get( 'disable_restriction_pre_queries' ) ? __( 'Hide from queries', 'ultimate-member' ) : __( 'Would you like to display a 404 page for users who do not have access to this term on the term\'s archive page and terms\' posts single pages?', 'ultimate-member' ),
 					'description' => UM()->options()->get( 'disable_restriction_pre_queries' ) ? __( 'Exclude only from WP queries results', 'ultimate-member' ) : __( 'Recommended to be enabled. Restricted term\'s archive page and all terms\' posts will be hidden by exclusion from WP Query. The safest and most effective method that hides post and its comments from all requests, RSS feeds, etc. on your site', 'ultimate-member' ),
 					'value'       => ! empty( $data['_um_access_hide_from_queries'] ) ? $data['_um_access_hide_from_queries'] : '',
 					'conditional' => array( '_um_accessible', '!=', '0' ),
@@ -827,14 +854,15 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 		/**
 		 * Add directory metabox
 		 */
-		function add_metabox_directory() {
+		public function add_metabox_directory() {
+			add_meta_box( 'submitdiv', __( 'Publish', 'ultimate-member' ), array( &$this, 'custom_submitdiv' ), 'um_directory', 'side', 'high' );
 			add_meta_box( 'um-admin-form-general', __( 'General Options', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'normal', 'default' );
 			add_meta_box( 'um-admin-form-sorting', __( 'Sorting', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'normal', 'default' );
 			add_meta_box( 'um-admin-form-profile', __( 'Profile Card', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'normal', 'default' );
 			add_meta_box( 'um-admin-form-search', __( 'Search Options', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'normal', 'default' );
 			add_meta_box( 'um-admin-form-pagination', __( 'Results &amp; Pagination', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'normal', 'default' );
 			add_meta_box( 'um-admin-form-shortcode', __( 'Shortcode', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'side', 'default' );
-			add_meta_box( 'um-admin-form-appearance', __( 'Styling: General', 'ultimate-member' ), array( &$this, 'load_metabox_directory'), 'um_directory', 'side', 'default' );
+			add_meta_box( 'um-admin-form-appearance', __( 'Styling: General', 'ultimate-member' ), array( &$this, 'load_metabox_directory' ), 'um_directory', 'side', 'default' );
 		}
 
 
@@ -987,14 +1015,19 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 			}
 		}
 
-
 		/**
 		 * Add form metabox
 		 */
-		function add_metabox_form() {
+		public function add_metabox_form() {
+			add_meta_box( 'submitdiv', __( 'Publish', 'ultimate-member' ), array( $this, 'custom_submitdiv' ), 'um_form', 'side', 'high' );
 
-			add_meta_box( 'um-admin-form-mode', __( 'Select Form Type', 'ultimate-member' ), array( &$this, 'load_metabox_form' ), 'um_form', 'normal', 'default' );
-			add_meta_box( 'um-admin-form-builder', __( 'Form Builder', 'ultimate-member' ), array( &$this, 'load_metabox_form' ), 'um_form', 'normal', 'default' );
+			if ( defined( 'UM_DEV_MODE' ) && UM_DEV_MODE && UM()->options()->get( 'enable_new_form_builder' ) ) {
+				// Do new metabox.
+			} else {
+				add_meta_box( 'um-admin-form-mode', __( 'Select Form Type', 'ultimate-member' ), array( &$this, 'load_metabox_form' ), 'um_form', 'normal', 'default' );
+				add_meta_box( 'um-admin-form-builder', __( 'Form Builder', 'ultimate-member' ), array( &$this, 'load_metabox_form' ), 'um_form', 'normal', 'default' );
+			}
+
 			add_meta_box( 'um-admin-form-shortcode', __( 'Shortcode', 'ultimate-member' ), array( &$this, 'load_metabox_form' ), 'um_form', 'side', 'default' );
 
 			add_meta_box( 'um-admin-form-register_customize', __( 'Customize this form', 'ultimate-member' ), array( &$this, 'load_metabox_form' ), 'um_form', 'side', 'default' );
@@ -1064,6 +1097,57 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 		}
 
 		/**
+		 *
+		 */
+		public function custom_submitdiv() {
+			global $post, $current_screen;
+			?>
+
+			<div class="submitbox" id="submitpost">
+				<div id="major-publishing-actions">
+					<?php do_action( 'post_submitbox_start' ); ?>
+					<div id="delete-action">
+						<?php if ( current_user_can( 'delete_post', $post->ID ) ) {
+							if ( ! EMPTY_TRASH_DAYS ) {
+								$delete_text = __( 'Delete Permanently', 'ultimate-member' );
+							} else {
+								$delete_text = __( 'Move to Trash', 'ultimate-member' );
+							} ?>
+							<a class="submitdelete deletion" href="<?php echo esc_url( get_delete_post_link( $post->ID ) ); ?>"> <?php echo esc_html( $delete_text ); ?> </a>
+						<?php } ?>
+					</div>
+					<div id="publishing-action">
+						<span class="spinner"></span>
+						<?php if ( ! in_array( $post->post_status, array( 'publish', 'future', 'private' ) ) || 0 == $post->ID ) {
+
+							$post_type = $post->post_type; // get current post_type
+							$post_type_object = get_post_type_object( $post_type );
+							$can_publish = current_user_can( $post_type_object->cap->publish_posts );
+
+							if ( $can_publish ) { ?>
+								<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Create', 'ultimate-member' ) ?>" />
+								<?php submit_button( __( 'Create', 'ultimate-member' ), 'primary button-large', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+							<?php }
+						} else { ?>
+							<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e('Update', 'ultimate-member' ); ?>" />
+							<?php submit_button( __( 'Update', 'ultimate-member' ), 'primary button-large', 'save', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php } ?>
+					</div>
+					<?php
+					if ( isset( $current_screen->base ) && 'post' === $current_screen->base && isset( $current_screen->action ) && 'add' === $current_screen->action ) {
+						if ( isset( $_GET['um_mode'] ) ) {
+							$mode = sanitize_key( $_GET['um_mode'] ); ?>
+							<input type="hidden" name="form[_um_mode]" id="form__um_mode" value="<?php echo esc_attr( $mode ); ?>" />
+						<?php }
+					}?>
+
+					<div class="clear"></div>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
 		 * Save directory metabox
 		 *
 		 * @param $post_id
@@ -1103,6 +1187,8 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 			delete_post_meta( $post_id, '_um_tagline_fields' );
 			delete_post_meta( $post_id, '_um_reveal_fields' );
 			delete_post_meta( $post_id, '_um_search_fields' );
+			delete_post_meta( $post_id, '_um_search_exclude_fields' );
+			delete_post_meta( $post_id, '_um_search_include_fields' );
 			delete_post_meta( $post_id, '_um_roles_can_search' );
 			delete_post_meta( $post_id, '_um_roles_can_filter' );
 			delete_post_meta( $post_id, '_um_show_these_users' );
@@ -1183,7 +1269,7 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 			}
 
 			// Set post meta for legacy support in the future.
-			add_post_meta( $post_id, 'um_form_version', UM_VERSION );
+			add_post_meta( $post_id, 'um_form_version', UM_VERSION, true );
 
 			if ( empty( $_POST['post_title'] ) ) {
 				$where = array( 'ID' => $post_id );
@@ -1234,6 +1320,7 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 				}
 			}
 
+			// Old interface for icon selector in UM admin forms field-type 'icon'.
 			if ( $this->init_icon ) {
 				include_once UM_PATH . 'includes/admin/templates/modal/forms/fonticons.php';
 			}
@@ -1267,9 +1354,15 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 		 */
 		public function field_input( $attribute, $form_id = null, $field_args = array() ) {
 
-			if ( $this->in_edit == true ) { // we're editing a field
-				$real_attr = substr( $attribute, 1 );
+			if ( $this->in_edit ) {
+				// We're editing a field.
+				$real_attr             = substr( $attribute, 1 );
 				$this->edit_mode_value = isset( $this->edit_array[ $real_attr ] ) ? $this->edit_array[ $real_attr ] : null;
+			}
+			$form_data = UM()->query()->post_data( $form_id );
+			if ( empty( $form_data['mode'] ) && ! empty( $_POST['form_mode'] ) ) {
+				// Case when we add new form with no form mode in postmeta. Then get form mode from AJAX request.
+				$form_data['mode'] = sanitize_key( $_POST['form_mode'] );
 			}
 
 			switch ( $attribute ) {
@@ -1404,6 +1497,9 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 					break;
 
 				case '_validate':
+					if ( array_key_exists( 'mode', $form_data ) && 'login' === $form_data['mode'] && array_key_exists( 'metakey', $field_args ) && in_array( $field_args['metakey'], array( 'username', 'user_login', 'user_email' ), true ) ) {
+						return;
+					}
 					?>
 
 					<p><label for="_validate"><?php _e( 'Validate', 'ultimate-member' ) ?> <?php UM()->tooltip( __( 'Does this field require a special validation', 'ultimate-member' ) ); ?></label>
@@ -1459,47 +1555,44 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 					break;
 
 				case '_icon':
+					UM()->setup()->set_icons_options();
+					$um_icons_list = get_option( 'um_icons_list' );
+
+					$first_activation_date = get_option( 'um_first_activation_date', false );
+
+					$wrapper_classes = array(
+						'um-icon-select-field-wrapper',
+					);
 					if ( 'row' === $this->set_field_type ) {
-						$back = 'UM_edit_row';
+						$wrapper_classes[] = '_heading_text';
+					}
+					$wrapper_classes = implode( ' ', $wrapper_classes );
+
+					// @todo new version
+					if ( empty( $first_activation_date ) || $first_activation_date >= 1716336000 || empty( $this->edit_mode_value ) || array_key_exists( $this->edit_mode_value, $um_icons_list ) ) {
 						?>
-						<p class="_heading_text"><label for="_icon"><?php esc_html_e( 'Icon', 'ultimate-member' ); ?> <?php UM()->tooltip( __( 'Select an icon to appear in the field. Leave blank if you do not want an icon to show in the field.', 'ultimate-member' ) ); ?></label>
-							<a href="javascript:void(0);" class="button" data-modal="UM_fonticons" data-modal-size="normal" data-dynamic-content="um_admin_fonticon_selector" data-arg1="" data-arg2="" data-back="<?php echo esc_attr( $back ); ?>"><?php esc_html_e( 'Choose Icon', 'ultimate-member' ); ?></a>
-
-							<span class="um-admin-icon-value"><?php if ( ! empty( $this->edit_mode_value ) ) { ?><i class="<?php echo esc_attr( $this->edit_mode_value ); ?>"></i><?php } else { ?><?php esc_html_e( 'No Icon', 'ultimate-member' ); ?><?php } ?></span>
-
-							<input type="hidden" name="_icon" id="_icon" value="<?php echo ! empty( $this->edit_mode_value ) ? esc_attr( $this->edit_mode_value ) : ''; ?>" />
-
-							<?php if ( ! empty( $this->edit_mode_value ) ) { ?>
-								<span class="um-admin-icon-clear show"><i class="um-icon-android-cancel"></i></span>
-							<?php } else { ?>
-								<span class="um-admin-icon-clear"><i class="um-icon-android-cancel"></i></span>
-							<?php } ?>
-						</p>
-						<?php
-					} else {
-						if ( $this->in_edit ) {
-							$back = 'UM_edit_field';
-						} else {
-							$back = 'UM_add_field';
-						}
-						?>
-						<div class="um-admin-tri">
-							<p>
-								<label for="_icon"><?php esc_html_e( 'Icon', 'ultimate-member' ); ?> <?php UM()->tooltip( __( 'Select an icon to appear in the field. Leave blank if you do not want an icon to show in the field.', 'ultimate-member' ) ); ?></label>
-
-								<a href="javascript:void(0);" class="button" data-modal="UM_fonticons" data-modal-size="normal" data-dynamic-content="um_admin_fonticon_selector" data-arg1="" data-arg2="" data-back="<?php echo esc_attr( $back ); ?>"><?php esc_html_e( 'Choose Icon', 'ultimate-member' ); ?></a>
-
-								<span class="um-admin-icon-value"><?php if ( ! empty( $this->edit_mode_value ) ) { ?><i class="<?php echo esc_attr( $this->edit_mode_value ); ?>"></i><?php } else { ?><?php esc_html_e( 'No Icon', 'ultimate-member' ) ?><?php } ?></span>
-
-								<input type="hidden" name="_icon" id="_icon" value="<?php echo ! empty( $this->edit_mode_value ) ? esc_attr( $this->edit_mode_value ) : ''; ?>" />
-
-								<?php if ( ! empty( $this->edit_mode_value ) ) { ?>
-									<span class="um-admin-icon-clear show"><i class="um-icon-android-cancel"></i></span>
-								<?php } else { ?>
-									<span class="um-admin-icon-clear"><i class="um-icon-android-cancel"></i></span>
+						<p class="<?php echo esc_attr( $wrapper_classes ); ?>">
+							<label for="_icon"><?php esc_html_e( 'Icon', 'ultimate-member' ); ?> <?php UM()->tooltip( __( 'Select an icon to appear in the field. Leave blank if you do not want an icon to show in the field.', 'ultimate-member' ) ); ?></label>
+							<select name="_icon" id="_icon" class="um-icon-select-field" data-placeholder="<?php esc_attr_e( 'Select Icon', 'ultimate-member' ); ?>" >
+								<option value=""><?php esc_html_e( 'Select Icon', 'ultimate-member' ); ?></option>
+								<?php if ( ! empty( $this->edit_mode_value ) && array_key_exists( $this->edit_mode_value, $um_icons_list ) ) { ?>
+									<option value="<?php echo esc_attr( $this->edit_mode_value ); ?>" selected><?php echo esc_html( $um_icons_list[ $this->edit_mode_value ]['label'] ); ?></option>
 								<?php } ?>
-							</p>
-						</div>
+							</select>
+						</p>
+					<?php } else { ?>
+						<p class="<?php echo esc_attr( $wrapper_classes ); ?>">
+							<label for="um_ui_icon_new"><?php esc_html_e( 'Icon', 'ultimate-member' ); ?> <?php UM()->tooltip( __( 'Select an icon to appear in the field. Leave blank if you do not want an icon to show in the field.', 'ultimate-member' ) ); ?></label>
+							<select name="um_ui_icon_new" id="um_ui_icon_new" class="um-icon-select-field" data-placeholder="<?php esc_attr_e( 'Select Icon', 'ultimate-member' ); ?>" >
+								<option value=""><?php esc_html_e( 'Select Icon', 'ultimate-member' ); ?></option>
+							</select>
+							<span class="um_admin_fonticon_wrapper">
+								<span><?php esc_html_e( 'The selected icon is using an outdated version. Please select the icon above to use latest version.', 'ultimate-member' ); ?></span>
+								<input type="hidden" name="_icon" id="_icon" class="um_old_icon_field_value" value="<?php echo esc_attr( $this->edit_mode_value ); ?>" />
+								<span class="um-admin-icon-value"><i class="<?php echo esc_attr( $this->edit_mode_value ); ?>"></i></span>
+								<span class="um-admin-icon-clear show"><i class="um-icon-android-cancel"></i></span>
+							</span>
+						</p>
 						<?php
 					}
 					break;
@@ -1803,10 +1896,10 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 				case '_pretty_format':
 					?>
 
-					<p><label for="_pretty_format"><?php _e( 'Displayed Date Format', 'ultimate-member' ) ?> <?php UM()->tooltip( __( 'Whether you wish to show the date in full or only show the years e.g. 25 Years', 'ultimate-member' ) ); ?></label>
+					<p><label for="_pretty_format"><?php esc_html_e( 'Displayed Date Format', 'ultimate-member' ); ?> <?php UM()->tooltip( __( 'Whether you wish to show the date in full or only show the years e.g. 25 Years', 'ultimate-member' ) ); ?></label>
 						<select name="_pretty_format" id="_pretty_format" style="width: 100%">
-							<option value="0" <?php selected( 0, $this->edit_mode_value ); ?>><?php _e( 'Show full date', 'ultimate-member' ) ?></option>
-							<option value="1" <?php selected( 1, $this->edit_mode_value ); ?>><?php _e( 'Show years only', 'ultimate-member' ) ?></option>
+							<option value="0" <?php selected( 0, $this->edit_mode_value ); ?>><?php esc_html_e( 'Show full date', 'ultimate-member' ); ?></option>
+							<option value="1" <?php selected( 1, $this->edit_mode_value ); ?>><?php esc_html_e( 'Show years only', 'ultimate-member' ); ?></option>
 						</select>
 					</p>
 
@@ -2395,7 +2488,7 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 				case '_custom_dropdown_options_source':
 					?>
 
-					<p><label for="_custom_dropdown_options_source"><?php _e( 'Choices Callback', 'ultimate-member' ) ?> <?php UM()->tooltip( __( 'Add a callback source to retrieve choices.', 'ultimate-member' ) ); ?></label>
+					<p><label for="_custom_dropdown_options_source"><?php esc_html_e( 'Choices Callback', 'ultimate-member' ) ?> <?php UM()->tooltip( __( 'Add a callback source to retrieve choices.', 'ultimate-member' ) ); ?></label>
 						<input type="text" name="_custom_dropdown_options_source" id="_custom_dropdown_options_source" value="<?php echo esc_attr( $this->edit_mode_value ); ?>" />
 					</p>
 
@@ -2405,17 +2498,20 @@ if ( ! class_exists( 'um\admin\core\Admin_Metabox' ) ) {
 				case '_parent_dropdown_relationship':
 					?>
 
-					<p><label for="_parent_dropdown_relationship"><?php _e( 'Parent Option', 'ultimate-member' ) ?><?php UM()->tooltip( __( 'Dynamically populates the option based from selected parent option.', 'ultimate-member' ) ); ?></label>
+					<p><label for="_parent_dropdown_relationship"><?php esc_html_e( 'Parent Option', 'ultimate-member' ); ?><?php UM()->tooltip( __( 'Dynamically populates the option based from selected parent option.', 'ultimate-member' ) ); ?></label>
 						<select name="_parent_dropdown_relationship" id="_parent_dropdown_relationship" style="width: 100%">
-							<option value=""><?php _e( 'No Selected', 'ultimate-member' ) ?></option>
-
-							<?php if ( UM()->builtin()->custom_fields ) {
-								foreach ( UM()->builtin()->custom_fields as $field_key => $array ) {
-									if ( in_array( $array['type'], array( 'select' ) ) && ( ! isset( $field_args['metakey'] ) || $field_args['metakey'] != $array['metakey'] ) && isset( $array['title'] ) ) { ?>
-										<option value="<?php echo esc_attr( $array['metakey'] ) ?>" <?php selected( $array['metakey'], $this->edit_mode_value ) ?>><?php echo $array['title'] ?></option>
-									<?php }
+							<option value=""><?php esc_html_e( 'No Selected', 'ultimate-member' ); ?></option>
+							<?php
+							if ( UM()->builtin()->custom_fields ) {
+								foreach ( UM()->builtin()->custom_fields as $array ) {
+									if ( array_key_exists( 'type', $array ) && 'select' === $array['type'] && ( ! isset( $field_args['metakey'] ) || $field_args['metakey'] != $array['metakey'] ) && isset( $array['title'] ) ) {
+										?>
+										<option value="<?php echo esc_attr( $array['metakey'] ); ?>" <?php selected( $array['metakey'], $this->edit_mode_value ); ?>><?php echo esc_html( $array['title'] ); ?></option>
+										<?php
+									}
 								}
-							} ?>
+							}
+							?>
 						</select>
 					</p>
 

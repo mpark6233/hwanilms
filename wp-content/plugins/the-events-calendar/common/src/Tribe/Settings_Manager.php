@@ -26,7 +26,6 @@ class Tribe__Settings_Manager {
 		add_action( '_network_admin_menu', [ $this, 'init_options' ] );
 		add_action( '_admin_menu', [ $this, 'init_options' ] );
 
-		add_action( 'admin_menu', [ $this, 'add_help_admin_menu_item' ], 50 );
 		add_action( 'tribe_settings_do_tabs', [ $this, 'do_setting_tabs' ] );
 		add_action( 'tribe_settings_validate_tab_network', [ $this, 'save_all_tabs_hidden' ] );
 		add_action( 'updated_option', [ $this, 'update_options_cache' ], 10, 3 );
@@ -59,7 +58,7 @@ class Tribe__Settings_Manager {
 	 * @return void
 	 */
 	public function init_options() {
-		Tribe__Settings::instance();
+		tribe( 'settings' );
 	}
 
 	/**
@@ -121,7 +120,7 @@ class Tribe__Settings_Manager {
 	 * @param array $options formatted the same as from get_options()
 	 * @param bool  $apply_filters
 	 *
-	 * @return bool
+	 * @return bool True if the value was updated, false otherwise.
 	 */
 	public static function set_options( $options, $apply_filters = true ) {
 		if ( ! is_array( $options ) ) {
@@ -145,7 +144,7 @@ class Tribe__Settings_Manager {
 	 * @param string $name The option key or 'name'.
 	 * @param mixed  $value The value we want to set.
 	 *
-	 * @return bool
+	 * @return bool True if the value was updated, false otherwise.
 	 */
 	public static function set_option( $name, $value ) {
 		$options          = self::get_options();
@@ -271,7 +270,7 @@ class Tribe__Settings_Manager {
 		$show_tab = ( current_user_can( 'activate_plugins' ) && $this->have_addons() );
 
 		/**
-		 * Provides an oppotunity to override the decision to show or hide the licenses tab
+		 * Provides an opportunity to override the decision to show or hide the licenses tab
 		 *
 		 * Normally it will only show if the current user has the "activate_plugins" capability
 		 * and there are some currently-activated premium plugins.
@@ -286,23 +285,13 @@ class Tribe__Settings_Manager {
 		 * @var $licenses_tab
 		 */
 		include Tribe__Main::instance()->plugin_path . 'src/admin-views/tribe-options-licenses.php';
-
-		/**
-		 * Allows the fields displayed in the licenses tab to be modified.
-		 *
-		 * @var array
-		 */
-		$license_fields = apply_filters( 'tribe_license_fields', $licenses_tab );
-
-		new Tribe__Settings_Tab( 'licenses', esc_html__( 'Licenses', 'tribe-common' ), [
-			'priority'      => '40',
-			'fields'        => $license_fields,
-			'network_admin' => is_network_admin() ? true : false,
-		] );
 	}
 
 	/**
-	 * Create the help tab
+	 * Create the help tab.
+	 *
+	 * @deprecated 6.3.2 This method is deprecated and should no longer be used. Use \TEC\Common\Admin\Help_Hub\Hub instead.
+	 *
 	 */
 	public function do_help_tab() {
 		/**
@@ -315,19 +304,10 @@ class Tribe__Settings_Manager {
 	/**
 	 * Add help menu item to the admin (unless blocked via network admin settings).
 	 *
-	 * @todo move to an admin class
+	 * @deprecated 5.0.2
 	 */
 	public function add_help_admin_menu_item() {
-		$hidden_settings_tabs = self::get_network_option( 'hideSettingsTabs', [] );
-		if ( in_array( 'help', $hidden_settings_tabs ) ) {
-			return;
-		}
-
-		$parent = class_exists( 'Tribe__Events__Main' ) ? Tribe__Settings::$parent_page : Tribe__Settings::$parent_slug;
-		$title  = esc_html__( 'Help', 'tribe-common' );
-		$slug   = 'tribe-help';
-
-		add_submenu_page( $parent, $title, $title, 'manage_options', $slug, [ $this, 'do_help_tab' ] );
+		_deprecated_function( __METHOD__, '5.0.2', 'Now handled by Tribe\Events\Admin\Settings::add_admin_pages()' );
 	}
 
 	/**

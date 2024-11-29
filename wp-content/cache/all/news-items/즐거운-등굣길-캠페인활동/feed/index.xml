@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	
+	>
+<channel>
+	<title>
+	댓글: 즐거운 등굣길  캠페인활동	</title>
+	<atom:link href="https://www.hwanil.ms.kr/news-items/%EC%A6%90%EA%B1%B0%EC%9A%B4-%EB%93%B1%EA%B5%A3%EA%B8%B8-%EC%BA%A0%ED%8E%98%EC%9D%B8%ED%99%9C%EB%8F%99/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.hwanil.ms.kr/news-items/%ec%a6%90%ea%b1%b0%ec%9a%b4-%eb%93%b1%ea%b5%a3%ea%b8%b8-%ec%ba%a0%ed%8e%98%ec%9d%b8%ed%99%9c%eb%8f%99/</link>
+	<description>환일중학교 홈페이지</description>
+	<lastBuildDate>Tue, 16 May 2023 00:51:46 +0000</lastBuildDate>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+</channel>
+</rss>
