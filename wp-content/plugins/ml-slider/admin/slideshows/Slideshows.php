@@ -59,14 +59,6 @@ class MetaSlider_Slideshows
      */
     public static function create()
     {
-
-        // Duplicate settings from their recently modified slideshow, or use defaults.
-        $last_modified =  self::get_last_modified();
-        $last_modified_id = !empty($last_modified) ? $last_modified['id'] : null;
-        // TODO: next branch, refactor to slideshow object and extract controller type methods.
-        // TODO: I want to be able to do $last_modified->settings()
-        $last_modified_settings = new MetaSlider_Slideshow_Settings($last_modified_id);
-        $last_modified_settings = $last_modified_settings->get_settings();
         $default_settings = MetaSlider_Slideshow_Settings::defaults();
 
         $new_id = wp_insert_post(array(
@@ -85,52 +77,34 @@ class MetaSlider_Slideshows
         if (is_wp_error($new_id)) {
             return $new_id;
         }
-
-        $overrides = get_option('metaslider_default_settings');
-        $last_modified_settings = is_array($overrides) ? array_merge($last_modified_settings, $overrides) : $last_modified_settings;
-
-        $last_modified_settings['keyboard'] = true;
-
-        // Force these always by default - @since 3.70
-        $last_modified_settings['printJs'] = true;
-        $last_modified_settings['printCss'] = true;
-        $last_modified_settings['noConflict'] = true;
-        $last_modified_settings['effect'] = 'slide';
-
-        // @since 3.91 - Use saved settings or defaults depending the case
-        $last_modified_settings['autoPlay'] = $default_settings['autoPlay'];
         
-        // @since 3.91 - Use saved settings or defaults depending the case
-        if (is_bool($default_settings['navigation'])) {
-            // Is boolean (hidden or dots)
-            $last_modified_settings['navigation'] = $default_settings['navigation'] ? 'true' : 'false';
-        } else {
-            // Is a string (thumbs or filmstrip)
-            $last_modified_settings['navigation'] = $default_settings['navigation'];
-        }
+        $overrides = get_option('metaslider_default_settings');
+        $new_settings = is_array($overrides) ? array_merge($default_settings, $overrides) : $default_settings;
 
         /* Make sure we set a default theme if available - Pro set '_theme_default' 
          * to bypass $last_modified_settings['theme'] that takes the last saved theme configuration 
          * 
+         * @TODO - Allow to set a regular theme, not just a custom theme
+         * by using too MetaSlider_Themes::get_instance()->set($new_id, $theme_data_array);
+         * 
          * @since 3.62 */
         $default_theme = apply_filters( 'metaslider_default_theme', '' );
         if ( $default_theme ) {
-            $last_modified_settings['theme'] = $default_theme;
+            $new_settings['theme'] = $default_theme;
+        } elseif (!metaslider_pro_is_active()) {
+            // @since 3.93 - Only in Free
+            $themes_ = MetaSlider_Themes::get_instance();
+            $themes_->set($new_id, $themes_->get_single_theme('default-base'));
         }
-        
-        add_post_meta($new_id, 'ml-slider_settings', $last_modified_settings, true);
 
-        // TODO: next branch, refactor to slideshow object and extract controller type methods.
-        // TODO: I want to be able to do $last_modified->theme()
-        // Get the latest slideshow used
-        $theme = get_post_meta($last_modified, 'metaslider_slideshow_theme', true);
+        add_post_meta($new_id, 'ml-slider_settings', $new_settings, true);
 
         // Lets users set their own default theme
         if ( $default_theme ) {
             $themes = MetaSlider_Themes::get_instance();
             $theme = $themes->get_theme_object( null, $default_theme );
         }
-
+        
         // Set the theme if we found something
         if (isset($theme['folder'])) {
             update_post_meta($new_id, 'metaslider_slideshow_theme', $theme);
@@ -152,20 +126,34 @@ class MetaSlider_Slideshows
      */
     public function save($slideshow_id, $new_settings)
     {
+        // Strip any HTML tags and sanitize the customize array
+        if ( isset( $new_settings['theme_customize'] ) ) {
+            $sanitized_customize = [];
+
+            foreach ( $new_settings['theme_customize'] as $item => $value ) {
+                $sanitized_item     = strip_tags( $item );
+
+                // Add to sanitized array only if both key and value are not empty and color is valid
+                // @TODO - Check if setting exists in manifest files (customize.php)
+                if ( ! empty( $sanitized_item ) 
+                    && ( $sanitized_value = $this->themes->sanitize_color( $value ) ) !== false
+                ) {
+                    $sanitized_customize[$sanitized_item] = $sanitized_value;
+                }
+            }
+
+            $new_settings['theme_customize'] = $sanitized_customize;
+        }
 
         // TODO: This is old code copied over and should eventually be refactored to not require hard-coded values
         $old_settings = get_post_meta($slideshow_id, 'ml-slider_settings', true);
 
-        // convert submitted checkbox values from 'on' or 'off' to boolean values
-        $checkboxes = apply_filters("metaslider_checkbox_settings", array('noConflict', 'fullWidth', 'hoverPause', 'reverse', 'random', 'printCss', 'printJs', 'smoothHeight', 'center', 'carouselMode', 'autoPlay', 'firstSlideFadeIn', 'responsive_thumbs', 'keyboard', 'touch', 'infiniteLoop',  'mobileArrows_smartphone', 'mobileArrows_tablet','mobileArrows_laptop', 'mobileArrows_desktop', 'mobileNavigation_smartphone', 'mobileNavigation_tablet', 'mobileNavigation_laptop', 'mobileNavigation_desktop', 'ariaLive', 'tabIndex', 'pausePlay','ariaCurrent'));
+        // Sanitize data
+        $new_settings = MetaSlider_Slideshow_Settings::adjust_settings($new_settings);
 
-        foreach ($checkboxes as $checkbox) {
-            $new_settings[$checkbox] = (isset($new_settings[$checkbox]) && 'on' == $new_settings[$checkbox]) ? 'true' : 'false';
-        }
+        $new_settings = array_merge((array) $old_settings, $new_settings);
 
-        $settings = array_merge((array) $old_settings, $new_settings);
-
-        update_post_meta($slideshow_id, 'ml-slider_settings', $settings);
+        update_post_meta($slideshow_id, 'ml-slider_settings', $new_settings);
 
         return $slideshow_id;
     }
@@ -340,6 +328,19 @@ class MetaSlider_Slideshows
     }
 
     /**
+     * Modified version of WP core maybe_unserialize()
+     * 
+     * @since 3.95
+     */
+    public function maybe_unserialize( $data ) {
+        if ( is_serialized( $data ) ) { // Don't attempt to unserialize data that wasn't serialized going in.
+            return @unserialize( trim( $data ), array( 'allowed_classes' => false ) );
+        }
+    
+        return $data;
+    }
+    
+    /**
      * Will import slideshows
      *
      * @param array $slideshows - The data generated by the export method
@@ -366,10 +367,21 @@ class MetaSlider_Slideshows
 
                 if (isset($slideshow['meta']) && is_array($slideshow['meta'])) {
                     foreach ($slideshow['meta'] as $key => $value) {
+
+                        // @since 3.95 - Stop the process and cleanup if we catch non valid data in JSON
+                        if ( is_serialized( $value ) && substr( trim( $value ), 0, 2 ) === 'O:' ) {
+                            wp_trash_post($new_slideshow_id);
+
+                            return new WP_Error(
+                                'import_slideshow_error',
+                                esc_html__( 'Import file is invalid.', 'ml-slider' )
+                            );
+                        }
+
                         update_post_meta(
                             $new_slideshow_id,
                             $key,
-                            maybe_unserialize(str_replace('{#ID#}', $new_slideshow_id, $value))
+                            $this->maybe_unserialize(str_replace('{#ID#}', $new_slideshow_id, $value))
                         );
                     }
                 }
@@ -400,7 +412,19 @@ class MetaSlider_Slideshows
 
                     foreach ($slide['meta'] as $key => $value) {
                         $value = $this->restore_image_urls_from_string($value);
-                        add_post_meta($new_slide_id, $key, maybe_unserialize($value));
+
+                        // @since 3.95 - Stop the process and cleanup if we catch non valid data in JSON
+                        if ( is_serialized( $value ) && substr( trim( $value ), 0, 2 ) === 'O:' ) {
+                            wp_trash_post($new_slideshow_id);
+                            $this->delete_all_slides($new_slideshow_id);
+
+                            return new WP_Error(
+                                'import_slideshow_error',
+                                esc_html__( 'Import file is invalid.', 'ml-slider' )
+                            );
+                        }
+
+                        add_post_meta($new_slide_id, $key, $this->maybe_unserialize($value));
                     }
 
                     wp_set_post_terms($new_slide_id, $term['term_id'], 'ml-slider', true);
@@ -412,7 +436,10 @@ class MetaSlider_Slideshows
                             $new_slide_id,
                             $settings['width'],
                             $settings['height'],
-                            isset($settings['smartCrop']) ? $settings['smartCrop'] : 'false'
+                            isset($settings['smartCrop']) ? $settings['smartCrop'] : 'false',
+                            true,
+                            null,
+                            isset($settings['cropMultiply']) ? absint($settings['cropMultiply']) : 1
                         );
                         // This crops even though it doesn't sounds like it
                         $image_cropper->get_image_url();
@@ -654,7 +681,7 @@ class MetaSlider_Slideshows
             return $slideshows;
         }
 
-        $slideshows_formatted = array_map('self::build_slideshow_object', $slideshows->posts);
+        $slideshows_formatted = array_map([self::class, 'build_slideshow_object'], $slideshows->posts);
 
         $remaining_pages = intval($slideshows->max_num_pages) - intval($page);
         if ($remaining_pages > 0) {
@@ -715,6 +742,29 @@ class MetaSlider_Slideshows
         $slideshows = get_posts(apply_filters('metaslider_all_meta_sliders_args', $args));
 
         return array_map(array($this, 'build_slideshow_object_simple'), $slideshows);
+    }
+
+    /**
+     * Method to get slideshows that uses legacy libraries
+     * 
+     * @return int
+     */
+    public function get_legacy_slideshows()
+    {
+        $slideshows = $this->get();
+        $count_sliders = 0;
+        foreach ($slideshows as $slideshow) {
+            if(isset($slideshow['id'])) {
+                $settings = get_post_meta($slideshow['id'], 'ml-slider_settings', true);
+                if (is_array($settings) && isset($settings['type'])) {
+                    $type = $settings['type'];
+                    if($type !== 'flex'){
+                        $count_sliders++;
+                    }
+                }
+            }
+        }
+        return $count_sliders;
     }
 
     /**

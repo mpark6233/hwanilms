@@ -26,7 +26,7 @@ class Tribe__Events__Integrations__ACF__ACF {
 	}
 
 	/**
-	 * Hooks the filters and actions neede for this integration to work.
+	 * Hooks the filters and actions needed for this integration to work.
 	 *
 	 * @since 4.6.3
 	 */
@@ -35,7 +35,7 @@ class Tribe__Events__Integrations__ACF__ACF {
 	}
 
 	/**
-	 * Load our compatability JS script to supplement the events-admin.js script.
+	 * Load our compatibility JS script to supplement the events-admin.js script.
 	 *
 	 * @since 4.6.3
 	 */
@@ -45,7 +45,7 @@ class Tribe__Events__Integrations__ACF__ACF {
 		if ( $admin_helpers->is_post_type_screen() ) {
 			wp_enqueue_script(
 				'tribe-admin-acf-compat',
-				plugin_dir_url( __FILE__ ) . 'resources/tribe-admin-acf-compat.js',
+				plugin_dir_url( 'build/tribe-admin-acf-compat.js' ),
 				[ 'jquery' ],
 				'1.0.0',
 				true

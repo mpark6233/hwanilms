@@ -12,7 +12,7 @@
  * @modified 2024-01-21
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly			//FixIn: 9.9.0.15
+if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly			// FixIn: 9.9.0.15.
 
 // =====================================================================================================================
 //  Left Navigation Panel
@@ -38,24 +38,24 @@ function wpbc_shortcode_config__navigation_panel(){
 	<div class="wpbc_settings_navigation_column wpbc_shortcode_config_navigation_column">
 		<div id="wpbc_shortcode_config__nav_tab__booking" class="wpbc_settings_navigation_item wpbc_settings_navigation_item_active">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_booking', 'booking' );" href="javascript:void(0);">
-				<span><?php _e( 'Booking Form with Calendar', 'booking' ) ?></span>
+				<span><?php esc_html_e( 'Booking Form with Calendar', 'booking' ) ?></span>
 			</a>
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__bookingcalendar" class="wpbc_settings_navigation_item wpbc_navigation_sub_item">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_bookingcalendar', 'bookingcalendar' );" href="javascript:void(0);">
-				<span><?php _e( 'Availability Calendar / Days Not Selectable', 'booking' ) ?></span>
+				<span><?php esc_html_e( 'Availability Calendar / Days Not Selectable', 'booking' ); ?></span>
 			</a>
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__bookingselect" class="wpbc_settings_navigation_item wpbc_dismiss__booking_select <?php  echo ( ! class_exists( 'wpdev_bk_personal' ) ) ? ' wpbc_settings_navigation_item_disabled ' : '';  ?>">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_bookingselect', 'bookingselect' );" href="javascript:void(0);">
-				<span><?php _e( 'Resource Selection', 'booking' ) ?></span><?php
+				<span><?php esc_html_e( 'Resource Selection', 'booking' ); ?></span><?php
 					echo ( ! class_exists( 'wpdev_bk_personal' ) ) ? '<span class="wpbc_pro_label">Pro</span>' : '';
 				?>
 			</a>
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__bookingform" class="wpbc_settings_navigation_item wpbc_dismiss__booking_form_only <?php  echo ( ! class_exists( 'wpdev_bk_biz_l' ) ) ? ' wpbc_settings_navigation_item_disabled ' : '';  ?>">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_bookingform', 'bookingform' );" href="javascript:void(0);">
-				<span><?php _e( 'Only Form', 'booking' ) ?></span><?php
+				<span><?php esc_html_e( 'Only Form', 'booking' ) ?></span><?php
 					if ( ! class_exists( 'wpdev_bk_personal' ) ){
 						echo '<span class="wpbc_pro_label">Pro</span>';
 					} else{
@@ -66,12 +66,12 @@ function wpbc_shortcode_config__navigation_panel(){
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__bookingtimeline" class="wpbc_settings_navigation_item wpbc_navigation_top_border">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_bookingtimeline', 'bookingtimeline' );" href="javascript:void(0);">
-				<span><?php _e( 'TimeLine', 'booking' ) ?></span>
+				<span><?php esc_html_e( 'TimeLine', 'booking' ); ?></span>
 			</a>
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__bookingsearch" class="wpbc_settings_navigation_item wpbc_dismiss__booking_search <?php  echo ( ! class_exists( 'wpdev_bk_biz_l' ) ) ? ' wpbc_settings_navigation_item_disabled ' : '';  ?>">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_bookingsearch', 'bookingsearch' );" href="javascript:void(0);">
-				<span><?php _e( 'Search Availability', 'booking' ) ?></span><?php
+				<span><?php esc_html_e( 'Search Availability', 'booking' ) ?></span><?php
 					if ( ! class_exists( 'wpdev_bk_personal' ) ){
 						echo '<span class="wpbc_pro_label">Pro</span>';
 					} else{
@@ -82,7 +82,7 @@ function wpbc_shortcode_config__navigation_panel(){
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__bookingother" class="wpbc_settings_navigation_item">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_bookingother', 'bookingother' );" href="javascript:void(0);">
-				<span><?php _e( 'Other', 'booking' ) ?></span><?php
+				<span><?php esc_html_e( 'Other', 'booking' ); ?></span><?php
 					//echo ( ! class_exists( 'wpdev_bk_personal' ) ) ? '<span class="wpbc_pro_label">Pro</span>' : '';
 				?>
 			</a>
@@ -90,12 +90,12 @@ function wpbc_shortcode_config__navigation_panel(){
 		<?php if ( $is_bm_exist ) { ?>
 		<div id="wpbc_shortcode_config__nav_tab__booking_import_ics" class="wpbc_settings_navigation_item wpbc_navigation_top_border">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_booking_import_ics', 'booking_import_ics' );" href="javascript:void(0);">
-				<span><?php _e( 'Import Events (.ics feed)', 'booking' ) ?></span>
+				<span><?php esc_html_e( 'Import Events (.ics feed)', 'booking' ) ?></span>
 			</a>
 		</div>
 		<div id="wpbc_shortcode_config__nav_tab__booking_listing_ics" class="wpbc_settings_navigation_item wpbc_navigation_sub_item">
 			<a onclick="javascript:wpbc_shortcode_config_click_show_section(this,'#wpbc_sc_container__shortcode_booking_listing_ics' , 'booking_listing_ics');" href="javascript:void(0);">
-				<span><?php _e( 'Show .ics Listing of Events', 'booking' ) ?></span>
+				<span><?php esc_html_e( 'Show .ics Listing of Events', 'booking' ); ?></span>
 			</a>
 		</div>
 		<?php } ?>
@@ -117,7 +117,7 @@ function wpbc_shortcode_config__content__booking() {
 
 	$shortcode_name = 'booking';
 
-	?><div id="wpbc_sc_container__shortcode_<?php echo $shortcode_name; ?>" class="wpbc_sc_container__shortcode wpbc_sc_container__shortcode_<?php echo $shortcode_name; ?>"><?php
+	?><div id="wpbc_sc_container__shortcode_<?php echo esc_attr( $shortcode_name ); ?>" class="wpbc_sc_container__shortcode wpbc_sc_container__shortcode_<?php echo esc_attr( $shortcode_name ); ?>"><?php
 
 		wpbc_shortcode_config__booking__top_tabs();
 
@@ -181,7 +181,13 @@ function wpbc_shortcode_config__content__booking() {
 		// 'START MONTH' -----------------------------------------------------------------------------------------------
 		?><div class="wpbc_sc_container__shortcode_section wpbc_sc_container__shortcode_section__other"><?php
 			?><table class="form-table"><tbody><?php
+
+				wpbc_shortcode_config_fields__calendar_dates_start( $shortcode_name . '_wpbc_calendar_dates_start', $shortcode_name );
+
+				wpbc_shortcode_config_fields__calendar_dates_end( $shortcode_name . '_wpbc_calendar_dates_end', $shortcode_name );
+
 				wpbc_shortcode_config_fields__start_month( $shortcode_name . '_wpbc_startmonth', $shortcode_name );
+
 			?></tbody></table><?php
 		?></div><?php
 
@@ -394,9 +400,9 @@ function wpbc_shortcode_config__content__booking() {
 															)
 							);
 
-				?><tr valign="top"  class="<?php echo $group_key . '_standard_section'; ?> wpbc_sub_settings_grayed <?php echo $id; ?>_wpbc_sc_calendar_size">
+				?><tr valign="top"  class="<?php echo esc_attr( $group_key . '_standard_section' ); ?> wpbc_sub_settings_grayed <?php echo esc_attr( $id ); ?>_wpbc_sc_calendar_size">
 					<th scope="row" style="vertical-align: middle;">
-						<label for="wpbc_booking_width" class="wpbc-form-text"><?php  _e('Calendar width:', 'booking'); ?></label>
+						<label for="wpbc_booking_width" class="wpbc-form-text"><?php esc_html_e('Calendar width:', 'booking'); ?></label>
 					</th>
 					<td class=""><fieldset><?php
 
@@ -423,11 +429,11 @@ function wpbc_shortcode_config__content__booking() {
 																			, 'options'           => array( 'px' => 'px', '%'  => '%' )
 																		)
 										);
-						?><span class="description"> <?php _e('Set width of calendar' ,'booking'); ?></span></fieldset></td>
+						?><span class="description"> <?php esc_html_e('Set width of calendar' ,'booking'); ?></span></fieldset></td>
 				</tr><?php
 
-				?><tr valign="top" class="<?php echo $group_key . '_standard_section'; ?> wpbc_sub_settings_grayed <?php echo $id; ?>_wpbc_sc_calendar_size">
-					<th scope="row" style="vertical-align: middle;"><label for="wpbc_booking_cell_height" class="wpbc-form-text"><?php  _e('Calendar cell height:', 'booking'); ?></label></th>
+				?><tr valign="top" class="<?php echo esc_attr( $group_key . '_standard_section' ); ?> wpbc_sub_settings_grayed <?php echo esc_attr( $id ); ?>_wpbc_sc_calendar_size">
+					<th scope="row" style="vertical-align: middle;"><label for="wpbc_booking_cell_height" class="wpbc-form-text"><?php esc_html_e('Calendar cell height:', 'booking'); ?></label></th>
 					<td class="">
 						<fieldset><?php
 
@@ -454,7 +460,7 @@ function wpbc_shortcode_config__content__booking() {
 																			, 'options'           => array( 'px' => 'px' )
 																		)
 										);
-							?><span class="description"> <?php _e('Set cell height for calendar' ,'booking'); ?></span>
+							?><span class="description"> <?php esc_html_e('Set cell height for calendar' ,'booking'); ?></span>
 						</fieldset>
 					</td>
 				</tr><?php
@@ -474,8 +480,8 @@ function wpbc_shortcode_config__content__booking() {
 			////////////////////////////////////////////////////////////////////
 			// Start Month
 			////////////////////////////////////////////////////////////////////
-			?><tr valign="top" class="<?php echo $group_key . '_standard_section'; ?>">
-				<th scope="row" style="vertical-align: middle;"><label for="<?php echo $id; ?>_active" class="wpbc-form-text"><?php  _e('Start month:', 'booking'); ?></label></th>
+			?><tr valign="top" class="<?php echo esc_attr( $group_key . '_standard_section' ); ?>">
+				<th scope="row" style="vertical-align: middle;"><label for="<?php echo esc_attr( $id ); ?>_active" class="wpbc-form-text"><?php esc_html_e('Start month:', 'booking'); ?></label></th>
 				<td class=""><fieldset><?php
 
 					WPBC_Settings_API::field_checkbox_row_static( $id . '_active'
@@ -509,8 +515,8 @@ function wpbc_shortcode_config__content__booking() {
 																		, 'css'               => 'width:5em;'
 																		, 'only_field'        => true
 																		, 'attr'              => array()
-																		, 'value'             => date( 'Y' )
-																		, 'options'           => array_combine( range( ( date('Y') - 1 ), ( date('Y') + 10 ) ), range( ( date('Y') - 1 ), ( date('Y') + 10 ) )  )
+																		, 'value'             => gmdate( 'Y' )
+																		, 'options'           => array_combine( range( ( gmdate('Y') - 1 ), ( gmdate('Y') + 10 ) ), range( ( gmdate('Y') - 1 ), ( gmdate('Y') + 10 ) )  )
 																	)
 									);
 					?><span class="description" style="font-weight:600;flex:0;margin: 3px 0.5em 0.5em 0;"> / </span><?php
@@ -528,15 +534,226 @@ function wpbc_shortcode_config__content__booking() {
 																		, 'css'               => 'width:4em;'
 																		, 'only_field'        => true
 																		, 'attr'              => array()
-																		, 'value'             => date('n')
+																		, 'value'             => gmdate('n')
 																		, 'options'           => array_combine( range( 1, 12 ), range( 1, 12 ) )
 																	)
 									);
 
-					?><span class="description"> <?php _e('Select start month of calendar' ,'booking'); ?></span></fieldset></td>
+					?><span class="description"> <?php esc_html_e('Select start month of calendar' ,'booking'); ?></span></fieldset></td>
 			</tr><?php
 
 	}
+
+
+	/**
+	 * Shortcode Fields:  Start Dates
+	 *
+	 * @param $id
+	 * @param $group_key
+	 *
+	 * @return void
+	 */
+	function wpbc_shortcode_config_fields__calendar_dates_start( $id , $group_key ){
+
+			?><tr valign="top" class="<?php echo esc_attr( $group_key . '_standard_section' ); ?>">
+				<th scope="row" style="vertical-align: middle;"><label for="<?php echo esc_attr( $id ); ?>_active" class="wpbc-form-text"><?php
+						esc_html_e('Start dates', 'booking'); ?></label></th>
+				<td class=""><fieldset><?php
+
+					WPBC_Settings_API::field_checkbox_row_static( $id . '_active'
+																, array(
+																		  'type'              => 'checkbox'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'class'             => ''
+																		, 'css'               => ''
+																		, 'tr_class'          => ''
+																		, 'attr'              => array()
+																		, 'group'             => $group_key
+																		, 'only_field'        => true
+																		, 'is_new_line'       => false
+																		, 'value'             => false
+																	)
+							);
+
+					WPBC_Settings_API::field_select_row_static(  $id . '_year'
+																, array(
+																		  'type'              => 'select'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'multiple'          => false
+																		, 'group'             => $group_key
+																		, 'class'             => ''
+																		, 'css'               => 'width:5em;'
+																		, 'only_field'        => true
+																		, 'attr'              => array()
+																		, 'value'             => gmdate( 'Y' )
+																		, 'options'           => array_combine( range( ( gmdate('Y') - 1 ), ( gmdate('Y') + 10 ) ), range( ( gmdate('Y') - 1 ), ( gmdate('Y') + 10 ) )  )
+																	)
+									);
+
+					?><span class="description" style="font-weight:600;flex:0;margin: 3px 0.5em 0.5em 0;"> / </span><?php
+
+					WPBC_Settings_API::field_select_row_static(  $id . '_month'
+																, array(
+																		  'type'              => 'select'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'multiple'          => false
+																		, 'group'             => $group_key
+																		, 'class'             => ''
+																		, 'css'               => 'width:4em;'
+																		, 'only_field'        => true
+																		, 'attr'              => array()
+																		, 'value'             => gmdate('m')
+																		, 'options'           => array_combine(
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 12 ) ),
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 12 ) )
+																								)
+																	)
+									);
+
+
+					?><span class="description" style="font-weight:600;flex:0;margin: 3px 0.5em 0.5em 0;"> / </span><?php
+
+					WPBC_Settings_API::field_select_row_static(  $id . '_date'
+																, array(
+																		  'type'              => 'select'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'multiple'          => false
+																		, 'group'             => $group_key
+																		, 'class'             => ''
+																		, 'css'               => 'width:4em;'
+																		, 'only_field'        => true
+																		, 'attr'              => array()
+																		, 'value'             => gmdate('d')
+																		, 'options'           => array_combine(
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 31 ) ),
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 31 ) )
+																								)
+
+																	)
+									);
+
+					?><span class="description"> <?php esc_html_e('Earliest date visible/selectable in the calendar.' ,'booking'); ?></span></fieldset></td>
+			</tr><?php
+	}
+
+
+	/**
+	 * Shortcode Fields:  End  Dates
+	 *
+	 * @param $id
+	 * @param $group_key
+	 *
+	 * @return void
+	 */
+	function wpbc_shortcode_config_fields__calendar_dates_end( $id , $group_key ){
+
+			?><tr valign="top" class="<?php echo esc_attr( $group_key . '_standard_section' ); ?>">
+				<th scope="row" style="vertical-align: middle;"><label for="<?php echo esc_attr( $id ); ?>_active" class="wpbc-form-text"><?php
+						esc_html_e('End dates', 'booking'); ?></label></th>
+				<td class=""><fieldset><?php
+
+					WPBC_Settings_API::field_checkbox_row_static( $id . '_active'
+																, array(
+																		  'type'              => 'checkbox'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'class'             => ''
+																		, 'css'               => ''
+																		, 'tr_class'          => ''
+																		, 'attr'              => array()
+																		, 'group'             => $group_key
+																		, 'only_field'        => true
+																		, 'is_new_line'       => false
+																		, 'value'             => false
+																	)
+							);
+
+					WPBC_Settings_API::field_select_row_static(  $id . '_year'
+																, array(
+																		  'type'              => 'select'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'multiple'          => false
+																		, 'group'             => $group_key
+																		, 'class'             => ''
+																		, 'css'               => 'width:5em;'
+																		, 'only_field'        => true
+																		, 'attr'              => array()
+																		, 'value'             => intval( gmdate( 'Y' ) ) + 2
+																		, 'options'           => array_combine( range( ( gmdate('Y') - 1 ), ( gmdate('Y') + 10 ) ), range( ( gmdate('Y') - 1 ), ( gmdate('Y') + 10 ) )  )
+																	)
+									);
+
+					?><span class="description" style="font-weight:600;flex:0;margin: 3px 0.5em 0.5em 0;"> / </span><?php
+
+					WPBC_Settings_API::field_select_row_static(  $id . '_month'
+																, array(
+																		  'type'              => 'select'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'multiple'          => false
+																		, 'group'             => $group_key
+																		, 'class'             => ''
+																		, 'css'               => 'width:4em;'
+																		, 'only_field'        => true
+																		, 'attr'              => array()
+																		, 'value'             => gmdate('m')
+																		, 'options'           => array_combine(
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 12 ) ),
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 12 ) )
+																								)
+
+																	)
+									);
+
+
+					?><span class="description" style="font-weight:600;flex:0;margin: 3px 0.5em 0.5em 0;"> / </span><?php
+
+					WPBC_Settings_API::field_select_row_static(  $id . '_date'
+																, array(
+																		  'type'              => 'select'
+																		, 'title'             => ''
+																		, 'description'       => ''
+																		, 'description_tag'   => 'span'
+																		, 'label'             => ''
+																		, 'multiple'          => false
+																		, 'group'             => $group_key
+																		, 'class'             => ''
+																		, 'css'               => 'width:4em;'
+																		, 'only_field'        => true
+																		, 'attr'              => array()
+																		, 'value'             => gmdate('d')
+																		, 'options'           => array_combine(
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 31 ) ),
+																									array_map( function ( $v ) { return str_pad( $v, 2, '0', STR_PAD_LEFT ); }, range( 1, 31 ) )
+																								)
+
+																	)
+									);
+
+					?><span class="description"> <?php esc_html_e('Latest date visible/selectable in the calendar.' ,'booking'); ?></span></fieldset></td>
+			</tr><?php
+	}
+
+
 
 	/**
 	 * Shortcode Fields:  AGGREGATE
@@ -560,6 +777,7 @@ function wpbc_shortcode_config__content__booking() {
 									'versions'           => 'paid versions',
 									'css'                => 'transform: translate(0) translateY(180px);'
 								) );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $upgrade_content_arr['content'];
 
 			//--------------------------------------------------------------------------------------------------------------
@@ -579,7 +797,7 @@ function wpbc_shortcode_config__content__booking() {
 			?>
 			<div class="clear"></div>
 			<div class="wpbc-settings-notice0 notice-info notice-header" style="font-size: 15px;font-weight: 600;margin: 15px 0 15px 15px;">
-				<label for="<?php echo esc_attr($id); ?>"><?php _e( 'Aggregate booking dates from other resources', 'booking' ); ?></label>
+				<label for="<?php echo esc_attr($id); ?>"><?php esc_html_e( 'Aggregate booking dates from other resources', 'booking' ); ?></label>
 			</div>
 
 			<div class="wpbc_shortcode_config__rules_container wpbc_dismiss__booking_param_aggregate <?php echo esc_attr( $upgrade_content_arr['maybe_blur_css_class'] ); ?>">
@@ -634,7 +852,7 @@ function wpbc_shortcode_config__content__booking() {
 																					, 'group'             => $group_key
 																					, 'only_field'        => true
 																					, 'is_new_line'       => false
-																					, 'value'             => false		////FixIn: 10.0.0.6
+																					, 'value'             => false		//// FixIn: 10.0.0.6.
 																				)
 																		);
 									?></div>
@@ -646,15 +864,15 @@ function wpbc_shortcode_config__content__booking() {
 					<div class="wpbc-settings-notice notice-info notice-list">
 						<ol>
 							<li>
-								<?php _e( "Show dates as booked in the current calendar if such dates are unavailable in one of the selected resources.", 'booking' ); ?>
+								<?php esc_html_e( "Show dates as booked in the current calendar if such dates are unavailable in one of the selected resources.", 'booking' ); ?>
 							</li>
 							<li>
 								<?php
-								echo    __( 'To set this up, select one or multiple booking resources in the multi-select box.', 'booking' )
+								echo esc_html__( 'To set this up, select one or multiple booking resources in the multi-select box.', 'booking' )
 											. '<br>'
-											. __( 'Hold down the Ctrl button to make multiple selections.', 'booking' );
+											. esc_html__( 'Hold down the Ctrl button to make multiple selections.', 'booking' );
 
-								echo ' <strong>' . __( 'Code Example', 'booking' ) . ': </strong>'
+								echo ' <strong>' . esc_html__( 'Code Example', 'booking' ) . ': </strong>'
 												. '<code>[booking resource_id=1 aggregate=\'3;5;9\']</code>';
 								?>
 
@@ -662,23 +880,25 @@ function wpbc_shortcode_config__content__booking() {
 
 							<li>
 								<?php
-								 printf(__('Enable %sAggregate only bookings%s option to  aggregate only bookings without including unavailable dates from the %s page.','booking')
+								 /* translators: 1: ... */
+								 echo wp_kses_post( sprintf( __( 'Enable %1$sAggregate only bookings%2$s option to  aggregate only bookings without including unavailable dates from the %3$s page.', 'booking' )
 											 , '<strong>', '</strong>'
 											, '<strong>Booking > Availability > Days Availability</strong>'
-								 );
+								 ) );
 								?>
 
 								<?php
-								 echo ' <strong>' . __( 'Code Example', 'booking' ) . ': </strong>'
+								 echo ' <strong>' . esc_html__( 'Code Example', 'booking' ) . ': </strong>'
 								 			, '<code>[booking resource_id=1 aggregate=\'3;5;9\' options=\'{aggregate type=bookings_only}\']</code>';
 
 								?>
 							</li>
 							<li>
 								<?php
-								printf(	__ ('Check the FAQ for details on %sshortcode configuration%s, especially this %soption%s.' , 'booking' )
+								/* translators: 1: ... */
+								echo wp_kses_post( sprintf(	__( 'Check the FAQ for details on %1$sshortcode configuration%2$s, especially this %3$soption%4$s.' , 'booking' )
 										, '<a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/" target="_blank">', '</a>'
-										, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-start-day-condition" target="_blank">', '</a></strong>' );
+										, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-start-day-condition" target="_blank">', '</a></strong>' ) );
 								?>
 							</li>
 						</ol>
@@ -709,27 +929,35 @@ function wpbc_shortcode_config__content__booking() {
 		  	wpbc_bs_toolbar_sub_html_container_start();
 
 				?><a class="nav-tab wpdevelop-submenu-tab tooltip_top wpdevelop-submenu-tab-selected wpbc_dismiss__conditional_days"
-				     onclick="javascript:<?php echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__weekdays_conditions').show();"	href="javascript:void(0)"
+				     onclick="javascript:<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__weekdays_conditions').show();"	href="javascript:void(0)"
 				   ><span class="nav-tab-text"><i class="menu_icon icon-1x wpbc-bi-calendar2-week"></i>&nbsp;&nbsp;<?php
-						_e( 'Weekdays Conditions', 'booking' );
+						esc_html_e( 'Weekdays Conditions', 'booking' );
 					?></span></a><?php
 
 				?><a class="nav-tab wpdevelop-submenu-tab tooltip_top wpbc_dismiss__conditional_days"
-				     onclick="javascript:<?php echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__seasons_conditions').show();"	href="javascript:void(0)"
+				     onclick="javascript:<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__seasons_conditions').show();"	href="javascript:void(0)"
 				   ><span class="nav-tab-text"><i class="menu_icon icon-1x wpbc-bi-calendar2-month"></i>&nbsp;&nbsp;<?php
-						_e( 'Seasons Conditions', 'booking' );
+						esc_html_e( 'Seasons Conditions', 'booking' );
 					?></span></a><?php
 
 				?><a class="nav-tab wpdevelop-submenu-tab tooltip_top wpbc_dismiss__conditional_days"
-				     onclick="javascript:<?php echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__startseason_conditions').show();"	href="javascript:void(0)"
+				     onclick="javascript:<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__startseason_conditions').show();"	href="javascript:void(0)"
 				   ><span class="nav-tab-text"><i class="menu_icon icon-1x wpbc-bi-calendar2-day"></i>&nbsp;&nbsp;<?php
-						_e( 'Start selection at Seasons', 'booking' );
+						esc_html_e( 'Start selection at Seasons', 'booking' );
 					?></span></a><?php
 
 				?><a class="nav-tab wpdevelop-submenu-tab tooltip_top wpbc_dismiss__conditional_days"
-				     onclick="javascript:<?php echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__dates_conditions').show();"	href="javascript:void(0)"
+				     onclick="javascript:<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $js; ?>.find('.wpbc_sc_container__shortcode_subsection__dates_conditions').show();"	href="javascript:void(0)"
 				   ><span class="nav-tab-text"><i class="menu_icon icon-1x wpbc-bi-calendar2-date"></i>&nbsp;&nbsp;<?php
-						_e( 'Dates selection Conditions', 'booking' );
+						esc_html_e( 'Dates selection Conditions', 'booking' );
 					?></span></a><?php
 
  		wpbc_bs_toolbar_sub_html_container_end();
@@ -761,6 +989,7 @@ function wpbc_shortcode_config__content__booking() {
 								'versions'           => 'Business Medium / Large, MultiUser versions',
 								'css'                => 'transform: translate(0) translateY(120px);'
 							) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $upgrade_content_arr['content'];
 
 		//--------------------------------------------------------------------------------------------------------------
@@ -835,7 +1064,7 @@ function wpbc_shortcode_config__content__booking() {
 
 									?></div>
 									<div class="ui_element"><?php
-										?><div class="wpbc_ui_control" style="line-height: 2;"><?php _e('days to select' ,'booking'); ?></div><?php
+										?><div class="wpbc_ui_control" style="line-height: 2;"><?php esc_html_e('days to select' ,'booking'); ?></div><?php
 									?></div><?php
 
 								?></div><?php
@@ -850,11 +1079,11 @@ function wpbc_shortcode_config__content__booking() {
 						<div class="ui_group"><?php
 
 							?><div class="ui_element">
-								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_weekday__add('<?php echo $id; ?>');" class="button button-primary"><?php _e( 'Set Rule', 'booking' ); ?></a>
+								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_weekday__add('<?php echo esc_attr( $id ); ?>');" class="button button-primary"><?php esc_html_e( 'Set Rule', 'booking' ); ?></a>
 							</div><?php
 							?><div class="ui_element">
-								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_weekday__reset('<?php echo $id; ?>');"
-								   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php _e('Reset','booking'); ?></a>
+								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_weekday__reset('<?php echo esc_attr( $id ); ?>');"
+								   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php esc_html_e('Reset','booking'); ?></a>
 							</div><?php
 
 						?>
@@ -866,35 +1095,37 @@ function wpbc_shortcode_config__content__booking() {
 
 			<div class="wpbc_shortcode_config__rules__help_section">
 				<div class="wpbc-settings-notice notice-info notice-header">
-					<span><?php _e( 'Specify the number of days to select when starting the selection on a specific weekday.', 'booking' ); ?></span>
+					<span><?php esc_html_e( 'Specify the number of days to select when starting the selection on a specific weekday.', 'booking' ); ?></span>
 				</div>
 				<div class="wpbc-settings-notice notice-info notice-list">
 					<ol>
 						<li>
-							<?php _e( "For example, a visitor can choose to book only 5 or 7 days starting on Monday, or any number from 2 to 7 days starting on Saturday, and so forth. To configure this, check the 'Monday' box and set the number of days to select as '5,7'. Then, check the 'Saturday' box and set the number of days to select as '2-7'. Finally, click the 'Set Rule' button.", 'booking' ); ?>
+							<?php esc_html_e( "For example, a visitor can choose to book only 5 or 7 days starting on Monday, or any number from 2 to 7 days starting on Saturday, and so forth. To configure this, check the 'Monday' box and set the number of days to select as '5,7'. Then, check the 'Saturday' box and set the number of days to select as '2-7'. Finally, click the 'Set Rule' button.", 'booking' ); ?>
 						</li>
 						<li>
 							<?php
-							echo '<strong>' . __( 'Code Example', 'booking' ) . ': </strong>'
+							echo '<strong>' . esc_html__( 'Code Example', 'booking' ) . ': </strong>'
 											. '<code>{select-day condition="weekday" for="1" value="5,7"},{select-day condition="weekday" for="6" value="2-7"}</code>';
 							?>
 						</li>
 						<li>
 							<?php
-							printf(	__ ('Check the FAQ for details on %sshortcode configuration%s, especially this %soption%s.' , 'booking' )
+							/* translators: 1: ... */
+							echo wp_kses_post( sprintf(	__( 'Check the FAQ for details on %1$sshortcode configuration%2$s, especially this %3$soption%4$s.' , 'booking' )
 									, '<a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/" target="_blank">', '</a>'
-									, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-condition" target="_blank">', '</a></strong>' );
+									, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-condition" target="_blank">', '</a></strong>' ) );
 							?>
 						</li>
 						<li>
 							<?php
-							 printf(__('Explore %sJavaScript customization%s for advanced different day selection in different calendars.' ,'booking')
-										, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>');
+							 /* translators: 1: ... */
+							 echo wp_kses_post( sprintf( __( 'Explore %1$sJavaScript customization%2$s for advanced different day selection in different calendars.', 'booking' )
+										, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>') );
 							?>
 						</li>
 					</ol>
 				</div>
-				<textarea id="<?php echo $id; ?>_textarea" name="<?php echo $id; ?>_textarea" style="width:100%;margin-top:15px;"></textarea>
+				<textarea id="<?php echo esc_attr( $id ); ?>_textarea" name="<?php echo esc_attr( $id ); ?>_textarea" style="width:100%;margin-top:15px;"></textarea>
 			</div>
 		</div><?php
 
@@ -923,6 +1154,7 @@ function wpbc_shortcode_config__content__booking() {
 								'versions'           => 'Business Medium / Large, MultiUser versions',
 								'css'                => 'transform: translate(0) translateY(120px);'
 							) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $upgrade_content_arr['content'];
 
 		//--------------------------------------------------------------------------------------------------------------
@@ -940,7 +1172,7 @@ function wpbc_shortcode_config__content__booking() {
 
 								<div class="ui_element">
 									<div class="wpbc_ui_control" style="line-height: 2;">
-										<span><?php _e('In season' ,'booking'); ?></span>
+										<span><?php esc_html_e('In season' ,'booking'); ?></span>
 									</div>
 								</div>
 
@@ -965,7 +1197,7 @@ function wpbc_shortcode_config__content__booking() {
 																								, 'options'           => $options
 																							)
 																				);
-									?><a href="<?php echo wpbc_get_availability_url(); ?>&tab=filter"
+									?><a href="<?php echo esc_url( wpbc_get_availability_url() . '' ); ?>"
 										 title="<?php echo esc_attr( __( 'Add new season', 'booking' ) ); ?>"
 									   class="wpbc_ui_control wpbc_ui_button tooltip_top" ><i class="menu_icon icon-1x wpbc_icn_add _circle_outline"></i></a><?php
 								?></div>
@@ -977,7 +1209,7 @@ function wpbc_shortcode_config__content__booking() {
 							<div class="ui_group">
 
 								<div class="ui_element">
-									<div class="wpbc_ui_control " style="line-height: 2;"><?php _e('allow to select' ,'booking'); ?></div>
+									<div class="wpbc_ui_control " style="line-height: 2;"><?php esc_html_e('allow to select' ,'booking'); ?></div>
 								</div>
 
 								<div class="ui_element"><?php
@@ -995,7 +1227,7 @@ function wpbc_shortcode_config__content__booking() {
 								?></div>
 
 								<div class="ui_element">
-									<div class="wpbc_ui_control" style="line-height: 2;"><?php _e('days' ,'booking'); ?></div>
+									<div class="wpbc_ui_control" style="line-height: 2;"><?php esc_html_e('days' ,'booking'); ?></div>
 								</div>
 							</div>
 						</div>
@@ -1004,12 +1236,12 @@ function wpbc_shortcode_config__content__booking() {
 							<div class="ui_group">
 
 								<div class="ui_element">
-									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_season__add('<?php echo $id; ?>');"
-											   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary" ><?php _e('Add Rule','booking'); ?></a>
+									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_season__add('<?php echo esc_attr( $id ); ?>');"
+											   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary" ><?php esc_html_e('Add Rule','booking'); ?></a>
 								</div>
 								<div class="ui_element">
-									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_season__reset('<?php echo $id; ?>');"
-											   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php _e('Reset','booking'); ?></a>
+									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_season__reset('<?php echo esc_attr( $id ); ?>');"
+											   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php esc_html_e('Reset','booking'); ?></a>
 								</div>
 							</div>
 						</div>
@@ -1018,35 +1250,37 @@ function wpbc_shortcode_config__content__booking() {
 				</div>
 				<div class="wpbc_shortcode_config__rules__help_section">
 					<div class="wpbc-settings-notice notice-info notice-header">
-						<span><?php _e( 'Specify the number of days to select when starting the selection in a specific season.', 'booking' ); ?></span>
+						<span><?php esc_html_e( 'Specify the number of days to select when starting the selection in a specific season.', 'booking' ); ?></span>
 					</div>
 					<div class="wpbc-settings-notice notice-info notice-list">
 						<ol>
 							<li>
-								<?php _e( "For example, a visitor can choose to book any number from 7 to 14 days or 21 days starting on 'High season', or any number from 2 to 5 days starting on 'Low season', and so forth. To configure this, select the 'High season' option in the dropdown menu and set the number of days to select as '7-14,21'. Click the 'Add Rule' button. Next, select the 'Low season' option in the dropdown menu and set the number of days to select as '2-5'. Click the 'Add Rule' button again.", 'booking' ); ?>
+								<?php esc_html_e( "For example, a visitor can choose to book any number from 7 to 14 days or 21 days starting on 'High season', or any number from 2 to 5 days starting on 'Low season', and so forth. To configure this, select the 'High season' option in the dropdown menu and set the number of days to select as '7-14,21'. Click the 'Add Rule' button. Next, select the 'Low season' option in the dropdown menu and set the number of days to select as '2-5'. Click the 'Add Rule' button again.", 'booking' ); ?>
 							</li>
 							<li>
 								<?php
-								echo '<strong>' . __( 'Code Example', 'booking' ) . ': </strong>'
+								echo '<strong>' . esc_html__( 'Code Example', 'booking' ) . ': </strong>'
 												. '<code>{select-day condition="season" for="High season" value="7-14,21"},{select-day condition="season" for="Low season" value="2-5"}</code>';
 								?>
 							</li>
 							<li>
 								<?php
-								printf(	__ ('Check the FAQ for details on %sshortcode configuration%s, especially this %soption%s.' , 'booking' )
+								/* translators: 1: ... */
+								echo wp_kses_post( sprintf(	__( 'Check the FAQ for details on %1$sshortcode configuration%2$s, especially this %3$soption%4$s.' , 'booking' )
 										, '<a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/" target="_blank">', '</a>'
-										, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-condition-seasons" target="_blank">', '</a></strong>' );
+										, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-condition-seasons" target="_blank">', '</a></strong>' ) );
 								?>
 							</li>
 							<li>
 								<?php
-								 printf(__('Explore %sJavaScript customization%s for advanced different day selection in different calendars.' ,'booking')
-											, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>');
+								 /* translators: 1: ... */
+								 echo wp_kses_post( sprintf( __( 'Explore %1$sJavaScript customization%2$s for advanced different day selection in different calendars.', 'booking' )
+											, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>') );
 								?>
 							</li>
 						</ol>
 					</div>
-					<textarea id="<?php echo $id; ?>_textarea" name="<?php echo $id; ?>_textarea" style="width:100%;margin:10px 0;"></textarea>
+					<textarea id="<?php echo esc_attr( $id ); ?>_textarea" name="<?php echo esc_attr( $id ); ?>_textarea" style="width:100%;margin:10px 0;"></textarea>
 				</div>
 		</div><?php
 
@@ -1151,6 +1385,7 @@ function wpbc_shortcode_config__content__booking() {
 								'versions'           => 'Business Medium / Large, MultiUser versions',
 								'css'                => 'transform: translate(0) translateY(120px);'
 							) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $upgrade_content_arr['content'];
 
 		//--------------------------------------------------------------------------------------------------------------
@@ -1167,7 +1402,7 @@ function wpbc_shortcode_config__content__booking() {
 							<div class="ui_group">
 								<div class="ui_element">
 									<div class="wpbc_ui_control" style="line-height: 2;">
-										<span><?php _e('In season' ,'booking'); ?></span>
+										<span><?php esc_html_e('In season' ,'booking'); ?></span>
 									</div>
 								</div>
 								<div class="ui_element wpdevelop"><?php
@@ -1193,7 +1428,7 @@ function wpbc_shortcode_config__content__booking() {
 																					)
 																		);
 
-									?><a href="<?php echo wpbc_get_availability_url(); ?>&tab=filter"
+									?><a href="<?php echo esc_url( wpbc_get_availability_url() . '' ); ?>"
 										 title="<?php echo esc_attr( __( 'Add new season', 'booking' ) ); ?>"
 									   class="wpbc_ui_control wpbc_ui_button tooltip_top" ><i class="menu_icon icon-1x wpbc_icn_add _circle_outline"></i></a><?php
 
@@ -1206,7 +1441,7 @@ function wpbc_shortcode_config__content__booking() {
 							 <div class="ui_group">
 								 <div class="ui_element">
 									 <div class="wpbc_ui_control " style="line-height: 2;"><?php
-										 _e('allow to start days selection only for these weekdays' ,'booking');
+										 esc_html_e('allow to start days selection only for these weekdays' ,'booking');
 									 ?></div>
 								 </div>
 							 </div>
@@ -1254,12 +1489,12 @@ function wpbc_shortcode_config__content__booking() {
 							<div class="ui_group"><?php
 
 								?><div class="ui_element">
-									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__start_day_season__add('<?php echo $id; ?>');"
-									   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary" ><?php _e('Add Rule','booking'); ?></a>
+									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__start_day_season__add('<?php echo esc_attr( $id ); ?>');"
+									   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary" ><?php esc_html_e('Add Rule','booking'); ?></a>
 								</div><?php
 								?><div class="ui_element">
-									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__start_day_season__reset('<?php echo $id; ?>');"
-									   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php _e('Reset','booking'); ?></a>
+									<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__start_day_season__reset('<?php echo esc_attr( $id ); ?>');"
+									   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php esc_html_e('Reset','booking'); ?></a>
 								</div><?php
 
 							?>
@@ -1269,35 +1504,37 @@ function wpbc_shortcode_config__content__booking() {
 			</div>
 			<div class="wpbc_shortcode_config__rules__help_section">
 				<div class="wpbc-settings-notice notice-info notice-header">
-					<span><?php _e( 'Specify the weekdays as start days for selection when starting the selection in a specific season.', 'booking' ); ?></span>
+					<span><?php esc_html_e( 'Specify the weekdays as start days for selection when starting the selection in a specific season.', 'booking' ); ?></span>
 				</div>
 				<div class="wpbc-settings-notice notice-info notice-list">
 					<ol>
 						<li>
-							<?php _e( "For example, a visitor can starting days selection only on 'Sunday' or 'Friday' if select days on 'Low season'. To configure this, select the 'Low season' option in the dropdown menu and enable 'Sunday' and 'Friday' boxes. Click the 'Add Rule' button.", 'booking' ); ?>
+							<?php esc_html_e( "For example, a visitor can starting days selection only on 'Sunday' or 'Friday' if select days on 'Low season'. To configure this, select the 'Low season' option in the dropdown menu and enable 'Sunday' and 'Friday' boxes. Click the 'Add Rule' button.", 'booking' ); ?>
 						</li>
 						<li>
 							<?php
-							echo '<strong>' . __( 'Code Example', 'booking' ) . ': </strong>'
+							echo '<strong>' . esc_html__( 'Code Example', 'booking' ) . ': </strong>'
 											. '<code>{start-day condition="season" for="Low season" value="0,5"}</code>';
 							?>
 						</li>
 						<li>
 							<?php
-							printf(	__ ('Check the FAQ for details on %sshortcode configuration%s, especially this %soption%s.' , 'booking' )
+							/* translators: 1: ... */
+							echo wp_kses_post( sprintf(	__( 'Check the FAQ for details on %1$sshortcode configuration%2$s, especially this %3$soption%4$s.' , 'booking' )
 									, '<a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/" target="_blank">', '</a>'
-									, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-start-day-condition" target="_blank">', '</a></strong>' );
+									, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#booking-options-start-day-condition" target="_blank">', '</a></strong>' ) );
 							?>
 						</li>
 						<li>
 							<?php
-							 printf(__('Explore %sJavaScript customization%s for advanced different day selection in different calendars.' ,'booking')
-										, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>');
+							 /* translators: 1: ... */
+							 echo wp_kses_post( sprintf( __( 'Explore %1$sJavaScript customization%2$s for advanced different day selection in different calendars.', 'booking' )
+										, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>') );
 							?>
 						</li>
 					</ol>
 				</div>
-				<textarea id="<?php echo $id; ?>_textarea" name="<?php echo $id; ?>_textarea" style="width:100%;margin:10px 0;"></textarea>
+				<textarea id="<?php echo esc_attr( $id ); ?>_textarea" name="<?php echo esc_attr( $id ); ?>_textarea" style="width:100%;margin:10px 0;"></textarea>
 			</div>
 		</div><?php
 
@@ -1329,6 +1566,7 @@ function wpbc_shortcode_config__content__booking() {
 								'versions'           => 'Business Medium / Large, MultiUser versions',
 								'css'                => 'transform: translate(0) translateY(120px);'
 							) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $upgrade_content_arr['content'];
 
 		//--------------------------------------------------------------------------------------------------------------
@@ -1344,7 +1582,7 @@ function wpbc_shortcode_config__content__booking() {
 
 							<div class="ui_element">
 								<div class="wpbc_ui_control" style="line-height: 2;">
-									<span><?php _e('For date' ,'booking'); ?></span>
+									<span><?php esc_html_e('For date' ,'booking'); ?></span>
 								</div>
 							</div>
 
@@ -1369,7 +1607,7 @@ function wpbc_shortcode_config__content__booking() {
 						<div class="ui_group">
 
 							<div class="ui_element">
-								<div class="wpbc_ui_control " style="line-height: 2;"><?php _e('allow to select' ,'booking'); ?></div>
+								<div class="wpbc_ui_control " style="line-height: 2;"><?php esc_html_e('allow to select' ,'booking'); ?></div>
 							</div>
 
 							<div class="ui_element"><?php
@@ -1387,7 +1625,7 @@ function wpbc_shortcode_config__content__booking() {
 							?></div>
 
 							<div class="ui_element">
-								<div class="wpbc_ui_control" style="line-height: 2;"><?php _e('days' ,'booking'); ?></div>
+								<div class="wpbc_ui_control" style="line-height: 2;"><?php esc_html_e('days' ,'booking'); ?></div>
 							</div>
 						</div>
 					</div>
@@ -1396,12 +1634,12 @@ function wpbc_shortcode_config__content__booking() {
 						<div class="ui_group">
 
 							<div class="ui_element">
-								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_fordate__add('<?php echo $id; ?>');"
-										   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary" ><?php _e('Add Rule','booking'); ?></a>
+								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_fordate__add('<?php echo esc_attr( $id ); ?>');"
+										   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary" ><?php esc_html_e('Add Rule','booking'); ?></a>
 							</div>
 							<div class="ui_element">
-								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_fordate__reset('<?php echo $id; ?>');"
-										   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php _e('Reset','booking'); ?></a>
+								<a href="javascript:void(0)" onclick="javascript:wpbc_shortcode_config__select_day_fordate__reset('<?php echo esc_attr( $id ); ?>');"
+										   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger" ><?php esc_html_e('Reset','booking'); ?></a>
 							</div>
 						</div>
 					</div>
@@ -1410,35 +1648,37 @@ function wpbc_shortcode_config__content__booking() {
 			</div>
 			<div class="wpbc_shortcode_config__rules__help_section">
 				<div class="wpbc-settings-notice notice-info notice-header">
-					<span><?php _e( 'Specify the number of days to select when starting the selection on a specific date.', 'booking' ); ?></span>
+					<span><?php esc_html_e( 'Specify the number of days to select when starting the selection on a specific date.', 'booking' ); ?></span>
 				</div>
 				<div class="wpbc-settings-notice notice-info notice-list">
 					<ol>
 						<li>
-							<?php _e( "For example, a visitor can choose to book 7 or 14 days or 21 days starting on '2027-02-15'. To configure this, enter date in format 'YYYY-MM-DD' such as '2027-02-15' and set the number of days to select as '7,14,21'. Click the 'Add Rule' button.", 'booking' ); ?>
+							<?php esc_html_e( "For example, a visitor can choose to book 7 or 14 days or 21 days starting on '2027-02-15'. To configure this, enter date in format 'YYYY-MM-DD' such as '2027-02-15' and set the number of days to select as '7,14,21'. Click the 'Add Rule' button.", 'booking' ); ?>
 						</li>
 						<li>
 							<?php
-							echo '<strong>' . __( 'Code Example', 'booking' ) . ': </strong>'
+							echo '<strong>' . esc_html__( 'Code Example', 'booking' ) . ': </strong>'
 											. '<code>{select-day condition="date" for="2027-02-15" value="7,14,21"}</code>';
 							?>
 						</li>
 						<li>
 							<?php
-							printf(	__ ('Check the FAQ for details on %sshortcode configuration%s, especially this %soption%s.' , 'booking' )
+							/* translators: 1: ... */
+							echo wp_kses_post( sprintf(	__( 'Check the FAQ for details on %1$sshortcode configuration%2$s, especially this %3$soption%4$s.' , 'booking' )
 									, '<a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/" target="_blank">', '</a>'
-									, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#aggregate" target="_blank">', '</a></strong>' );
+									, '<strong><a href="https://wpbookingcalendar.com/faq/shortcode-booking-form/#aggregate" target="_blank">', '</a></strong>' ) );
 							?>
 						</li>
 						<li>
 							<?php
-							 printf(__('Explore %sJavaScript customization%s for advanced different day selection in different calendars.' ,'booking')
-										, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>');
+							 /* translators: 1: ... */
+							 echo wp_kses_post( sprintf( __( 'Explore %1$sJavaScript customization%2$s for advanced different day selection in different calendars.', 'booking' )
+										, '<a href="https://wpbookingcalendar.com/faq/advanced-javascript-for-the-booking-shortcodes/" target="_blank">','</a>') );
 							?>
 						</li>
 					</ol>
 				</div>
-				<textarea id="<?php echo $id; ?>_textarea" name="<?php echo $id; ?>_textarea" style="width:100%;margin:10px 0;"></textarea>
+				<textarea id="<?php echo esc_attr( $id ); ?>_textarea" name="<?php echo esc_attr( $id ); ?>_textarea" style="width:100%;margin:10px 0;"></textarea>
 			</div>
 		</div><?php
 

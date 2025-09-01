@@ -17,7 +17,7 @@ if ( ! class_exists( 'um\core\Blocks' ) ) {
 		 * Blocks constructor.
 		 */
 		public function __construct() {
-			add_action( 'init', array( &$this, 'block_editor_render' ) );
+			add_action( 'init', array( &$this, 'block_editor_render' ), 11 );
 			add_filter( 'block_type_metadata_settings', array( &$this, 'block_type_metadata_settings' ), 9999, 2 );
 		}
 
@@ -37,27 +37,33 @@ if ( ! class_exists( 'um\core\Blocks' ) ) {
 
 			if ( empty( $settings['attributes']['um_is_restrict'] ) ) {
 				$settings['attributes']['um_is_restrict'] = array(
-					'type' => 'boolean',
+					'type'    => 'boolean',
+					'default' => false,
 				);
 			}
 			if ( empty( $settings['attributes']['um_who_access'] ) ) {
 				$settings['attributes']['um_who_access'] = array(
-					'type' => 'string',
+					'type'    => 'string',
+					'default' => 0,
 				);
 			}
 			if ( empty( $settings['attributes']['um_roles_access'] ) ) {
 				$settings['attributes']['um_roles_access'] = array(
-					'type' => 'array',
+					'type'    => 'array',
+					'default' => array(),
+					'items'   => array( 'type' => 'string' ),
 				);
 			}
 			if ( empty( $settings['attributes']['um_message_type'] ) ) {
 				$settings['attributes']['um_message_type'] = array(
-					'type' => 'string',
+					'type'    => 'string',
+					'default' => 0,
 				);
 			}
 			if ( empty( $settings['attributes']['um_message_content'] ) ) {
 				$settings['attributes']['um_message_content'] = array(
-					'type' => 'string',
+					'type'    => 'string',
+					'default' => '',
 				);
 			}
 
@@ -68,6 +74,7 @@ if ( ! class_exists( 'um\core\Blocks' ) ) {
 		 * Register UM Blocks.
 		 *
 		 * @uses register_block_type_from_metadata()
+		 * @uses wp_register_block_metadata_collection()
 		 */
 		public function block_editor_render() {
 			/**
@@ -97,6 +104,10 @@ if ( ! class_exists( 'um\core\Blocks' ) ) {
 			$enable_blocks = UM()->options()->get( 'enable_blocks' );
 			if ( empty( $enable_blocks ) ) {
 				return;
+			}
+
+			if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
+				wp_register_block_metadata_collection( UM_PATH . 'includes/blocks', UM_PATH . 'includes/blocks/blocks-manifest.php' );
 			}
 
 			$blocks = array(

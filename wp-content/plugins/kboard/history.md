@@ -2,6 +2,24 @@
 
 [homepage](https://www.cosmosfarm.com/products/kboard)
 
+6.6
+----------------------------------
+
+  1. 대량관리 CSV 파일 다운로드 기능 취약점 개선
+  2. 버그 수정
+
+
+6.5
+----------------------------------
+
+  1. kboard_url_to_string 필터 추가
+  2. 게시글 표시 수 제외 옵션 추가
+  3. 대시보드 페이지에 검색엔진 항상 읽기 가능 기능 추가
+  4. 최신글 숏코드에 private 옵션 추가 (본인의 글만 최신글에 표시)
+  5. 번역 파일 로드 방식 변경
+  6. 버그 수정
+
+
 6.4
 ----------------------------------
 
@@ -10,11 +28,12 @@
   3. kboard_latest_select 필터 추가
   4. kboard_latest_from 필터 추가
   5. kboard_latest_where 필터 추가
-  6. kboard_latest_orderby 필터 추가
-  7. 회원 본인의 글만 표시하는 숏코드 추가 [kboard_my_list]
-  8. kboard_autolink 도메인 지원 확대
-  9. KBoard 자체 SEO 기능 최적화 코드 수정 (All In One SEO Pack, Rank Math 플러그인 대응)
-  10. Summernote 에디터 사진 입력버튼을 비디오 입력 버튼으로 변경
+  5. kboard_latest_orderby 필터 추가
+  6. 회원 본인의 글만 표시하는 숏코드 추가 [kboard_my_list]
+  7. kboard_autolink 도메인 지원 확대
+  8. KBoard 자체 SEO 기능 최적화 코드 수정 (All In One SEO Pack, Rank Math 플러그인 대응)
+  9. Summernote 에디터 사진 입력버튼을 비디오 입력 버튼으로 변경
+  10. 인기글 활성화시 인기글 리스트에 공지사항 제거
   11. 버그 수정
 
 

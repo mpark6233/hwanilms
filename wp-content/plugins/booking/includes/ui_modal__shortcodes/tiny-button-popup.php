@@ -14,44 +14,47 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly
 
-//FixIn: 9.9.0.15
+// FixIn: 9.9.0.15.
 
 class WPBC_TinyMCE_Buttons {
     
     //                                                                              <editor-fold   defaultstate="collapsed"   desc=" I n i t    +    H o o k s" >
-    private $settings = array();
-    
-    function __construct( $params ) {
-        
-        $this->settings = array(
-                                  'tiny_prefix'         => 'wpbc_tiny'
-                                , 'tiny_icon_url'       => ''//WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'
-                                , 'tiny_js_plugin'      => WPBC_PLUGIN_URL . '/js/wpbc_tinymce_btn.js'
-                                , 'tiny_js_function'    => 'wpbc_init_tinymce_buttons'                     // This function NAME exist inside of this JS file: ['tiny_js_plugin']
-                                , 'tiny_btn_row'        => 1
-                                , 'pages_where_insert'  => array( 'post-new.php', 'page-new.php', 'post.php', 'page.php', 'widgets.php', 'customize.php'  )		//FixIn: 8.8.2.12
-                                , 'buttons'             => array(
-                                                          'booking_insert' => array(
-                                                                                      'hint'  => __('Insert booking calendar' ,'booking')
-                                                                                    , 'title' => __('Booking calendar' ,'booking')
-                                                                                    , 'img'   => ''//WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'
-                                                                                    , 'class' => 'bookig_buttons'
-                                                                                    , 'js_func_name_click'    => 'wpbc_tiny_btn_click'
-                                                                                    , 'bookmark'              => 'booking'
-                                                                                    , 'is_close_bookmark'     => 0
-                                                                                )
-                                                          )
-                            );
-        
-        $this->settings = wp_parse_args( $params, $this->settings );
-        
-        add_action( 'init', array( $this, 'define_init_hooks' ) );   // Define init hooks
-    }
+	private $settings = array();
+
+	public function __construct( $params ) {
+
+		$this->settings = array(
+			'tiny_prefix'        => 'wpbc_tiny',
+			'tiny_icon_url'      => '',                                             // WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'.
+			'tiny_js_plugin'     => WPBC_PLUGIN_URL . '/js/wpbc_tinymce_btn.js',
+			'tiny_js_function'   => 'wpbc_init_tinymce_buttons',                    // This function NAME exist inside of this JS file: ['tiny_js_plugin'].
+			'tiny_btn_row'       => 1,
+			'pages_where_insert' => array(),        // FixIn: 10.6.5.1.
+			'buttons'            => array(),        // FixIn: 10.6.5.1.
+		);
+
+		$this->settings = wp_parse_args( $params, $this->settings );
+
+		add_action( 'init', array( $this, 'define_init_hooks' ) );   // Define init hooks.
+	}
     
     /** Init all hooks for showing Button in Tiny Toolbar */
     public function define_init_hooks() {
 
 		if ( wpbc_can_i_load_on_this_page__shortcode_config() ) {
+
+			// FixIn: 10.6.5.1.
+			$this->settings['buttons'] = array(
+												  'booking_insert' => array(
+																			  'hint'  => __('Insert WP Booking Calendar' ,'booking')
+																			, 'title' => __('Booking calendar' ,'booking')
+																			, 'img'   => ''//WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'
+																			, 'class' => 'bookig_buttons'
+																			, 'js_func_name_click'    => 'wpbc_tiny_btn_click'
+																			, 'bookmark'              => 'booking'
+																			, 'is_close_bookmark'     => 0
+																		)
+									  			);
 
             // Load JS file  - TinyMCE plugin
             add_filter( 'mce_external_plugins', array( $this, 'load_tiny_js_plugin' ) );
@@ -67,105 +70,115 @@ class WPBC_TinyMCE_Buttons {
             add_action( 'edit_page_form',       array( $this, 'add_html_button' ) );
             add_action( 'admin_head',           array( $this, 'insert_button') );			// Tiny Button
             add_action( 'admin_footer',         array( $this, 'modal_content' ) );			// Modal Content
-            
+
+
             // JS & CSS
 			wpbc_load_js__required_for_modals();
 
-			add_action( 'customize_controls_print_footer_scripts', array( $this, 'add_html_button' ) );					//FixIn: 8.8.2.12
+			add_action( 'customize_controls_print_footer_scripts', array( $this, 'add_html_button' ) );					// FixIn: 8.8.2.12.
 			add_action( 'customize_controls_print_footer_scripts', array( $this, 'insert_button' ) );
 			add_action( 'customize_controls_print_footer_scripts', array( $this, 'modal_content' ) );					// Modal Content
         }            
     }
     //                                                                              </editor-fold>
-                                                                                  
-                                                                                  
+
+
     //                                                                              <editor-fold   defaultstate="collapsed"   desc=" TinyMCE - Add Button " >    
 
-    /**
+	/**
 	 * Load JS file  - TinyMCE plugin
-     * 
-     * @param array $plugins
-     * @return array
-     */
-    public function load_tiny_js_plugin( $plugins ){
-    
-        $plugins[ $this->settings['tiny_prefix'] . '_quicktags'] = $this->settings['tiny_js_plugin'];
-        
-        return $plugins;
-    }
-    
-    
-    /**
+	 *
+	 * @param array $plugins
+	 *
+	 * @return array
+	 */
+	public function load_tiny_js_plugin( $plugins ) {
+
+		$plugins[ $this->settings['tiny_prefix'] . '_quicktags' ] = $this->settings['tiny_js_plugin'];
+
+		return $plugins;
+	}
+
+
+	/**
 	 * Add the custom TinyMCE buttons
-     * 
-     * @param array $buttons
-     * @return array
-     */
-    public function add_tiny_button( $buttons ) {
-                
-        array_push( $buttons, "separator" );
-        
-        foreach ( $this->settings['buttons'] as $type => $strings ) {
-            array_push( $buttons, $this->settings['tiny_prefix'] . '_' . $type );
-        }
+	 *
+	 * @param array $buttons
+	 *
+	 * @return array
+	 */
+	public function add_tiny_button( $buttons ) {
 
-        return $buttons;        
-    }
-    
-    
-    /** Add the old style button to the non-TinyMCE editor views */
-    public function add_html_button() {
-        
-        $buttonshtml = '';
-        $datajs='';
-        
-        foreach ( $this->settings['buttons'] as $type => $props ) {
+		array_push( $buttons, 'separator' );
 
-            $buttonshtml .= '<input type="button" class="ed_button button button-small" onclick="'
-                                .$props['js_func_name_click'].'(\'' . $type . '\')" title="' . $props['hint'] . '" value="' . $props['title'] . '" />';
+		foreach ( $this->settings['buttons'] as $type => $strings ) {
+			array_push( $buttons, $this->settings['tiny_prefix'] . '_' . $type );
+		}
 
-            $datajs.= " wpbc_tiny_btn_data['$type'] = {\n";
-            $datajs.= '		title: "' . esc_js( $props['title'] ) . '",' . "\n";
-            $datajs.= '		tag: "' . esc_js( $props['bookmark'] ) . '",' . "\n";
-            $datajs.= '		tag_close: "' . esc_js( $props['is_close_bookmark'] ) . '",' . "\n";
-            $datajs.= '		cal_count: "' . get_bk_option( 'booking_client_cal_count' )  . '"' . "\n";
-            $datajs.=  "\n	};\n";
-        }
-        
-        ?><script type="text/javascript">
-            // <![CDATA[
-            
-                function wpbc_add_html_button_to_toolbar(){                     // Add buttons  ( HTML view )
-                    if ( jQuery( '#ed_toolbar' ).length == 0 ) 
-                        setTimeout( 'wpbc_add_html_button_to_toolbar()' , 100 );
-                    else 
-                        jQuery("#ed_toolbar").append( '<?php echo wp_specialchars_decode( esc_js( $buttonshtml ), ENT_COMPAT ); ?>' );
-                }                
-                jQuery(document).ready(function(){ 
-                    setTimeout( 'wpbc_add_html_button_to_toolbar()' , 100 );
-                });
+		return $buttons;
+	}
 
-                var selected_booking_shortcode = 'bookingform';
-                var wpbc_tiny_btn_data={};
-                <?php echo $datajs; ?>
-                
-            // ]]>
-        </script><?php
-        
-    }
-    
-    
+
+	/** Add the old style button to the non-TinyMCE editor views */
+	public function add_html_button() {
+
+		$buttonshtml = '';
+		$datajs      = '';
+
+		foreach ( $this->settings['buttons'] as $type => $props ) {
+
+			$buttonshtml .= '<input type="button" class="ed_button button button-small" onclick="' . $props['js_func_name_click'] . '(\'' . $type . '\')" title="' . $props['hint'] . '" value="' . $props['title'] . '" />';
+
+			$datajs .= " wpbc_tiny_btn_data['$type'] = {\n";
+			$datajs .= '		title: "' . esc_js( $props['title'] ) . '",' . "\n";
+			$datajs .= '		tag: "' . esc_js( $props['bookmark'] ) . '",' . "\n";
+			$datajs .= '		tag_close: "' . esc_js( $props['is_close_bookmark'] ) . '",' . "\n";
+			$datajs .= '		cal_count: "' . get_bk_option( 'booking_client_cal_count' ) . '"' . "\n";
+			$datajs .= "\n	};\n";
+		}
+
+		?>
+		<script type="text/javascript">
+			// <![CDATA[
+			function wpbc_add_html_button_to_toolbar() {                     // Add buttons  ( HTML view ).
+				if ( jQuery( '#ed_toolbar' ).length == 0 )
+					setTimeout( 'wpbc_add_html_button_to_toolbar()', 100 );
+				else {
+					jQuery( "#ed_toolbar" ).append( '<?php
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo wp_specialchars_decode( esc_js( $buttonshtml ), ENT_COMPAT ); ?>' );
+				}
+			}
+
+			jQuery( document ).ready( function () {
+				setTimeout( 'wpbc_add_html_button_to_toolbar()', 100 );
+			} );
+
+			var selected_booking_shortcode = 'bookingform';
+			var wpbc_tiny_btn_data         = {};
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $datajs; ?>
+			// ]]>
+		</script>
+		<?php
+
+	}
+
+
     public function insert_button() {
         
         $script = '';
 
-		// calendar3-range		https://icons.getbootstrap.com/icons/calendar3-range/
-		$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3-range" viewBox="-2 -1 20 20">'
-								  . '<path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>'
-								  . '<path d="M7 10a1 1 0 0 0 0-2H1v2h6zm2-3h6V5H9a1 1 0 0 0 0 2z"/>'
-								. '</svg>';
-		$mune_icon_url = sprintf( 'data:image/svg+xml;base64,%s', base64_encode( $svg_icon_integarted ) );
+//		// calendar3-range		https://icons.getbootstrap.com/icons/calendar3-range/
+//		$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3-range" viewBox="-2 -1 20 20">'
+//								  . '<path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>'
+//								  . '<path d="M7 10a1 1 0 0 0 0-2H1v2h6zm2-3h6V5H9a1 1 0 0 0 0 2z"/>'
+//								. '</svg>';
+//		$mune_icon_url = sprintf( 'data:image/svg+xml;base64,%s', base64_encode( $svg_icon_integarted ) );
 
+		// FixIn: 10.11.3.3.
+		$mune_icon_url = wpbc_get_svg_logo_for_background( '#000', '#aaa', '0.3' );   //  '#aaa', '#aaa', '0.2' .
 
         if ( ! empty( $this->settings['buttons'] ) ){
             
@@ -188,8 +201,9 @@ class WPBC_TinyMCE_Buttons {
             $script .=  ' }';
 
             $script .= '</script>';
-            
-            echo $script;
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $script;
         }        
     }
     
@@ -208,10 +222,7 @@ class WPBC_TinyMCE_Buttons {
                         <h4 class="modal-title">
 							<span>WP Booking Calendar</span>
 							<span style="padding: 0 1em;"> / </span>
-							<span>
-							<?php
-							_e( 'Shortcode Configuration', 'booking' );
-                        ?></span></h4>
+							<span> <?php esc_html_e( 'Shortcode Configuration', 'booking' ); ?></span></h4>
                     </div>
                     <div class="modal-body">
 
@@ -269,14 +280,14 @@ class WPBC_TinyMCE_Buttons {
 						<div class="wpbc_shortcode_config_content_toolbar__container">
 							<div class="wpbc_shortcode_config_content_toolbar__reset">
 								<a href="javascript:void(0)" class="button button-primary wpbc_tiny_button__reset_to_resource wpbc_ui_button_danger"
-								   onclick="javascript:wpbc_shortcode_config__reset( jQuery('#wpbc_shortcode_type').val().trim() );" ><?php _e( 'Reset' ); ?></a>
+								   onclick="javascript:wpbc_shortcode_config__reset( jQuery('#wpbc_shortcode_type').val().trim() );" ><?php esc_html_e( 'Reset', 'booking' ); ?></a>
 							</div>
 							<div class="wpbc_shortcode_config_content_toolbar__insert">
 								<a href="javascript:void(0)" class="button button-primary wpbc_tiny_button__insert_to_editor"    style="float:none;"
-								   onclick="javascript:wpbc_send_text_to_editor( jQuery('#wpbc_text_put_in_shortcode').val().trim() );wpbc_tiny_close();"><?php    _e( 'Insert' ); ?></a>
+								   onclick="javascript:wpbc_send_text_to_editor( jQuery('#wpbc_text_put_in_shortcode').val().trim() );wpbc_tiny_close();"><?php esc_html_e( 'Insert', 'booking' ); ?></a>
 								<a href="javascript:void(0)" class="button button-primary wpbc_tiny_button__insert_to_resource"  style="float:none;display:none;"
-								   onclick="javascript:wpbc_send_text_to_resource( jQuery('#wpbc_text_put_in_shortcode').val().trim() );wpbc_tiny_close();" ><?php _e( 'Insert' ); ?></a>
-								<!--a href="javascript:void(0)" class="button" style="float:none;" data-dismiss="modal"><?php _e('Close' ,'booking'); ?></a-->
+								   onclick="javascript:wpbc_send_text_to_resource( jQuery('#wpbc_text_put_in_shortcode').val().trim() );wpbc_tiny_close();" ><?php esc_html_e( 'Insert', 'booking' ); ?></a>
+								<!--a href="javascript:void(0)" class="button" style="float:none;" data-dismiss="modal"><?php esc_html_e('Close' ,'booking'); ?></a-->
 							</div>
 						</div>
                    </div>
@@ -288,39 +299,34 @@ class WPBC_TinyMCE_Buttons {
 
     }
     //                                                                              </editor-fold>
-    
 
 }
 
 
-$wpbc_pages_where_insert_btn = array( 'post-new.php', 'page-new.php', 'post.php', 'page.php', 'widgets.php', 'customize.php' );            //FixIn: 8.8.2.11		//FixIn: 8.8.2.12
+function wpbc_get_pages_where_insert_tiny_mce_buttons() {
+	return array(
+		'post-new.php',
+		'page-new.php',
+		'post.php',
+		'page.php',
+		'widgets.php',
+		'customize.php',
+	);            // FixIn: 8.8.2.11  // FixIn: 8.8.2.12.
+}
+
 
 if (
-		( in_array( basename( $_SERVER['PHP_SELF'] ), $wpbc_pages_where_insert_btn ) )
-	 || (
-		   ( isset( $_REQUEST['page'] )
-	   	&& ( $_REQUEST['page'] == 'wpbc-resources' ) )                  // Check  if this Booking > Resources page
-		)
- ){
-    new WPBC_TinyMCE_Buttons( 
-                            array(
-                                      'tiny_prefix'     => 'wpbc_tiny'
-                                    , 'tiny_icon_url'   => ''//WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'
-                                    , 'tiny_js_plugin'  => WPBC_PLUGIN_URL . '/js/wpbc_tinymce_btn.js'
-                                    , 'tiny_js_function' => 'wpbc_init_tinymce_buttons'                     // This function NAME exist inside of this file: ['tiny_js_plugin']
-                                    , 'tiny_btn_row'    => 1
-                                    , 'pages_where_insert' => $wpbc_pages_where_insert_btn
-                                    , 'buttons'            => array(
-                                                                'booking_insert' => array(
-                                                                                              'hint'  => __('Insert WP Booking Calendar' ,'booking')
-                                                                                            , 'title' => __('Booking calendar' ,'booking')
-                                                                                            , 'img'   => ''//WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'
-                                                                                            , 'class' => 'bookig_buttons'
-                                                                                            , 'js_func_name_click'    => 'wpbc_tiny_btn_click'
-                                                                                            , 'bookmark'              => 'booking'
-                                                                                            , 'is_close_bookmark'     => 0
-                                                                                        )
-                                                                )
-                            )
-                        );
+	( in_array( basename( $_SERVER['PHP_SELF'] ), wpbc_get_pages_where_insert_tiny_mce_buttons() ) )      // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	|| ( ( isset( $_REQUEST['page'] ) && ( 'wpbc-resources' === $_REQUEST['page'] ) ) )                   // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	|| wpbc_is_setup_wizard_page() // || wpbc_is_bookings_page()  // FixIn: 10.6.6.2.
+) {
+	// FixIn: 10.6.5.1.
+	new WPBC_TinyMCE_Buttons( array(
+			'tiny_prefix'        => 'wpbc_tiny',
+			'tiny_icon_url'      => '',  // WPBC_PLUGIN_URL . '/assets/img/bc_black-16x16.png'.
+			'tiny_js_plugin'     => WPBC_PLUGIN_URL . '/js/wpbc_tinymce_btn.js',
+			'tiny_js_function'   => 'wpbc_init_tinymce_buttons',  // This function NAME exist inside of this file: ['tiny_js_plugin'].
+			'tiny_btn_row'       => 1,
+			'pages_where_insert' => wpbc_get_pages_where_insert_tiny_mce_buttons(),
+		) );
 }

@@ -11,12 +11,6 @@ function avada_lang_setup() {
 }
 add_action( 'after_setup_theme', 'avada_lang_setup' );
 
-// loading chgmedialurl.js code
-function chgmediaurl_script() {
-    wp_enqueue_script( 'chgmediaurl', get_template_directory_uri() . '/js/chgmediaurl.js', array( 'jquery' ), false, true );
-}
-add_action( 'wp_enqueue_scripts', 'chgmediaurl_script' );
-
 /**
  * Customize Post Types
  */
@@ -66,53 +60,82 @@ function pm_change_post_label2() {
 }
 function pm_change_post_object2() {
     global $wp_post_types;
-    $labels = &$wp_post_types['avada_portfolio']->labels;
-    $labels->name = '글';
-    $labels->singular_name = '글';
-    $labels->add_new = '글 쓰기';
-    $labels->add_new_item = '글 쓰기';
-    $labels->edit_item = '글 수정하기';
-    $labels->new_item = '새로운 글';
-    $labels->view_item = '글 보기';
-    $labels->search_items = '글 검색하기';
-    $labels->not_found = '찾는 글이 없습니다.';
-    $labels->not_found_in_trash = '찾는 글이 휴지통에 없습니다.';
-    $labels->all_items = '전체 글';
-    $labels->menu_name = '명품환일 글';
-    $labels->name_admin_bar = '명품환일 글';
+
+    // Check if 'avada_portfolio' exists in $wp_post_types and ensure it's not null
+    if (isset($wp_post_types['avada_portfolio']) && !is_null($wp_post_types['avada_portfolio']->labels)) {
+        $labels = &$wp_post_types['avada_portfolio']->labels;
+        $labels->name = '글';
+        $labels->singular_name = '글';
+        $labels->add_new = '글 쓰기';
+        $labels->add_new_item = '글 쓰기';
+        $labels->edit_item = '글 수정하기';
+        $labels->new_item = '새로운 글';
+        $labels->view_item = '글 보기';
+        $labels->search_items = '글 검색하기';
+        $labels->not_found = '찾는 글이 없습니다.';
+        $labels->not_found_in_trash = '찾는 글이 휴지통에 없습니다.';
+        $labels->all_items = '전체 글';
+        $labels->menu_name = '명품환일 글';
+        $labels->name_admin_bar = '명품환일 글';
+    }
 }
-// add_filter( 'post_type_labels_portfolio', 'pm_rename_labels' );
-// function pm_rename_labels( $labels )
-// {
-//     # Labels
-//     $labels->name = '글';
-//     $labels->singular_name = '글';
-//     $labels->add_new = '글 쓰기';
-//     $labels->add_new_item = '글 쓰기';
-//     $labels->edit_item = '글 수정하기';
-//     $labels->new_item = '새로운 글';
-//     $labels->view_item = '글 보기';
-//     $labels->view_items = '글 보기';
-//     $labels->search_items = '글 검색하기';
-//     $labels->not_found = '찾는 글이 없습니다.';
-//     $labels->not_found_in_trash = '찾는 글이 휴지통에 없습니다.';
-//     $labels->parent_item_colon = 'Parent news'; // Not for "post"
-//     $labels->archives = 'News Archives';
-//     $labels->attributes = 'News Attributes';
-//     $labels->insert_into_item = 'Insert into news';
-//     $labels->uploaded_to_this_item = 'Uploaded to this news';
-//     $labels->featured_image = 'Featured Image';
-//     $labels->set_featured_image = 'Set featured image';
-//     $labels->remove_featured_image = 'Remove featured image';
-//     $labels->use_featured_image = 'Use as featured image';
-//     $labels->filter_items_list = 'Filter news list';
-//     $labels->items_list_navigation = 'News list navigation';
-//     $labels->items_list = 'News list';
 
-//     # Menu
-//     $labels->menu_name = '명품환일 글';
-//     $labels->all_items = '전체 글';
-//     $labels->name_admin_bar = '명품환일 글';
+/**
+ * Setup AWS S3 Integration
+ */
+require_once '/var/www/html/vendor/autoload.php';
+use Aws\S3\S3Client;
 
-//     return $labels;
-// }
+// Configure AWS S3 Client
+function get_s3_client() {
+    return new S3Client([
+        'version'     => 'latest',
+        'region'      => 'ap-northeast-2', // Replace with your bucket's region
+        'credentials' => [
+            'key'    => AWS_ACCESS_KEY_ID,
+            'secret' => AWS_SECRET_ACCESS_KEY,
+        ],
+    ]);
+}
+
+// Upload Files to S3
+add_filter('wp_handle_upload', 'upload_to_s3');
+function upload_to_s3($file) {
+    $s3 = get_s3_client();
+    $upload = fopen($file['file'], 'rb');
+    
+    // Format the key to include the year and month dynamically
+    $time = current_time('mysql');
+    $year = substr($time, 0, 4);
+    $month = substr($time, 5, 2);
+    $key = "wp-content/uploads/$year/$month/" . basename($file['file']);
+
+    $s3->putObject([
+        'Bucket' => 'hwanilms',
+        'Key'    => $key,
+        'Body'   => $upload
+    ]);
+
+    fclose($upload);
+    if (file_exists($file['file'])) {
+        unlink($file['file']);
+    }
+
+    return $file;
+}
+
+// Rewrite Media URLs to Point to S3
+add_filter('wp_get_attachment_url', 'get_attachment_url_from_s3', 10, 2);
+function get_attachment_url_from_s3($url, $postID) {
+    $filepath = get_post_meta($postID, '_wp_attached_file', true);
+    return 'https://hwanilms.s3.ap-northeast-2.amazonaws.com/wp-content/uploads/' . $filepath;
+}
+
+// Modify image srcset URLs to point to S3
+add_filter('wp_calculate_image_srcset', 'modify_image_srcset_urls');
+function modify_image_srcset_urls($sources) {
+    foreach ($sources as $key => $source) {
+        $sources[$key]['url'] = str_replace('https://www.hwanil.ms.kr/wp-content/uploads', 'https://hwanilms.s3.ap-northeast-2.amazonaws.com/wp-content/uploads', $source['url']);
+    }
+    return $sources;
+}

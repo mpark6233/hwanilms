@@ -14,103 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-//   T o o l b a r s
+// == T o o l b a r s ==
 // ---------------------------------------------------------------------------------------------------------------------
-
-//FixIn: 9.6.3.5
-
-/** T o o l b a r   C o n t a i n e r   f o r   Timeline */
-function wpbc_timeline_toolbar() {
-
-    wpbc_clear_div();
-
-    //wpbc_toolbar_search_by_id_bookings();                                       // Search bookings by  ID - form  at the top  right side of the page
-
-    //wpbc_toolbar_btn__view_mode();                                              //  Vertical Buttons				//FixIn: 9.8.15.2
-
-    //  Toolbar ////////////////////////////////////////////////////////////////
-
-    ?><div id="toolbar_booking_listing" class="wpbc_timeline_toolbar_container"><?php
-/*
-        wpbc_bs_toolbar_tabs_html_container_start();
-
-            // <editor-fold     defaultstate="collapsed"                        desc=" T O P    T A B s "  >
-
-            if ( ! isset( $_REQUEST['tab_cvm'] ) )  $_REQUEST['tab_cvm'] = 'actions_cvm';
-            $selected_tab = $_REQUEST['tab_cvm'];
-
-            wpbc_bs_display_tab(   array(
-                                                'title'         => __('View', 'booking')
-                                                // , 'hint' => array( 'title' => __('Manage bookings' ,'booking') , 'position' => 'top' )
-                                                , 'onclick'     =>  "jQuery('.visibility_container').hide();"
-                                                                    . "jQuery('#actions_toolbar_container').show();"
-                                                                    . "jQuery('#toolbar_booking_listing .nav-tab').removeClass('nav-tab-active');"					//FixIn: 9.8.15.2
-                                                                    . "jQuery(this).addClass('nav-tab-active');"
-                                                                    . "jQuery('.nav-tab i.icon-white').removeClass('icon-white');"
-                                                                    . "jQuery('.nav-tab-active i').addClass('icon-white');"
-                                                , 'font_icon'   => 'wpbc-bi-calendar2-range-fill'
-                                                , 'default'     => ( $selected_tab == 'actions_cvm' ) ? true : false
-
-                                ) );
-
-
-            wpbc_bs_dropdown_menu_help();
-
-            // </editor-fold>
-
-        wpbc_bs_toolbar_tabs_html_container_end();
-*/
-        ////////////////////////////////////////////////////////////////////////
-
-        wpbc_bs_toolbar_sub_html_container_start();
-
-        // A c t i o n s   T o o l b a r   f o r     T i m e l i n e
-/*
-        ?><div id="actions_toolbar_container" class="visibility_container clearfix-height" style="display:<?php echo ( $selected_tab == 'actions_cvm' ) ? 'block' : 'none'  ?>;margin-top:-5px;"><?php
-
-            wpbc_toolbar_btn__timeline_view_mode();                             //  View Mode    Buttons
-
-            wpbc_toolbar_btn__timeline_navigation();                            //  Navigation   Buttons
-
-
-        ?></div><?php
-*/
-
-		?><div class="wpbc_timeline_toolbar_structure"><?php
-
-			make_bk_action( 'wpbc_br_selection_for_timeline' );
-
-			wpbc_toolbar_is_send_emails_btn( '');
-
-		?></div><?php
-
-		wpbc_bs_toolbar_sub_html_container_end();
-
-    ?></div><?php
-
-    wpbc_clear_div();
-
-}
-
-/**
- * Show Search  by  Booking ID form  at  top right side of Calendar  Overview page
- *
- * @param $page_tag
- * @param $active_page_tab
- * @param $active_page_subtab
- *
- * @return false|void
- */
-function wpbc_calendar_overview__search_by_id_bookings( $page_tag, $active_page_tab, $active_page_subtab ) {
-
-	if ( ( 'wpbc' !== $page_tag ) || ( 'vm_calendar' !== $active_page_tab ) ) {
-		return false;
-	}
-	?><span class="wpdevelop wpbc_page wpbc_toolbar_search_by_id_bookings"><?php
-		wpbc_toolbar_search_by_id_bookings();                                       // Search bookings by  ID - form  at the top  right side of the page
-	?></span><?php
-}
-add_bk_action('wpbc_h1_header_content_end', 'wpbc_calendar_overview__search_by_id_bookings');
 
 
 /** T o o l b a r   C o n t a i n e r   f o r   Add New Booking */
@@ -126,15 +31,16 @@ function wpbc_add_new_booking_toolbar() {
 
             // <editor-fold     defaultstate="collapsed"                        desc=" T O P    T A B s "  >
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
             if ( ! isset( $_REQUEST['toolbar'] ) )  $_REQUEST['toolbar'] = 'filter';
-            $selected_tab = $_REQUEST['toolbar'];
+            $selected_tab = sanitize_text_field( wp_unslash( $_REQUEST['toolbar'] ) );  /* phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing */ /* FixIn: sanitize_unslash */
 
             wpbc_bs_display_tab(   array(
                                                 'title'         => __('Options', 'booking')
                                                 // , 'hint' => array( 'title' => __('Manage bookings' ,'booking') , 'position' => 'top' )
                                                 , 'onclick'     =>  "jQuery('.visibility_container').hide();"
                                                                     . "jQuery('#filter_toolbar_container').show();"
-                                                                    . "jQuery('#toolbar_booking_listing .nav-tab').removeClass('nav-tab-active');"						//FixIn: 9.8.15.2
+                                                                    . "jQuery('#toolbar_booking_listing .nav-tab').removeClass('nav-tab-active');"						// FixIn: 9.8.15.2.
                                                                     . "jQuery(this).addClass('nav-tab-active');"
                                                                     . "jQuery('.nav-tab i.icon-white').removeClass('icon-white');"
                                                                     . "jQuery('.nav-tab-active i').addClass('icon-white');"
@@ -148,7 +54,7 @@ function wpbc_add_new_booking_toolbar() {
                                                 // , 'hint' => array( 'title' => __('Manage bookings' ,'booking') , 'position' => 'top' )
                                                 , 'onclick'     =>  "jQuery('.visibility_container').hide();"
                                                                     . "jQuery('#calendar_size_toolbar_container').show();"
-                                                                    . "jQuery('#toolbar_booking_listing .nav-tab').removeClass('nav-tab-active');"						//FixIn: 9.8.15.2
+                                                                    . "jQuery('#toolbar_booking_listing .nav-tab').removeClass('nav-tab-active');"						// FixIn: 9.8.15.2.
                                                                     . "jQuery(this).addClass('nav-tab-active');"
                                                                     . "jQuery('.nav-tab i.icon-white').removeClass('icon-white');"
                                                                     . "jQuery('.nav-tab-active i').addClass('icon-white');"
@@ -171,9 +77,12 @@ function wpbc_add_new_booking_toolbar() {
         //  T o o l b a r
         ?><div id="filter_toolbar_container" class="visibility_container clearfix-height" style="display:<?php echo ( $selected_tab == 'filter' ) ? 'block' : 'none'  ?>;margin-top:-5px;"><?php
 
-            if (    (  function_exists( 'wpbc_toolbar_btn__resource_selection' ) )
-                 && ( empty( $_GET['booking_hash'] ) )  )                     //Do not show resource seleciton  if editing booking.	//FixIn:7.1.2.10
-                wpbc_toolbar_btn__resource_selection();
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( ( function_exists( 'wpbc_toolbar_btn__resource_selection' ) ) && ( empty( $_GET['booking_hash'] ) ) ) {
+				// Do not show resource seleciton  if editing booking.	// FixIn: 7.1.2.10.
+
+				wpbc_toolbar_btn__resource_selection();
+			}
 
             if (  function_exists( 'wpbc_toolbar_btn__form_selection' ) )
                 wpbc_toolbar_btn__form_selection();
@@ -183,10 +92,13 @@ function wpbc_add_new_booking_toolbar() {
 
             ?><div class="control-group wpbc-no-padding" style="float:right;margin-right: 0;margin-left: 15px;"><?php
 
-                if ( function_exists( 'wpbc_toolbar_btn__auto_fill' ) )
-                    wpbc_toolbar_btn__auto_fill();
+				wpbc_toolbar_btn__add_past_booking();
 
-                wpbc_toolbar_btn__add_new_booking();
+				if ( function_exists( 'wpbc_toolbar_btn__auto_fill' ) ) {
+					wpbc_toolbar_btn__auto_fill();
+				}
+
+				wpbc_toolbar_btn__add_new_booking();
 
             ?></div><?php
             ////////////////////////////////////////////////////////////////////
@@ -256,16 +168,16 @@ function wpbc_add_new_booking_toolbar() {
 function wpbc_toolbar_expand_collapse_btn( $css_class_of_expand_element ) {
 
       ?><span id="show_link_advanced_booking_filter" class="tab-bottom tooltip_right advanced_booking_filter"
-            title="<?php _e('Expand Advanced Toolbar' ,'booking'); ?>"
+            title="<?php esc_attr_e('Expand Advanced Toolbar' ,'booking'); ?>"
             ><a href="javascript:void(0)"
-                onclick="javascript:jQuery('.<?php echo $css_class_of_expand_element; ?>').show();
+                onclick="javascript:jQuery('.<?php echo esc_js( $css_class_of_expand_element ); ?>').show();
                                     jQuery('#show_link_advanced_booking_filter').hide();
                                     jQuery('#hide_link_advanced_booking_filter').show();"><i
                     class="wpbc_icn_expand_more"></i></a></span>
         <span id="hide_link_advanced_booking_filter" class="tab-bottom tooltip_right advanced_booking_filter" style="display:none;"
-            title="<?php _e('Collapse Advanced Toolbar' ,'booking'); ?>"
+            title="<?php esc_attr_e('Collapse Advanced Toolbar' ,'booking'); ?>"
             ><a href="javascript:void(0)"
-                onclick="javascript:jQuery('.<?php echo $css_class_of_expand_element; ?>').hide();
+                onclick="javascript:jQuery('.<?php echo esc_js( $css_class_of_expand_element ); ?>').hide();
                                     jQuery('#hide_link_advanced_booking_filter').hide();
                                     jQuery('#show_link_advanced_booking_filter').show();"><i
                     class="wpbc_icn_expand_less"></i></a></span><?php
@@ -282,7 +194,7 @@ function wpbc_toolbar_expand_collapse_btn( $css_class_of_expand_element ) {
  */
 function wpbc_toolbar_is_send_emails_btn( $style = 'position:absolute;right:0px;margin-top:10px;' ) {
 
-	?><div class="btn-group" style="<?php echo $style; ?>"><?php
+	?><div class="btn-group" style="<?php echo esc_attr( $style ); ?>"><?php
 
 	$el_id = 'is_send_email_for_pending';
 
@@ -291,7 +203,7 @@ function wpbc_toolbar_is_send_emails_btn( $style = 'position:absolute;right:0px;
 	$params_checkbox = array(
 							  'id'       => $el_id 		// HTML ID  of element
 							, 'name'     => $el_id
-							, 'label'    => array( 'title' => __( 'Emails sending', 'booking' ) , 'position' => 'right' )           //FixIn: 9.6.1.5
+							, 'label'    => array( 'title' => __( 'Emails sending', 'booking' ) , 'position' => 'right' )           // FixIn: 9.6.1.5.
 							, 'style'    => '' 					// CSS of select element
 							, 'class'    => '' 					// CSS Class of select element
 							, 'disabled' => false
@@ -310,43 +222,6 @@ function wpbc_toolbar_is_send_emails_btn( $style = 'position:absolute;right:0px;
 }
 
 
-/** Search form  by booking ID (at top right side of page)  */
-function wpbc_toolbar_search_by_id_bookings() {
-
-    $bk_admin_url = wpbc_get_params_in_url( wpbc_get_bookings_url( true, false ), array('view_mode', 'wh_booking_id', 'page_num' ) );
-
-    ?>
-    <div style=" position: absolute; right: 23px; top: 11px;z-index: 9;">
-        <form name="booking_filters_formID" action="<?php echo $bk_admin_url . '&view_mode=vm_listing' ; ?>" method="post" id="booking_filters_formID" >
-        <?php
-
-            if (isset($_REQUEST['wh_booking_id']))  $wh_booking_id = wpbc_clean_digit_or_csd( $_REQUEST['wh_booking_id'] );                  //  {'1', '2', .... }
-            else                                    $wh_booking_id = '';
-
-
-            $params = array(  'label_for' => 'wh_booking_id'
-                                      , 'label' => ''//__('Keyword:', 'booking')
-                                      , 'items' => array(
-                                 array( 'type' => 'text', 'id' => 'wh_booking_id', 'value' => $wh_booking_id, 'placeholder' => __('Booking ID', 'booking'), 'style' => 'border-right: none;' )
-                                , array(
-                                    'type' => 'button'
-                                    , 'title' => __('Go', 'booking')
-                                    , 'class' => 'button-secondary'
-                                    , 'font_icon' => 'wpbc_icn_search'
-                                    , 'icon_position' => 'right'
-                                    , 'action' => "jQuery('#booking_filters_formID').trigger( 'submit' );" )
-                                       )
-                                );
-            ?><div class="control-group wpbc-no-padding" ><?php
-                      wpbc_bs_input_group( $params );
-            ?></div><?php
-        ?>
-        </form>
-        <?php wpbc_clear_div(); ?>
-    </div>
-    <?php
-}
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 //   U I    E l e m e n t s
@@ -360,18 +235,19 @@ function wpbc_bs_dropdown_menu_help() {
                                       , 'font_icon' => 'wpbc_icn_support'												//FixIn: 9.0.1.4	'glyphicon glyphicon-question-sign'
                                       , 'position' => 'right'
                                       , 'items' => array(
-                                               array( 'type' => 'link', 'title' => "What's New"/*__('Get Started')*/, 'url' => esc_url( admin_url( add_query_arg( array( 'page' => 'wpbc-about' ), 'index.php' ) ) ) )
+                                               array( 'type' => 'link', 'title' => __('FAQ', 'booking'), 'url' => 'https://wpbookingcalendar.com/faq/' )
+                                             , array( 'type' => 'link', 'title' => __('Support Forum', 'booking'), 'url' => 'https://wpbookingcalendar.com/support/' )
+											 , array( 'type' => 'divider' )
+                                             , array( 'type' => 'link', 'title' => __('Contact Support', 'booking'), 'url'  => 'mailto:support@wpbookingcalendar.com'
+																												   , 'attr' => array( 'style' => 'font-weight: 600;' ) )
                                              , array( 'type' => 'divider' )
-                                             , array( 'type' => 'link', 'title' => __('Help', 'booking'), 'url' => 'https://wpbookingcalendar.com/help/' )
-                                             , array( 'type' => 'link', 'title' => __('FAQ', 'booking'), 'url' => 'https://wpbookingcalendar.com/faq/' )
-                                             , array( 'type' => 'link', 'title' => __('Technical Support', 'booking'), 'url' => 'https://wpbookingcalendar.com/support/' )
-                                             , array( 'type' => 'divider' )
-                                             , array( 'type' => 'link', 'title' => __('About Booking Calendar', 'booking')
+                                             , array( 'type' => 'link', 'title' => "What's New"/*__('Get Started')*/, 'url' => esc_url( admin_url( add_query_arg( array( 'page' => 'wpbc-about' ), 'index.php' ) ) ) )
+                                             , array( 'type' => 'link', 'title' => __('About', 'booking')
 																		// , 'url' => wpbc_up_link()
-																		, 'url' =>  esc_url( admin_url( add_query_arg( array( 'page' => 'wpbc-about-premium' ), 'index.php' ) ) )
+																		, 'url' =>  'https://wpbookingcalendar.com/' //esc_url( admin_url( add_query_arg( array( 'page' => 'wpbc-about-premium' ), 'index.php' ) ) )
                                                                         , 'attr' => array(
                                                                             //  'target' => '_blank'
-                                                                            'style' => 'font-weight: 600;font-size: 1em;'
+                                                                            // 'style' => 'font-weight: 600;'
                                                                         )
                                                     )
                                         )
@@ -379,224 +255,25 @@ function wpbc_bs_dropdown_menu_help() {
 }
 
 
-/** View Mode   -   B u t t o n */
-function wpbc_toolbar_btn__view_mode() {
-
-	$selected_view_mode = ( isset( $_REQUEST['view_mode'] ) ) ? $_REQUEST['view_mode'] : '';
-
-    $bk_admin_url = wpbc_get_params_in_url( wpbc_get_bookings_url( false ), array('view_mode', 'wh_booking_id', 'page_num' ) );
-
-    $params = array();
-
-
-	//FixIn: 9.6.3.5
-	$is_selected = ( ( $selected_view_mode == 'vm_booking_listing' ) || ( $selected_view_mode == 'vm_listing' ) ) ? true : false;
-
-	$params['btn_vm_listing_new'] = array(
-								  'title' => ''
-								, 'hint' => array( 'title' => __('Booking Listing' ,'booking') , 'position' => 'top' )
-								, 'selected' => $is_selected
-								, 'link' => wpbc_get_bookings_url('booking-listing', true ) . '&view_mode=vm_booking_listing'
-								, 'icon' => ''
-								, 'font_icon' => 'wpbc-bi-collection'//'glyphicon glyphicon-align-justify'
-							);
-
-
-    $bk_admin_url = wpbc_get_params_in_url( wpbc_get_bookings_url( false ) , array()              // Exclude Value of this parameter
-                                            , array( 'page', 'tab', 'tab_cvm', 'wh_booking_type', 'scroll_start_date', 'scroll_month', 'view_days_num'
-                                                     , 'wh_trash'               //FixIn: 6.1.1.10
-                                                ) // Only  this parameters
-                                           );
-    $params['btn_vm_calendar'] = array(
-                                  'title' => ''
-                                , 'hint' => array( 'title' => __('Timeline View' ,'booking') , 'position' => 'bottom' )
-                                , 'selected' => ( $selected_view_mode == 'vm_calendar' ) ? true : false
-                                , 'link' => $bk_admin_url . '&view_mode=vm_calendar'
-                                , 'icon' => ''
-                                , 'font_icon' => 'wpbc-bi-calendar2-range'// 'glyphicon glyphicon-calendar'
-                            );
-
-    ?><div style="position:absolute;" class="wpbc_mode_switcher"><?php
-
-        wpbc_bs_vertical_buttons_group( $params );
-
-    ?></div><?php
-}
-
-//FixIn: 9.6.3.5
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Toolbar   Actions    B u t t o n s   -   T i m e l i n e   //////////////////
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-/** View Mode Timeline   -   B u t t o n s */
-function wpbc_toolbar_btn__timeline_view_mode() {
-
-    if  ((isset($_REQUEST['wh_booking_type'])) && ( strpos($_REQUEST['wh_booking_type'], ',') !== false ) )
-            $is_show_resources_matrix = true;
-    else    $is_show_resources_matrix = false;
-
-
-    if ( isset( $_REQUEST['view_days_num'] ) )
-         $view_days_num = intval( $_REQUEST['view_days_num'] );
-    else $view_days_num = get_bk_option( 'booking_view_days_num');
-
-
-    $bk_admin_url = wpbc_get_params_in_url( wpbc_get_bookings_url( false ), array('view_days_num') );
-
-
-    if ( ! $is_show_resources_matrix ) {
-
-        $params = array(
-                          'label_for' => 'calendar_overview_number_of_days_to_show'                              // "For" parameter  of button group element
-                        , 'label' => '' //__('Calendar view mode', 'booking')                  // Label above the button group
-                        , 'style' => ''                                         // CSS Style of entire div element
-                        , 'items' => array(
-                                            array(
-                                                  'type' => 'button'
-                                                , 'title' => __('Day', 'booking') . '&nbsp;&nbsp;'        						// Title of the button		//FixIn: Flex TimeLine 1.0
-                                                , 'hint' => array( 'title' => __('Show day' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'font_icon' => 'wpbc-bi-calendar-event'
-//                                                , 'title' => __('Month', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-//                                                , 'hint' => array( 'title' => __('Show month' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=30'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_30'                   // button-secondary  | button-primary
-                                                , 'icon' => ''
-//                                                , 'font_icon' => 'glyphicon glyphicon-align-justify'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                            , array(
-                                                  'type' => 'button'
-                                                , 'title' => __('Week', 'booking') . '&nbsp;&nbsp;'        							// Title of the button		//FixIn: Flex TimeLine 1.0
-                                                , 'hint' => array( 'title' => __('Show week' ,'booking') , 'position' => 'top' ) 	// Hint
-                                                , 'font_icon' => 'wpbc-bi-calendar-week'
-//                                                , 'title' => __('3 Months', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-//                                                , 'hint' => array( 'title' => __('Show 3 months' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=90'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_90'                   // button-secondary  | button-primary
-                                                , 'icon' => ''
-//                                                , 'font_icon' => 'glyphicon glyphicon-th-list'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                            , array(
-                                                  'type' => 'button'
-                                                , 'title' => __('Month', 'booking') . '&nbsp;&nbsp;'        						// Title of the button
-                                                , 'hint' => array( 'title' => __('Show month' ,'booking') , 'position' => 'top' ) 	// Hint
-                                                , 'font_icon' => 'wpbc-bi-calendar3'
-//                                                , 'title' => __('Year', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-//                                                , 'hint' => array( 'title' => __('Show year' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=365'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_365'                  // button-secondary  | button-primary
-                                                , 'icon' => ''
-//                                                , 'font_icon' => 'glyphicon glyphicon-th'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                        )
-        );
-    } else {
-
-        $params = array(
-                          'label_for' => 'calendar_overview_number_of_days_to_show'                              // "For" parameter  of button group element
-                        , 'label' => '' //__('Calendar view mode:', 'booking')                  // Label above the button group
-                        , 'style' => ''                                         // CSS Style of entire div element
-                        , 'items' => array(
-                                            array(
-                                                  'type' => 'button'
-                                                , 'title' => __('Day', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-                                                , 'hint' => array( 'title' => __('Show day' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=1'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_1'                   // button-secondary  | button-primary
-                                                , 'icon' => ''
-                                                , 'font_icon' => 'wpbc-bi-calendar-event'	//'wpbc_icn_event'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                            , array(
-                                                  'type' => 'button'
-                                                , 'title' => __('Week', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-                                                , 'hint' => array( 'title' => __('Show week' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=7'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_7'                   // button-secondary  | button-primary
-                                                , 'icon' => ''
-                                                , 'font_icon' => 'wpbc-bi-calendar-week'//'wpbc_icn_calendar_view_week'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                            , array(
-                                                  'type' => 'button'
-                                                , 'title' => __('Month', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-                                                , 'hint' => array( 'title' => __('Show month' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=30'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_30'                  // button-secondary  | button-primary
-                                                , 'icon' => ''
-                                                , 'font_icon' => 'wpbc-bi-calendar3'//'wpbc_icn_calendar_view_month'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                            , array(
-                                                  'type' => 'button'
-                                                , 'title' => __('2 Months', 'booking') . '&nbsp;&nbsp;'        // Title of the button
-                                                , 'hint' => array( 'title' => __('Show 2 months' ,'booking') , 'position' => 'top' ) // Hint
-                                                , 'link' => $bk_admin_url . '&view_days_num=60'             // Direct link or skip  it
-                                                , 'action' => ""                                            // Some JavaScript to execure, for example run  the function
-                                                , 'class' => 'button-secondary btn_dn_60'                  // button-secondary  | button-primary
-                                                , 'icon' => ''
-                                                , 'font_icon' => 'wpbc-bi-calendar2-week'//'wpbc_icn_density_medium'
-                                                , 'icon_position' => 'right'                                // Position  of icon relative to Text: left | right
-                                                , 'style' => ''                                             // Any CSS class here
-                                                , 'mobile_show_text' => true                                // Show  or hide text,  when viewing on Mobile devices (small window size).
-                                                , 'attr' => array()
-                                            )
-                                        )
-        );
-
-    }
-    wpbc_bs_button_group( $params );
-
-    //FixIn: 7.0.1.10
-    ?><script type="text/javascript">
-        if ( 'function' === typeof( jQuery('#calendar_overview_number_of_days_to_show .button').button ) ) {
-                jQuery('#calendar_overview_number_of_days_to_show .button').button();
-                jQuery('#calendar_overview_number_of_days_to_show .button.btn_dn_<?php echo $view_days_num; ?>').button('toggle');
-        } else {
-            console.log('Warning! Booking Calendar. Its seems that  you have deactivated loading of Bootstrap JS files at Booking Settings General page in Advanced section.')
-        }
-    </script><?php
-}
 
 
 /** Navigation Timeline   -   B u t t o n s */
 function wpbc_toolbar_btn__timeline_navigation() {
 
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     if  ((isset($_REQUEST['wh_booking_type'])) && ( strpos($_REQUEST['wh_booking_type'], ',') !== false ) )
             $is_show_resources_matrix = true;
     else    $is_show_resources_matrix = false;
 
 
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
     if ( isset( $_REQUEST['view_days_num'] ) )
-         $view_days_num = intval( $_REQUEST['view_days_num'] );
+         $view_days_num = intval( $_REQUEST['view_days_num'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
     else $view_days_num = get_bk_option( 'booking_view_days_num');
 
 
@@ -608,7 +285,8 @@ function wpbc_toolbar_btn__timeline_navigation() {
 
         switch ($view_days_num) {
             case '90':
-                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 else $scroll_day = 0;
                 $scroll_params = array( '&scroll_day='.intval($scroll_day-4*7),
                                         '&scroll_day='.intval($scroll_day-7),
@@ -622,10 +300,11 @@ function wpbc_toolbar_btn__timeline_navigation() {
                                          __('Next 4 weeks' ,'booking') );
                 break;
             case '30':
-                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 else $scroll_day = 0;
 
-	            //FixIn: 8.9.4.3
+	            // FixIn: 8.9.4.3.
 	            // Here we need to define number of days to scroll depends from selected number of days to show.
 	            $days_num_to_scroll = intval( get_bk_option( 'booking_calendar_overview__day_mode__days_number_show' ) );;
 	            if ( empty( $days_num_to_scroll ) ) {
@@ -644,8 +323,9 @@ function wpbc_toolbar_btn__timeline_navigation() {
                                          __( 'Next', 'booking' ) . ' ' . ( 2 * $days_num_to_scroll ) . ' ' . __( 'days', 'booking' ) );
                 break;
             default:  // 365
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 if (! isset($_REQUEST['scroll_month'])) $_REQUEST['scroll_month'] = 0;
-                $scroll_month = intval( $_REQUEST['scroll_month'] );
+                $scroll_month = intval( $_REQUEST['scroll_month'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 $scroll_params = array( '&scroll_month='.intval($scroll_month-3),
                                         '&scroll_month='.intval($scroll_month-1),
                                         '&scroll_month=0',
@@ -662,7 +342,8 @@ function wpbc_toolbar_btn__timeline_navigation() {
 
         switch ($view_days_num) {
             case '1': //Day
-                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 else $scroll_day = 0;
                 $scroll_params = array( '&scroll_day='.intval($scroll_day-7),
                                         '&scroll_day='.intval($scroll_day-1),
@@ -677,7 +358,8 @@ function wpbc_toolbar_btn__timeline_navigation() {
                 break;
 
             case '7': //Week
-                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+                if (isset($_REQUEST['scroll_day'])) $scroll_day = intval( $_REQUEST['scroll_day'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 else $scroll_day = 0;
                 $scroll_params = array( '&scroll_day='.intval($scroll_day-4*7),
                                         '&scroll_day='.intval($scroll_day-7),
@@ -694,8 +376,9 @@ function wpbc_toolbar_btn__timeline_navigation() {
             case '30':
             case '60':
             case '90': //3 months
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 if (! isset($_REQUEST['scroll_month'])) $_REQUEST['scroll_month'] = 0;
-                $scroll_month = intval( $_REQUEST['scroll_month'] );
+                $scroll_month = intval( $_REQUEST['scroll_month'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 $scroll_params = array( '&scroll_month='.intval($scroll_month-3),
                                         '&scroll_month='.intval($scroll_month-1),
                                         '&scroll_month=0',
@@ -709,8 +392,9 @@ function wpbc_toolbar_btn__timeline_navigation() {
                 break;
 
             default:  // 30, 60, 90...
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 if (! isset($_REQUEST['scroll_month'])) $_REQUEST['scroll_month'] = 0;
-                $scroll_month = intval( $_REQUEST['scroll_month'] );
+                $scroll_month = intval( $_REQUEST['scroll_month'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
                 $scroll_params = array( '&scroll_month='.intval($scroll_month-3),
                                         '&scroll_month='.intval($scroll_month-1),
                                         '&scroll_month=0',
@@ -786,13 +470,13 @@ function wpbc_toolbar_btn__timeline_navigation() {
                                                                                 , 'disabled'    => false
                                                                                 , 'class'       => 'wpdevbk-filters-section-calendar'
                                                                                 , 'style'       => ''
-                                                                                , 'placeholder' => date('Y-m-d')
+                                                                                , 'placeholder' => gmdate('Y-m-d')
                                                                                 , 'attr'        => array()
                                                                                 , 'value' => ''
                                                                               )
                                                                         )
                                                     , 'divider2' => 'divider'
-                                                    , 'buttons' => array( array(  'type' => 'group', 'class' => 'btn-group' ),
+                                                    , 'buttons' => array( array(  'type' => 'group', 'class' => 'btn-group0', 'style'=>'display: flex;flex-flow: row nowrap;align-items: center;justify-content: flex-end;' ),
                                                                         array(
                                                                                   'type' => 'button'
                                                                                 , 'title' => __('Apply' ,'booking') // Title of the button
@@ -823,7 +507,7 @@ function wpbc_toolbar_btn__timeline_navigation() {
                                                                                 , 'icon' => ''
                                                                                 , 'font_icon' => ''
                                                                                 , 'icon_position' => 'left'         // Position  of icon relative to Text: left | right
-                                                                                , 'style' => ''                     // Any CSS class here
+                                                                                , 'style' => 'margin:0 10px;'                     // Any CSS class here
                                                                                 , 'mobile_show_text' => false       // Show  or hide text,  when viewing on Mobile devices (small window size).
                                                                                 , 'attr' => array()
                                                                               )
@@ -876,12 +560,18 @@ function wpbc_get_new_booking_url__base( $skip_parameters = array() ) {
     $link_base = wpbc_get_new_booking_url( true, false );
 
     $link_params = array();
-    if ( ( isset( $_GET['booking_type'] ) ) && ( $_GET['booking_type'] > 0 ) )      $link_params['booking_type'] = $_GET['booking_type'];
-    if ( isset( $_GET['booking_hash'] ) )                   $link_params['booking_hash'] = $_GET['booking_hash'];
-    if ( isset( $_GET['parent_res'] ) )                     $link_params['parent_res'] = $_GET['parent_res'];
-    if ( isset( $_GET['booking_form'] ) )                   $link_params['booking_form'] = $_GET['booking_form'];
-    if ( isset( $_GET['calendar_months_count'] ) )          $link_params['calendar_months_count'] = intval( $_GET['calendar_months_count'] );
-    if ( isset( $_GET['calendar_months_num_in_1_row'] ) )   $link_params['calendar_months_num_in_1_row'] = intval( $_GET['calendar_months_num_in_1_row'] );
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    if ( ( isset( $_GET['booking_type'] ) ) && ( $_GET['booking_type'] > 0 ) )      $link_params['booking_type'] = sanitize_text_field( wp_unslash( $_GET['booking_type'] ) );  /* phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing */ /* FixIn: sanitize_unslash */
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    if ( isset( $_GET['booking_hash'] ) )                   $link_params['booking_hash'] = sanitize_text_field( wp_unslash( $_GET['booking_hash'] ) );  /* phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing */ /* FixIn: sanitize_unslash */
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    if ( isset( $_GET['parent_res'] ) )                     $link_params['parent_res'] = sanitize_text_field( wp_unslash( $_GET['parent_res'] ) );  /* phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing */ /* FixIn: sanitize_unslash */
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    if ( isset( $_GET['booking_form'] ) )                   $link_params['booking_form'] = sanitize_text_field( wp_unslash( $_GET['booking_form'] ) );  /* phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing */ /* FixIn: sanitize_unslash */
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    if ( isset( $_GET['calendar_months_count'] ) )          $link_params['calendar_months_count'] = intval( $_GET['calendar_months_count'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+    if ( isset( $_GET['calendar_months_num_in_1_row'] ) )   $link_params['calendar_months_num_in_1_row'] = intval( $_GET['calendar_months_num_in_1_row'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 
     foreach ( $link_params as $key => $value ) {
@@ -1100,12 +790,12 @@ function wpbc_toolbar_btn__calendar_options_save() {
 			data_params.calendar_cell_height = jQuery('#calendar_cell_height').val();
 			data_params.calendar_cell_heightunits = jQuery('#calendar_cell_heightunits').val();
 			var ajax_data_params = jQuery.param( data_params );
-                        wpbc_save_custom_user_data(<?php echo wpbc_get_current_user_id(); ?>
+                        wpbc_save_custom_user_data(<?php echo esc_js( wpbc_get_current_user_id() ); ?>
                                                 , '<?php echo 'add_booking_calendar_options'; ?>'
                                                 , ajax_data_params
                                                 , 1
                                                 );"
-             ><?php _e('Save' , 'booking') ?></a><?php
+             ><?php esc_html_e('Save' , 'booking' ); ?></a><?php
     ?></div><?php
 }
 
@@ -1125,28 +815,75 @@ function wpbc_toolbar_btn__calendar_options_reset() {
 								 jQuery('#calendar_cell_heightunits').val('px');
 								 jQuery( '#toolbar_btn__calendar_options_save').trigger('click');
 								"
-             ><?php _e('Reset' , 'booking') ?></a><?php
+             ><?php esc_html_e('Reset' , 'booking' ); ?></a><?php
     ?></div><?php
 }
 
+/**
+ * Button for ability to  add bookings in the past.
+ *
+ * @return void
+ */
+function wpbc_toolbar_btn__add_past_booking() {
+
+	if ( isset( $_GET['allow_past'] ) ) {                                                                               // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+		return;
+	}
+
+	$link = wpbc_get_new_booking_url();
+
+	$link .= ( ! empty( $_REQUEST['booking_type'] ) ) ? '&booking_type=' . intval( $_REQUEST['booking_type'] ) : '';                               // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	$link .= ( ! empty( $_REQUEST['booking_form'] ) ) ? '&booking_form=' . sanitize_text_field( wp_unslash( $_REQUEST['booking_form'] ) ) : '';    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	$link .= ( ! empty( $_REQUEST['booking_hash'] ) ) ? '&booking_form=' . sanitize_text_field( wp_unslash( $_REQUEST['booking_hash'] ) ) : '';    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	$link .= ( ! empty( $_REQUEST['is_show_payment_form'] ) ) ? '&is_show_payment_form=Off' : '';                                                  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	$link .= ( ! empty( $_REQUEST['parent_res'] ) ) ? '&parent_res=' . intval( $_REQUEST['parent_res'] ) : '';                                     // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+
+	$el_id    = 'is_allow_bookings_in_past';
+	$el_value = 'Off';
+
+	$params_checkbox = array(
+							  'id'       => $el_id 		// HTML ID  of element
+							, 'name'     => $el_id
+							, 'label'    => array( 'title' => __( 'Allow booking in the past', 'booking' ) , 'position' => 'right' )           // FixIn: 9.6.1.5.
+							, 'style'    => '' 					// CSS of select element
+							, 'class'    => '' 					// CSS Class of select element
+							, 'disabled' => false
+							, 'attr'     => array() 							// Any  additional attributes, if this radio | checkbox element
+							, 'legend'   => ''									// aria-label parameter
+							, 'value'    => $el_value 							// Some Value from optins array that selected by default
+							, 'selected' => ( ( 'On' == $el_value ) ? true : false )		// Selected or not
+							//, 'onfocus' =>  "console.log( 'ON FOCUS:',  jQuery( this ).is(':checked') , 'in element:' , jQuery( this ) );"					// JavaScript code
+							, 'onchange' => "window.location.href='". $link . "&allow_past=1';"					// JavaScript code
+							, 'hint' 	=> array( 'title' => __('Allow booking in the past' ,'booking') , 'position' => 'top' )
+						);
+
+	?><div class="btn-group" style="display: inline-flex;min-height: 31px;flex-flow: row nowrap;align-items: center;"><?php
+
+	wpbc_flex_toggle( $params_checkbox );
+
+	?></div><?php
+}
 
 
 /** Add New Booking   Button*/
 function wpbc_toolbar_btn__add_new_booking() {
 
-    if ( isset( $_GET['booking_type'] ) )
-         $bk_type = intval ( $_GET['booking_type'] );
-    else $bk_type = 1;
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	if ( isset( $_GET['booking_type'] ) ) {
+		$bk_type = intval( $_GET['booking_type'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+	} else {
+		$bk_type = 1;
+	}
 
-    ?><a
-             class="button-primary button wpbc_submit_button"
-             href="javascript:void(0)"
-             onclick="mybooking_submit(
-                                        document.getElementById('booking_form<?php echo $bk_type; ?>' )
-                                        , <?php echo $bk_type; ?>
-                                        , '<?php echo wpbc_get_maybe_reloaded_booking_locale(); ?>'
-                                    );"
-             ><?php _e('Add booking' , 'booking') ?></a><?php
+	?><a
+	class="button-primary button wpbc_submit_button"
+	href="javascript:void(0)"
+	onclick="mybooking_submit(
+		document.getElementById('booking_form<?php echo intval( $bk_type ); ?>' )
+		, <?php echo intval( $bk_type ); ?>
+		, '<?php echo esc_js( wpbc_get_maybe_reloaded_booking_locale() ); ?>'
+		);"
+	><?php esc_html_e( 'Add booking', 'booking' ); ?></a><?php
 }
 
 
@@ -1162,7 +899,7 @@ function wpbc_toolbar_is_send_emails_btn_duplicated() {
 	$params_checkbox = array(
 							  'id'       => $el_id 		// HTML ID  of element
 							, 'name'     => $el_id
-							, 'label'    => array( 'title' => __( 'Emails sending', 'booking' ) , 'position' => 'right' )           //FixIn: 9.6.1.5
+							, 'label'    => array( 'title' => __( 'Emails sending', 'booking' ) , 'position' => 'right' )           // FixIn: 9.6.1.5.
 							, 'style'    => '' 					// CSS of select element
 							, 'class'    => '' 					// CSS Class of select element
 							, 'disabled' => false
@@ -1197,7 +934,7 @@ function wpbc_toolbar_is_send_emails_btn_duplicated() {
  * @param bool $echo
  * @return string
  */
-function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = array(), $echo = true ) {					//FixIn: 7.1.2.5
+function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = array(), $echo = true ) {					// FixIn: 7.1.2.5.
 
 //debuge($booking_data);
 	if ( ! $echo ) {
@@ -1239,7 +976,7 @@ function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = 
 
 			$field_name = explode( '^', $booking_gcal_events_form_fields[ $key_name ] );
 
-			$field_name = $field_name[ ( count( $field_name ) - 1 ) ];                                                  //FixIn: 8.7.7.6
+			$field_name = $field_name[ ( count( $field_name ) - 1 ) ];                                                  // FixIn: 8.7.7.6.
 
 			if (   (! empty($field_name))
 				&& (! empty($booking_data['form_data']))
@@ -1247,9 +984,9 @@ function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = 
 				&& (! empty($booking_data['form_data']['_all_fields_'][ $field_name ]))
 				) {
 
-					if ( 'description' === $key_name ) {                                                                //FixIn: 8.1.3.2
-						if ( isset( $booking_data['form_show'] ) ) {                                                    //FixIn: 8.7.3.14
-							//FixIn: 8.7.11.4
+					if ( 'description' === $key_name ) {                                                                // FixIn: 8.1.3.2.
+						if ( isset( $booking_data['form_show'] ) ) {                                                    // FixIn: 8.7.3.14.
+							// FixIn: 8.7.11.4.
 							$fields[ $key_name ] = $booking_data['form_show'];
 							$fields[ $key_name ] = htmlspecialchars_decode($fields[ $key_name ], ENT_QUOTES );
 							$fields[ $key_name ] = urlencode($fields[ $key_name ]);
@@ -1257,7 +994,7 @@ function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = 
 							$fields[ $key_name ] = htmlspecialchars_decode ( $fields[ $key_name ], ENT_NOQUOTES );
 						}
 					} else {
-						//FixIn: 8.7.11.4
+						// FixIn: 8.7.11.4.
 						$fields[ $key_name ] = $booking_data['form_data']['_all_fields_'][ $field_name ];
 						$fields[ $key_name ] = htmlspecialchars_decode($fields[ $key_name ], ENT_QUOTES );
 						// Convert here from  usual  symbols to URL symbols https://www.url-encode-decode.com/
@@ -1287,19 +1024,19 @@ function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = 
 
 		$check_in_timestamp  = strtotime( $booking_data[ 'dates_short' ][ 0 ], current_time( 'timestamp' ) );
 		if ( trim( substr( $booking_data[ 'dates_short' ][ 0 ], 11 ) ) == '00:00:00' ) {
-			$check_in_timestamp = date( "Ymd", $check_in_timestamp );		// All day
+			$check_in_timestamp = gmdate( "Ymd", $check_in_timestamp );		// All day
 		} else {
-			$check_in_timestamp = date( "Ymd\THis", $check_in_timestamp );
-			//$check_in_timestamp = date( "Ymd\THis\Z", $check_in_timestamp );
+			$check_in_timestamp = gmdate( "Ymd\THis", $check_in_timestamp );
+			//$check_in_timestamp = gmdate( "Ymd\THis\Z", $check_in_timestamp );
 		}
 
 		$check_out_timestamp = strtotime( $booking_data[ 'dates_short' ][ ( count( $booking_data[ 'dates_short' ] ) - 1 ) ], current_time( 'timestamp' ) );
 		if ( trim( substr( $booking_data[ 'dates_short' ][ ( count( $booking_data[ 'dates_short' ] ) - 1 ) ], 11 ) ) == '00:00:00' ) {
 			$check_out_timestamp = strtotime( '+1 day', $check_out_timestamp );
-			$check_out_timestamp = date( "Ymd", $check_out_timestamp );		// All day
+			$check_out_timestamp = gmdate( "Ymd", $check_out_timestamp );		// All day
 		} else {
-			$check_out_timestamp = date( "Ymd\THis", $check_out_timestamp );
-			//$check_out_timestamp = date( "Ymd\THis\Z", $check_out_timestamp );
+			$check_out_timestamp = gmdate( "Ymd\THis", $check_out_timestamp );
+			//$check_out_timestamp = gmdate( "Ymd\THis\Z", $check_out_timestamp );
 		}
 
 	}
@@ -1310,7 +1047,7 @@ function wpbc_btn_add_booking_to_google_calendar( $booking_data, $button_attr = 
     //    sscanf( $iso, "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $minute, $second );
     //    return mktime( intval($hour), intval($minute), intval($second), intval($month), intval($day), intval($year) );
 	// 20140127T224000Z
-	// date("Ymd\THis\Z", time());
+	// gmdate("Ymd\THis\Z", time());
 
 	/**
 action:
@@ -1350,12 +1087,12 @@ sprop:
 
 //	$link_add2gcal  = 'http://www.google.com/calendar/event?action=TEMPLATE';
 //	$link_add2gcal .= '&text=' . $fields['title'];
-	//FixIn: 8.7.3.10
+	// FixIn: 8.7.3.10.
 	$link_add2gcal = 'https://calendar.google.com/calendar/r/eventedit?';
-	$link_add2gcal .= 'text=' . $fields['title'];							//FixIn: 8.7.11.4
+	$link_add2gcal .= 'text=' . $fields['title'];							// FixIn: 8.7.11.4.
 	//$link_add2gcal .= '&dates=[start-custom format='Ymd\\THi00\\Z']/[end-custom format='Ymd\\THi00\\Z']';
 	$link_add2gcal .= '&dates=' . $check_in_timestamp . '/' . $check_out_timestamp;
-	$link_add2gcal .= '&details='  . ( ( 'On' !== get_bk_option( 'booking_g_cal_export_no_data' ) ) ? $fields['description'] : '' );		//FixIn: 10.3.0.1
+	$link_add2gcal .= '&details='  . ( ( 'On' !== get_bk_option( 'booking_g_cal_export_no_data' ) ) ? $fields['description'] : '' );		// FixIn: 10.3.0.1.
 	$link_add2gcal .= '&location=' . ( ( 'On' !== get_bk_option( 'booking_g_cal_export_no_data' ) ) ? $fields['where'] : '' );
 	$link_add2gcal .= '&trp=false';
 	if ( ! empty( $params['timezone'] ) ) {
@@ -1367,10 +1104,11 @@ sprop:
 	//$link_add2gcal .= '&sprop=name:';
 
 	if ( $button_attr['is_only_url'] ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $link_add2gcal;
 	} else {
 
-		?><a href="<?php echo $link_add2gcal; ?>" target="_blank" rel="nofollow"
+		?><a href="<?php echo esc_url( $link_add2gcal ); ?>" target="_blank" rel="nofollow"
 			class="tooltip_top <?php echo esc_attr( $button_attr['class'] ) ?>"
 			title="<?php echo esc_attr( $button_attr['hint'] ); ?>"
 		><?php
@@ -1408,7 +1146,7 @@ sprop:
 function wpbc_toolbar_btn__selection_element( $params ) {
 
     $defaults = array(
-                          'name'        => 'random_' . rand( 1000, 10000 )
+                          'name'        => 'random_' . wp_rand( 1000, 10000 )
                         , 'title'       => __('Total', 'booking') . ':'
                         , 'on_change'   => ''                                    //'location.href=\'' . $link_base . '\' + this.value;';    //$link_base = wpbc_get_new_booking_url__base( array( $params['name'] ) ) . '&' . $params['name'] . '=' ;
                         , 'options'     => array()
@@ -1458,7 +1196,7 @@ function wpbc_toolbar_btn__selection_element( $params ) {
 // Toolbar     S e a r c h    F o r m     at    Top  Right side of Settings page
 // ---------------------------------------------------------------------------------------------------------------------
 
-//FixIn: 8.0.1.12
+// FixIn: 8.0.1.12.
 /**
  * Add hidden input SEARCH KEY field into  main form, if previosly was searching by ID or Title
  * @param array $params			=>  array( 'search_get_key'  => 'wh_resource_id' )
@@ -1472,9 +1210,13 @@ function wpbc_hidden_search_by_id_field_in_main_form( $params = array() ){
 
 
 	$search_form_value = '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 	if ( isset( $_REQUEST[ $params[ 'search_get_key' ] ] ) ) {
-		$wh_resource_id    = wpbc_clean_digit_or_csd( $_REQUEST[ $params[ 'search_get_key' ] ] );          // '12,0,45,9' or '10'
-		$wh_resource_title = wpbc_clean_string_for_form( $_REQUEST[ $params[ 'search_get_key' ] ] );       // Clean string
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$wh_resource_id = wpbc_clean_digit_or_csd( $_REQUEST[ $params['search_get_key'] ] );                            // '12,0,45,9' or '10'.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$wh_resource_title = wpbc_clean_string_for_form( $_REQUEST[ $params['search_get_key'] ] );                      // Clean string.
+
 		if ( ! empty( $wh_resource_id ) ) {
 			$search_form_value = $wh_resource_id;
 		} else {
@@ -1505,7 +1247,7 @@ function wpbc_toolbar_search_by_id__top_form( $params ) {
                           'search_form_id'  => 'wpbc_seasonfilters_search_form'
                         , 'search_get_key'  => 'wh_search_id'
                         , 'is_pseudo'       => false                                    //'location.href=\'' . $link_base . '\' + this.value;';    //$link_base = wpbc_get_new_booking_url__base( array( $params['name'] ) ) . '&' . $params['name'] . '=' ;
-						, 'container_style' => 'position: absolute; right: 20px; top: 0px;z-index: 0;' 					//FixIn: 10.0.0.29
+						, 'container_style' => 'position: absolute; right: 20px; top: 0px;z-index: 0;' 					// FixIn: 10.0.0.29.
                     );
     $params = wp_parse_args( $params, $defaults );
 
@@ -1516,9 +1258,10 @@ function wpbc_toolbar_search_by_id__top_form( $params ) {
 
 
     $search_form_value = '';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
     if ( isset( $_REQUEST[ $params[ 'search_get_key' ] ] ) ) {
-        $wh_resource_id    = wpbc_clean_digit_or_csd( $_REQUEST[ $params[ 'search_get_key' ] ] );          // '12,0,45,9' or '10'
-        $wh_resource_title = wpbc_clean_string_for_form( $_REQUEST[ $params[ 'search_get_key' ] ] );       // Clean string
+        $wh_resource_id    = wpbc_clean_digit_or_csd( $_REQUEST[ $params[ 'search_get_key' ] ] );  // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized          // '12,0,45,9' or '10'
+        $wh_resource_title = wpbc_clean_string_for_form( $_REQUEST[ $params[ 'search_get_key' ] ] );  // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized       // Clean string
         if ( ! empty( $wh_resource_id ) ) {
             $search_form_value = $wh_resource_id;
         } else {
@@ -1534,10 +1277,10 @@ function wpbc_toolbar_search_by_id__top_form( $params ) {
 
     <?php if ( ! $params['is_pseudo'] ) { ?>
         <div style="<?php echo esc_attr( $params['container_style'] ); ?>">
-            <form action="<?php echo $wpbc_admin_url; ?>" method="post" id="<?php echo $params[ 'search_form_id' ]; ?>"  name="<?php echo $params[ 'search_form_id' ]; ?>"  >
+            <form action="<?php echo esc_url( $wpbc_admin_url ); ?>" method="post" id="<?php echo esc_attr( $params[ 'search_form_id' ] ); ?>"  name="<?php echo esc_attr( $params[ 'search_form_id' ] ); ?>"  >
             <?php
     } else {
-      ?><div style="float:right;" id="<?php echo $params['search_form_id'] . '_pseudo'; ?>"><?php
+      ?><div style="float:right;" id="<?php echo esc_attr( $params['search_form_id'] . '_pseudo' ); ?>"><?php
     }
 
 
@@ -1632,7 +1375,7 @@ if(0){
 
 					$el_id = 'ui_btn_' . $booking_action;
 
-					// Escaped construction of search keyword. //FixIn: 9.9.0.11
+					// Escaped construction of search keyword. // FixIn: 9.9.0.11.
 					$params_for_element  =  array(
 						'type'             => 'button' ,
 						'title'            => '',//__( 'Search', 'booking' ) . '&nbsp;&nbsp;',  											// Title of the button
@@ -1681,7 +1424,9 @@ if(0){
             <?php
                 if ( $params['is_pseudo'] ) {
                     // Required for opening specific page NUM during saving ////////
-                    ?><input type="hidden" value="<?php echo $search_form_value; ?>" name="<?php echo $params[ 'search_get_key' ]; ?>" /><?php
+                    ?><input type="hidden" value="<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $search_form_value; ?>" name="<?php echo esc_attr( $params[ 'search_get_key' ] ); ?>" /><?php
                     ?><div class="clear" style="height:20px;"></div><?php
                 }
             ?>
@@ -1695,8 +1440,8 @@ if(0){
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function(){
-                if ( jQuery('#<?php echo $params[ 'search_form_id' ]; ?>').length == 0 ) {
-                    jQuery('#<?php echo $params['search_form_id'] . '_pseudo'; ?>').hide();
+                if ( jQuery('#<?php echo esc_js( $params[ 'search_form_id' ] ); ?>').length == 0 ) {
+                    jQuery('#<?php echo esc_js( $params['search_form_id'] . '_pseudo' ); ?>').hide();
                 }
             });
         </script>
@@ -1705,7 +1450,7 @@ if(0){
 }
 
 
-//FixIn: 9.6.3.5
+// FixIn: 9.6.3.5.
 
 // ---------------------------------------------------------------------------------------------------------------------
 // JS & CSS
@@ -1725,14 +1470,22 @@ function wpbc_js_for_bookings_page() {
 
 /** Datepicker activation JavaScript */
 function wpbc_datepicker_js() {
-
-    ?><script type="text/javascript">
-        jQuery(document).ready( function(){
+	?>
+	<script type="text/javascript">
+		<?php
+		echo wpbc_jq_ready_start();  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?>
 			if ( 'function' === typeof( jQuery('input.wpdevbk-filters-section-calendar').datepick ) ) {
 				jQuery( 'input.wpdevbk-filters-section-calendar' ).datepick(
 					{
 						beforeShowDay   : function ( date ) {
 							return [true, 'date_available'];
+						},
+						onSelect        : function ( string_dates, js_dates_arr ){  /**
+																	 *	string_dates   =   '23.08.2023 - 26.08.2023'    |    '23.08.2023 - 23.08.2023'    |    '19.09.2023, 24.08.2023, 30.09.2023'
+																	 *  js_dates_arr   =   range: [ Date (Aug 23 2023), Date (Aug 25 2023)]     |     multiple: [ Date(Oct 24 2023), Date(Oct 20 2023), Date(Oct 16 2023) ]
+																	 */
+									return wpbc_filters_section_calendar_selected_day( string_dates, {}, this );
 						},
 						showOn          : 'focus',
 						multiSelect     : 0,
@@ -1748,18 +1501,30 @@ function wpbc_datepicker_js() {
 						showStatus      : false,
 						multiSeparator  : ', ',
 						closeAtTop      : null,																			//!false,
-						firstDay        :<?php echo intval(get_bk_option( 'booking_start_day_weeek' )); ?>,
+						firstDay        : <?php echo intval( get_bk_option( 'booking_start_day_weeek' ) ); ?>,
 						gotoCurrent     : false,
 						hideIfNoPrevNext: true,
 						useThemeRoller  : false,
 						mandatory       : true
 					}
 				);
+				function wpbc_filters_section_calendar_selected_day( string_dates, params_arr, _this ) {
+					// FixIn: 10.11.4.2.
+					if ( 'ui_wh_booking_date_checkin' === jQuery( _this ).attr( 'id' ) ) {
+						setTimeout( function () {
+							jQuery( '#ui_wh_booking_date_checkout' ).val( string_dates );
+							jQuery( '#ui_wh_booking_date_checkout' ).trigger( 'focus' );
+						}, 100 );
+					}
+				}
 			} else {
-				alert( 'WPBC Error. JavaScript library "datepick" was not defined.' );
+				console.log( 'WPBC Error. JavaScript library "datepick" was not defined.' );
 			}
-        });
-        </script><?php
+		<?php
+		echo wpbc_jq_ready_end();   // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?>
+	</script>
+	<?php
 }
 
 
@@ -1772,13 +1537,13 @@ function wpbc_datepicker_css(){
     ?>
     <style type="text/css">
         #datepick-div {
-            max-width: <?php echo $width  ?>px !important;
+            max-width: <?php echo intval( $width );  ?>px !important;
 			width:100%;
 			margin-top: 2px;
 			background: #fff;
 		}
 		#datepick-div .datepick-days-cell {
-			height: <?php echo $height  ?>px !important;
+			height: <?php echo intval( $height );  ?>px !important;
 		}
 		#datepick-div .datepick-control {
 			display: none;

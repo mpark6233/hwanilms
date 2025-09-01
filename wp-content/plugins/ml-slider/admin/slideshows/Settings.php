@@ -71,6 +71,7 @@ class MetaSlider_Slideshow_Settings
             'opacity' => 0.7,
             'titleSpeed' => 500,
             'effect' => 'slide',
+            'extra_effect' => 'none',
             'navigation' => true,
             'filmstrip_delay' => 7000,
             'filmstrip_animationSpeed' => 600,
@@ -87,13 +88,20 @@ class MetaSlider_Slideshow_Settings
             'slices' => 15,
             'center' => false,
             'smartCrop' => true,
+            'smartCropSource' => 'slideshow',
+            'imageWidth' => 400,
+            'imageHeight' => 400,
+            'cropMultiply' => 1,
             'smoothHeight' => false,
             'carouselMode' => false,
             'infiniteLoop' => false,
             'carouselMargin' => 5,
+            'minItems' => 2,
+            'forceHeight' => false,
             'firstSlideFadeIn' => false,
             'easing' => 'linear',
             'autoPlay' => true,
+            'loop' => 'continuously',
             'thumb_width' => 150,
             'thumb_height' => 100,
             'responsive_thumbs' => true,
@@ -108,13 +116,68 @@ class MetaSlider_Slideshow_Settings
             'mobileNavigation_tablet' => false,
             'mobileNavigation_laptop' => false,
             'mobileNavigation_desktop' => false,
-            'ariaLive' => false,
-            'ariaCurrent' => false,
-            'tabIndex' => false,
-            'pausePlay' => false
+            'mobileSlideshow_smartphone' => false,
+            'mobileSlideshow_tablet' => false,
+            'mobileSlideshow_laptop' => false,
+            'mobileSlideshow_desktop' => false,
+            'ariaLive' => true,
+            'ariaCurrent' => true,
+            'tabIndex' => true,
+            'pausePlay' => false,
+            'progressBar' => false,
+            'playText' => '',
+            'pauseText' => ''
         );
         $defaults = apply_filters('metaslider_default_parameters', $defaults);
         $overrides = get_option('metaslider_default_settings');
         return is_array($overrides) ? array_merge($defaults, $overrides) : $defaults;
+    }
+
+    /**
+     * Convert 'on' or 'off' to boolean values
+     * 
+     * @since 3.92
+     * 
+     * @param array $settings Slideshow settings
+     * 
+     * @return array
+     */
+    public static function adjust_settings($settings)
+    {
+        // Convert submitted checkbox values from 'on' or 'off' to boolean values in string format (e.g. true becomes 'true')
+        $checkboxes = array('noConflict', 'fullWidth', 'hoverPause', 'reverse', 'printCss', 'printJs', 'smoothHeight', 'center', 'carouselMode', 'autoPlay', 'firstSlideFadeIn', 'responsive_thumbs', 'keyboard', 'touch', 'infiniteLoop',  'mobileArrows_smartphone', 'mobileArrows_tablet','mobileArrows_laptop', 'mobileArrows_desktop', 'mobileNavigation_smartphone', 'mobileNavigation_tablet', 'mobileNavigation_laptop', 'mobileNavigation_desktop', 'mobileSlideshow_smartphone', 'mobileSlideshow_tablet', 'mobileSlideshow_laptop', 'mobileSlideshow_desktop', 'ariaLive', 'tabIndex', 'pausePlay', 'showPlayText', 'ariaCurrent', 'progressBar', 'forceHeight', 'lightbox');
+
+        foreach ($checkboxes as $checkbox) {
+            $settings[$checkbox] = (isset($settings[$checkbox]) && 'on' == $settings[$checkbox]) ? 'true' : 'false';
+        }
+
+        /* Convert submitted dropdown values from 'on' or 'off' to boolean values in string format (e.g. true becomes 'true') and sanitize the rest
+         * Reason is these settings have true/false + string options, so is better to handle all as strings
+         * Keep original value if is different to 'on' and 'off'. 
+         * We include actual booleans in $map just in case. */
+        $dropdowns = array('effect', 'cropMultiply', 'direction', 'easing', 'links', 'navigation', 'smartCrop', 'random', 'loop', 'layer_scaling');
+
+        foreach ($dropdowns as $dropdown) {
+            if (isset($settings[$dropdown])) {
+                $map = array(
+                    'on' => 'true', 
+                    'off' => 'false',
+                    true => 'true',
+                    false => 'false'
+                );
+                $settings[$dropdown] = $map[$settings[$dropdown]] ?? sanitize_text_field($settings[$dropdown]);
+            }            
+        }
+
+        // Sanitize text fields
+        $texts = array('cssClass', 'nextText', 'prevText', 'playText', 'pauseText');
+
+        foreach ($texts as $text) {
+            if (isset($settings[$text])) {
+                $settings[$text] = sanitize_text_field($settings[$text]);
+            }
+        }
+
+        return $settings;
     }
 }

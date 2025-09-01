@@ -33,6 +33,13 @@ pre#shortcode *::selection {
 	@apply bg-blue-highlight text-gray-darker;
 }
 
+#metaslider-ui button:disabled,
+#metaslider-ui button:disabled:hover {
+    cursor: default;
+    opacity: 0.8;
+}
+
+
 /* Consider everything after this a legacy style with the intent to
 eventually be removed/refactored */
 .metaslider.wrap div.updated,
@@ -711,12 +718,12 @@ eventually be removed/refactored */
 	padding-top: 1rem;
 }
 
-.metaslider .tabs-content .schedule_placeholder {
+.metaslider .tabs-content .pro-feature_placeholder {
 	text-align: center;
 	padding-top: 10px;
 }
 
-.metaslider .tabs-content .schedule_placeholder h4 {
+.metaslider .tabs-content .pro-feature_placeholder h4 {
 	font-weight: normal;
 }
 
@@ -970,6 +977,16 @@ input[type="radio"] {
 /* TinyMCE */
 .tox.tox-tinymce-aux {
     z-index: 9999;
+}
+.tox-tinymce-aux .tox-menu h1, .tox-tinymce-aux .tox-menu p {
+	margin-bottom: 0 !important;
+}
+.mce-content-body .ms-custom-button {
+    background-color: #DD6923;
+    border-radius: 9px;
+    color: #000;
+    display: inline-block;
+    padding: 10px 20px;
 }
 
  /* Spin an svg */
@@ -1372,6 +1389,29 @@ input.no_last_pass {
 	padding: 10px 0;
 	margin: 0 !important;
 }
+#metaslider-settings-page .import-subheader {
+	font-size: 14px;
+	font-weight: 700;
+	margin: 20px 0;
+	text-transform: uppercase;
+}
+#metaslider-settings-page .missing-image-wrap .inner-wrap {
+	padding: 15px !important;
+	background-color: #fdf4d2;
+}
+#metaslider-settings-page .import-note {
+	font-style: italic;
+	border: 1px solid #DD6923;
+	padding: 12px;
+	margin-bottom: 15px;
+}
+#metaslider-settings-page .missing-images {
+	list-style: disc;
+	padding-left: 15px;
+}
+#metaslider-settings-page .missing-images li {
+	margin: 5px 0;
+}
 
 /* Custom Theme */
 .customtheme-list-h {
@@ -1428,6 +1468,16 @@ input.no_last_pass {
 .ml-legacy-notice p {
 	margin: 10px 0 !important;
 }
+.ml-legacy-notice.ml-move-notice {
+	margin: 0 0 10px !important;
+	border: 1px solid #f2a561;
+	background-color: #f9edc9;
+}
+.ml-move-notice a {
+	color: #016FB9;
+	font-weight: bold;
+	text-decoration: underline;
+}
 
 #metaslider-ui, 
 .container {
@@ -1467,6 +1517,61 @@ input.no_last_pass {
     overflow: hidden;
     width: 150px;
     height: 150px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+.shortcode-modal {
+	background: #fff;
+	border: 1px solid #ccc;
+	box-shadow: 0 0 10px rgba(0,0,0,.2);
+	display: none;
+	left: 50%;
+	max-width: 500px;
+	min-width: 300px;
+	padding: 20px;
+	position: fixed;
+	top: 50%;
+	transform: translate(-50%,-50%);
+	width: 400px;
+	z-index: 1000;
+	max-height: 400px;
+	overflow: auto;
+}
+.shortcode-modal .modal-content {
+    position: relative;
+    padding: 10px;
+}
+.shortcode-modal .close-modal {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+}
+.shortcode-modal ul {
+	list-style: disc;
+	padding-left: 20px;
+}
+.shortcode-modal li {
+	margin: 0;
+	font-size: 14px;
+	line-height: 21px;
+}
+.shortcode-modal h5 {
+	margin: 10px 0 0 0;
+	text-transform: uppercase;
+	font-size: 14px;
+	letter-spacing: 1px;
 }
 
 /* Force CSS properties overriden by core for .form-select class */
@@ -1529,31 +1634,50 @@ input.no_last_pass {
 }
 
 /* Settngs & Help Page */
-#mobile-settings button {
+#mobile-settings button,
+#dashboard-settings button {
 	display: none !important;
 }
-#mobile-settings div.col:last-child button {
+#mobile-settings div.col:last-child button,
+#dashboard-settings div.col:last-child button {
 	display: inline-block !important;
 }
-#mobile-settings .row {
+#mobile-settings .row,
+#dashboard-settings .row {
 	display: flex;
 }
-#mobile-settings .col {
+#mobile-settings .col,
+#dashboard-settings .col {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
 }
 #mobile-settings .dashicons {
-	padding: 25px 10px;
-	width: 55px;
-	height: 75px;
-	font-size: 25px;
 	color: #606060;
+	font-size: 35px;
+	height: 35px;
+	padding: 0;
+	width: 45px;
 }
 #mobile-settings form input {
-	width: 80px !important;
+	width: 60px !important;
 }
-
+#mobile-settings .mobile-icon-wrap {
+	padding: 20px 5px 0 5px;
+	text-align: center;
+}
+#dashboard-settings form {
+	box-shadow: none !important;
+}
+#dashboard-settings form .px-4.py-5.md\:p-6 {
+	padding: 10px 10px 0 0 !important;
+}
+#dashboard-settings form h3 {
+	font-size: 16px !important;
+}
+#dashboard-settings form select {
+	width: 200px !important;
+}
 /* Comparison Chart */
 #comparison-chart {
 	width: 100%;
@@ -1613,12 +1737,13 @@ td .dot.available {
 	background: #dd6923;
 }
 
+
 /* CSS Manager Upsell */
 .css-manager-ad-container {
 	background-color: #F0F0F1;
 	padding: 30px 0;
 }
-.css-manager-ad-container .probutton, .schedule_placeholder .probutton{
+.css-manager-ad-container .probutton, .pro-feature_placeholder .probutton{
 	color: #fff;
 	background: #dd6923;
 	padding: 12px 30px !important;
@@ -1632,26 +1757,26 @@ td .dot.available {
 	line-height: 1.8 !important;
 	white-space: unset;
 }
-.schedule_placeholder .probutton {
+.pro-feature_placeholder .probutton {
 	margin-top: 0!important;
 	margin-bottom: 15px;
 }
 .css-manager-ad-container .dashicons.dashicons-external,
-.schedule_placeholder .dashicons.dashicons-external{
+.pro-feature_placeholder .dashicons.dashicons-external{
 	margin-top: 5px;
 }
-.css-manager-ad-container h1, .schedule_placeholder h1 {
+.css-manager-ad-container h1, .pro-feature_placeholder h1 {
 	color: #29375b;
 	font-size: 28px;
 	line-height: 1.2;
 	font-weight: 600 !important;
 }
-.schedule_placeholder h1 {
+.pro-feature_placeholder h1 {
     margin-bottom: 5px!important;
 }
 .css-manager-ad-container li,
 .css-manager-ad-container p,
-.schedule_placeholder p {
+.pro-feature_placeholder p {
 	font-size: 16px !important;
 	font-style: normal !important;
 	color: #3c434a !important;
@@ -1674,36 +1799,92 @@ td .dot.available {
     background: #fff;
 }
 
-#loading-add-sample-slides-notice span {
+#loading-add-sample-slides-notice > span {
     padding-left: 30px;
     background-repeat: no-repeat;
     background-size: contain;
 }
 
-.static-theme-customize {
+.metaslider .static-theme-customize {
 
     table {
+        border-right: 1px solid #c3c4c7;
+        border-left: 1px solid #c3c4c7;
+        border-bottom: 1px solid #c3c4c7;
         margin-top: 20px !important;
         margin-bottom: 0 !important;
+        width: 100%;
 
         tr {
             border: none !important;
 
+            &.spacer-top,
+            &.spacer-bottom {
+                
+                td {
+                    background: #fff !important;
+                    border: none !important;
+                    padding: 5px !important;
+                }
+            }
+
+            &.row-header {
+                    
+                + tr td {
+                    padding-top: 12px;
+                }
+            }
+
+            &.customizer-slide {
+                display: none !important;
+            }
+            
             td {
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-bottom: 5px;
+                padding-top: 5px;
+
+                .wp-picker-container .wp-color-result.button {
+                    margin-bottom: 0;
+                }
+
+                &[colspan="2"] {
+                    border-top: 1px solid #c3c4c7;
+                    border-bottom: 1px solid #c3c4c7;
+                    background: #f1f1f1;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+
+                    h4 {
+                        font-weight: 500;
+                        color: #50575e;
+                        font-size: 0.9rem;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                }
 
                 &:first-child {
-                    padding-left: 0;
+                    /*padding-left: 0;*/
                 }
 
                 &:last-child {
-                    padding-right: 0;
+                    /*padding-right: 0;*/
+                }
+
+                .ms-range-dual {
+
+                    input {
+                        margin-bottom: 6px;
+                    }
                 }
             }
         }
     }
 
     .colorpicker {
-        width: 150px !important;
+        width: 183px !important;
     }
 
     .wp-picker-container {
@@ -1721,6 +1902,140 @@ td .dot.available {
     }
 }
 
+/* Color tooltips */
+.ms-color-tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+
+    /* START custom color picker position */
+    .wp-picker-holder > div {
+        /*border-bottom: none;*/
+        box-shadow: 0 0 5px #ccc;
+    }
+
+    .wp-picker-input-wrap {
+        bottom: -292px;
+        padding: 10px;
+        background: #fff;
+        border: 1px solid #dcdcde;
+        width: 257px;
+        box-shadow: 0 0 5px #ccc;
+    }
+
+    &:nth-child(1) {
+        
+        .wp-picker-input-wrap,
+        .wp-picker-holder {
+            left: -50px;
+        }
+    }
+
+    &:nth-child(2) {
+        
+        .wp-picker-input-wrap,
+        .wp-picker-holder {
+            left: -88px;
+        }
+    }
+
+    &:nth-child(3) {
+        
+        .wp-picker-input-wrap,
+        .wp-picker-holder {
+            left: -126px;
+        }
+    }
+
+    &:nth-child(4) {
+        
+        .wp-picker-input-wrap,
+        .wp-picker-holder {
+            left: -164px;
+        }
+    }
+    /* END custom color picker position */
+}
+
+.ms-color-tooltip-wrapper .ms-color-tooltip {
+    position: absolute;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    z-index: 9;
+    left: -29px;
+    bottom: 35px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    visibility: hidden;
+    width: 90px;
+    height: auto;
+    text-align: center;
+}
+
+.ms-color-tooltip-wrapper:hover .ms-color-tooltip {
+    visibility: visible;
+}
+
+.ms-color-tooltip-wrapper .ms-color-tooltip:after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -4px;
+    width: 0;
+    height: 0;
+    border-top: 4px solid rgba(0,0,0,0.6);
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
+.ms-color-tooltip-wrapper .iris-picker-inner .ms-color-tooltip {
+    bottom: unset;
+    top: -32px;
+    left: -44px;
+    visibility: hidden !important;
+}
+
+.ms-color-tooltip-wrapper .iris-picker-inner .iris-strip:hover .ms-color-tooltip {
+    visibility: visible !important;
+}
+
+/* Theme customizer Pause / Play Options and Progress Bar */
+.metaslider .ms-settings-table tr.customizer-pausePlay,
+.metaslider .ms-settings-table tr.customizer-progressBar {
+	display: none;
+}
+
+.metaslider .ms-settings-table .is-pro-setting {
+    width: 30px;
+    opacity: 1;
+    color: #333;
+}
+
+.metaslider .ms-settings-table .is-pro-setting:hover {
+    color: #333;
+}
+
+.metaslider .ms-settings-table .is-pro-setting:focus {
+    box-shadow: none;
+}
+
+.metaslider .ms-settings-table .is-pro-setting:before {
+    background: #feb123;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.metaslider-ui .metaslider-slides-container .slide.slide-is-hidden td > *:not(.metaslider-ui-controls) {
+	opacity: .2;
+}
+
+/* Force display inline-block when flex class (for FlexSlider) conflicts */
+.metaslider .ms-settings-table select.flex.inline-block,
+.metaslider .ms-settings-table input.flex.inline-block {
+    display: inline-block !important;
+}
+
 @media only screen and (min-width : 320px) {
     .toolbar-separator, .toolbar-actions{
         padding: 0!important;
@@ -1728,6 +2043,9 @@ td .dot.available {
     .ms-toolbar-button {
         padding-left: 4px!important;
         padding-right: 4px!important;
+    }
+    #dashboard-settings form select {
+        width: 100% !important;
     }
 }
 
@@ -1762,6 +2080,9 @@ td .dot.available {
     .metaslider-start {
         margin: 30px auto!important;
         max-width: 80%;
+    }
+    #dashboard-settings form select {
+        width: 200px!important;
     }
 }
 

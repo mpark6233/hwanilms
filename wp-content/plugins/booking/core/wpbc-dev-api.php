@@ -12,12 +12,13 @@
  * @modified 2017-06-24
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;  // Exit if accessed directly.
+}
 
-//FixIn: 8.0
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add New Booking 
+// Add New Booking .
 // ---------------------------------------------------------------------------------------------------------------------
 /**
  * Add New Booking
@@ -257,13 +258,15 @@ function wpbc_api_is_dates_booked( $booking_dates, $resource_id = 1, $params = a
 	 *                                            OR
 	 *                                                 [ 'result' => 'error', 'message' => 'Booking can not be saved ...' ]
 	 */
+	$server_request_uri = ( ( isset( $_SERVER['REQUEST_URI'] ) ) ? sanitize_text_field( $_SERVER['REQUEST_URI'] ) : '' );  /* phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash */ /* FixIn: sanitize_unslash */
+	$server_http_referer_uri = ( ( isset( $_SERVER['HTTP_REFERER'] ) ) ? sanitize_text_field( $_SERVER['HTTP_REFERER'] ) : '' );  /* phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash */ /* FixIn: sanitize_unslash */
 	$where_to_save_booking = wpbc__where_to_save_booking( array(
 											 'resource_id'            => $resource_id,                              // 2
 											 'skip_booking_id'        => '',                                        // '',            |  125 if edit booking
 											 'dates_only_sql_arr'     => $dates_only_sql_arr,                       // [ "2023-10-18", "2023-10-25", "2023-11-25" ]
 											 'time_as_seconds_arr'    => $time_as_seconds_arr,                      // [ 36000, 39600 ]
 											 'how_many_items_to_book' => 1,                                         // 1
-											 'request_uri'            => ( ( ( defined( 'DOING_AJAX' ) ) && ( DOING_AJAX ) ) ? $_SERVER['HTTP_REFERER'] : $_SERVER['REQUEST_URI'] ),     //  front-end: $_SERVER['REQUEST_URI'] | ajax: $_SERVER['HTTP_REFERER']                      // It different in Ajax requests. It's used for change-over days to detect for exception at specific pages,         // 'http://beta/resource-id2/'
+											 'request_uri'            => ( ( ( defined( 'DOING_AJAX' ) ) && ( DOING_AJAX ) ) ? $server_http_referer_uri : $server_request_uri ),     //  front-end: $server_request_uri | ajax: $_SERVER['HTTP_REFERER']                      // It different in Ajax requests. It's used for change-over days to detect for exception at specific pages,         // 'http://beta/resource-id2/'
 											 'as_single_resource'     => true,                                       // false
 									  'is_use_booking_recurrent_time' => $params['is_use_booking_recurrent_time']
 									) );
@@ -289,7 +292,7 @@ function wpbc_api_is_dates_booked( $booking_dates, $resource_id = 1, $params = a
 // Get Bookings Array	-	[Listing]
 // ---------------------------------------------------------------------------------------------------------------------
 /**
-	 * Get bookings array from  Booking Calendar
+ * Deprecated: Get bookings array from  Booking Calendar
  * 
  * @param aray $params
  * @return array	
@@ -427,7 +430,7 @@ function wpbc_api_get_bookings_arr( $params = array() ) {
 		, 'wh_cost2' => ''
 		, 'or_sort' => ''
 		, 'page_num' => '1'
-		, 'wh_trash' => ''                                                          // '' | trash | any                 //FixIn: 8.0.2.8
+		, 'wh_trash' => ''                                                          // '' | trash | any                 // FixIn: 8.0.2.8.
 		, 'limit_hours' => '0,24'
 		, 'only_booked_resources' => 0
 		, 'page_items_count' => '100000'
@@ -439,7 +442,7 @@ function wpbc_api_get_bookings_arr( $params = array() ) {
 	return $bookings_arr;
 }
 
-//FixIn: 8.7.6.4
+// FixIn: 8.7.6.4.
 /**
  * Get Booking Data as array of properties
  *
@@ -452,8 +455,9 @@ function wpbc_api_get_booking_by_id( $booking_id = '' ) {
 	global $wpdb;
 	$booking_id = wpbc_clean_digit_or_csd( $booking_id );
 
-	$slct_sql         = "SELECT * FROM {$wpdb->prefix}booking as b left join {$wpdb->prefix}bookingdates as bd on (b.booking_id = bd.booking_id) WHERE b.booking_id IN (%s) LIMIT 0,1";
-	$slct_sql         = $wpdb->prepare( $slct_sql, $booking_id );
+	$slct_sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}booking as b left join {$wpdb->prefix}bookingdates as bd on (b.booking_id = bd.booking_id) WHERE b.booking_id IN (%s) LIMIT 0,1", $booking_id );
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 	$slct_sql_results = $wpdb->get_results( $slct_sql, ARRAY_A );
 
 	$data = array();
@@ -479,7 +483,7 @@ function wpbc_api_get_booking_by_id( $booking_id = '' ) {
 	return $data;
 }
 
-//FixIn: 8.7.7.3
+// FixIn: 8.7.7.3.
 /**
  * Get booking form  fields in Booking Calendar Free version
  * @return array
@@ -491,7 +495,7 @@ function wpbc_get_form_fields_free() {
 		$form_fields = wpbc_simple_form__db__get_visual_form_structure();
 
 		foreach ( $form_fields as $field ) {
-			//FixIn: 8.7.8.7
+			// FixIn: 8.7.8.7.
 			if (    ( ! empty( $field['name'] ) )
 			     && ( ! empty( $field['label'] ) )
 		         && ( ! in_array( $field['type'], array(
@@ -544,6 +548,7 @@ function wpbc_resource_created__add_other_params( $resource_id ) {
 	//  $wp_queries[] = "INSERT INTO  {$wpdb->prefix}booking_types_meta ( type_id, meta_key, meta_value ) VALUES ( {$resource_id}, 'availability', '{$meta_str}' );";
 
 	foreach ( $wp_queries as $wp_q ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$wpdb->query( $wp_q );
 	}
 
@@ -655,22 +660,22 @@ function wpbc_resource_created__add_other_params( $resource_id ) {
 	function your_cust_func_wpbc_booking_approved( $booking_id, $is_approved_dates  ) {
 
 	}
-	add_action( 'wpbc_booking_approved', 'your_cust_func_wpbc_booking_approved', 100, 2 );                                  //FixIn: 8.7.6.1
+	add_action( 'wpbc_booking_approved', 'your_cust_func_wpbc_booking_approved', 100, 2 );                                  // FixIn: 8.7.6.1.
  */
 
 /**
  * Hook action after trash of booking:
- * do_action( 'wpbc_booking_trash', $booking_id, $is_trash );                                						    //FixIn: 8.7.6.2
+ * do_action( 'wpbc_booking_trash', $booking_id, $is_trash );                                						    // FixIn: 8.7.6.2.
  */
 
 /**
  * Hook action after delete of booking:
- * do_action( 'wpbc_booking_delete', $approved_id_str );															    //FixIn: 8.7.6.3
+ * do_action( 'wpbc_booking_delete', $approved_id_str );															    // FixIn: 8.7.6.3.
  */
 
 /**
  * Hooks in new Booking Listing page for different actions:
- *                                                                                                                      //FixIn: 9.5.3.3
+ *                                                                                                                      // FixIn: 9.5.3.3.
 	do_action( 'wpbc_set_booking_locale', $params, $action_result );	    // where $params is array,  which  contain	$params['booking_id'], and 	$action_result array and have $action_result['after_action_result'], which contains a boolean value of the result of an operation.
 	do_action( 'wpbc_set_booking_pending', $params, $action_result );	    // where $params is array,  which  contain	$params['booking_id'], and 	$action_result array and have $action_result['after_action_result'], which contains a boolean value of the result of an operation.
 	do_action( 'wpbc_set_booking_approved' $params, $action_result );	    // where $params is array,  which  contain	$params['booking_id'], and 	$action_result array and have $action_result['after_action_result'], which contains a boolean value of the result of an operation.
@@ -715,3 +720,74 @@ function wpbc_resource_created__add_other_params( $resource_id ) {
  *		}
  *		add_action( 'wpbc_deleted_booking_resources', 'my_func__on_resource_delete' );
  */
+
+
+/**
+ * Some exmaples of fucntions usage.
+ *
+ * @return void
+ */
+function wpbc_create_a_new_booking_exmaple(){
+
+	// -----------------------------------------------------------------------------------------------------------------
+	// Example #1.
+	// -----------------------------------------------------------------------------------------------------------------
+	$booking    = array(
+		'dates' => array( '2027-06-24', '2027-06-24', '2027-06-25', '2027-06-26' ),
+		'data'  => array(
+			'secondname' => array( 'value' => 'Smith', 'type' => 'text' ),
+			'name'       => 'Rika',
+			'email'      => array( 'value' => 'rika@cost.com', 'type' => 'email' ),
+		)
+	);
+	$booking_id = wpbc_api_booking_add_new( $booking['dates'], $booking['data'] );
+
+	// -----------------------------------------------------------------------------------------------------------------
+	// Example #2.  - Add bew booking, without checking if the dates/times are available in source booking resource.
+	// -----------------------------------------------------------------------------------------------------------------
+	$booking    = array(
+		'dates'       => array( '2027-08-24', '2027-08-25', '2027-08-26' ),
+		'data'        => array(
+			'rangetime'  => array( 'value' => '14:00 - 16:00', 'type' => 'selectbox-one' ),  // Define booked time-slot.
+			'name'       => 'John',                                                          // Simple configuration.
+			'secondname' => array( 'value' => 'Smith', 'type' => 'text' ),                   // Advanced configuration.
+			'email'      => array( 'value' => 'John@cost.com', 'type' => 'email' ),
+		),
+		'resource_id' => 3,
+		'options'     => array(
+			'save_booking_even_if_unavailable' => 1,  // [0 | 1]  if 1 - skip checking if the dates/times are available.
+		),
+	);
+	$booking_id = wpbc_api_booking_add_new( $booking['dates'], $booking['data'], $booking['resource_id'], $booking['options'] );
+
+	// -----------------------------------------------------------------------------------------------------------------
+	// Example #3.  - Check  if time slot on specific date available.
+	// -----------------------------------------------------------------------------------------------------------------
+	$booking         = array(
+		'dates'       => array( '2027-08-24 15:00:01', '2027-08-24 16:00:02' ),
+		'resource_id' => 3,
+		'params'      => array( 'is_use_booking_recurrent_time' => false ),
+	);
+	$is_dates_booked = wpbc_api_is_dates_booked( $booking['dates'], $booking['resource_id'], $booking['params'] );
+	if ( $is_dates_booked ) {
+		// Booked.
+	} else {
+		// Available.
+	}
+
+	// -----------------------------------------------------------------------------------------------------------------
+	// Example #4.  - Check  if dates available.
+	// -----------------------------------------------------------------------------------------------------------------
+	$booking         = array(
+		'dates'       => array( '2027-08-24 00:00:00', '2027-08-25 00:00:00', '2027-08-26 00:00:00' ),
+		'resource_id' => 3,
+		'params'      => array( 'is_use_booking_recurrent_time' => false ),
+	);
+	$is_dates_booked = wpbc_api_is_dates_booked( $booking['dates'], $booking['resource_id'], $booking['params'] );
+	if ( $is_dates_booked ) {
+		// Booked.
+	} else {
+		// Available.
+	}
+
+}

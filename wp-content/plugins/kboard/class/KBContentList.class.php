@@ -979,10 +979,11 @@ class KBContentList {
 	
 	/**
 	 * 인기글 리스트를 반환한다.
+	 * @param boolean $with_notice
 	 * @return resource
 	 * @return KBoard
 	 */
-	public function getPopularList(){
+	public function getPopularList($with_notice=false){
 		global $wpdb;
 		
 		if(!$this->board){
@@ -1046,6 +1047,10 @@ class KBContentList {
 		else if($this->board->meta->popular_type == 'vote'){
 			$orderby = '`like` DESC';
 			$limit = $this->board->meta->popular_count;
+		}
+		
+		if(!$with_notice){
+			$where[] = "`{$wpdb->prefix}kboard_board_content`.`notice`=''";
 		}
 		
 		$select = apply_filters('kboard_popular_list_select', '*', $this->board_id, $this);

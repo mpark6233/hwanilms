@@ -158,7 +158,7 @@ function wpbc_ajx_availability__calendar__show( calendar_params_arr ){
 	/**
 	 * Define showing mouse over tooltip on unavailable dates
 	 * It's defined, when calendar REFRESHED (change months or days selection) loaded in jquery.datepick.wpbc.9.0.js :
-	 * 		$( 'body' ).trigger( 'wpbc_datepick_inline_calendar_refresh', ...		//FixIn: 9.4.4.13
+	 * 		$( 'body' ).trigger( 'wpbc_datepick_inline_calendar_refresh', ...		// FixIn: 9.4.4.13.
 	 */
 	jQuery( 'body' ).on( 'wpbc_datepick_inline_calendar_refresh', function ( event, resource_id, inst ){
 		// inst.dpDiv  it's:  <div class="datepick-inline datepick-multi" style="width: 17712px;">....</div>
@@ -174,19 +174,19 @@ function wpbc_ajx_availability__calendar__show( calendar_params_arr ){
 	/**
 	 * Define height of the calendar  cells, 	and  mouse over tooltips at  some unavailable dates
 	 * It's defined, when calendar loaded in jquery.datepick.wpbc.9.0.js :
-	 * 		$( 'body' ).trigger( 'wpbc_datepick_inline_calendar_loaded', ...		//FixIn: 9.4.4.12
+	 * 		$( 'body' ).trigger( 'wpbc_datepick_inline_calendar_loaded', ...		// FixIn: 9.4.4.12.
 	 */
 	jQuery( 'body' ).on( 'wpbc_datepick_inline_calendar_loaded', function ( event, resource_id, jCalContainer, inst ){
 
 		// Remove highlight day for today  date
 		jQuery( '.datepick-days-cell.datepick-today.datepick-days-cell-over' ).removeClass( 'datepick-days-cell-over' );
 
-		// Set height of calendar  cells if defined this option
+		// Set height of calendar  cells if defined this option  // FixIn: 10.12.4.2.
 		if ( '' !== calendar_params_arr.ajx_cleaned_params.calendar__view__cell_height ){
 			jQuery( 'head' ).append( '<style type="text/css">'
 										+ '.hasDatepick .datepick-inline .datepick-title-row th, '
 										+ '.hasDatepick .datepick-inline .datepick-days-cell {'
-											+ 'height: ' + calendar_params_arr.ajx_cleaned_params.calendar__view__cell_height + ' !important;'
+											+ 'max-height: ' + calendar_params_arr.ajx_cleaned_params.calendar__view__cell_height + ' !important;'
 										+ '}'
 									+'</style>' );
 		}
@@ -380,6 +380,7 @@ function wpbc_show_inline_booking_calendar( calendar_params_arr ){
 	function wpbc__inline_booking_calendar__apply_css_to_days( date, calendar_params_arr, datepick_this ){
 
 		var today_date = new Date( _wpbc.get_other_param( 'today_arr' )[ 0 ], (parseInt( _wpbc.get_other_param( 'today_arr' )[ 1 ] ) - 1), _wpbc.get_other_param( 'today_arr' )[ 2 ], 0, 0, 0 );
+		var real_today_date = new Date( _wpbc.get_other_param( 'time_local_arr' )[ 0 ], (parseInt( _wpbc.get_other_param( 'time_local_arr' )[ 1 ] ) - 1), _wpbc.get_other_param( 'time_local_arr' )[ 2 ], 0, 0, 0 );
 
 		var class_day  = ( date.getMonth() + 1 ) + '-' + date.getDate() + '-' + date.getFullYear();						// '1-9-2023'
 		var sql_class_day = wpbc__get__sql_class_date( date );																			// '2023-01-09'
@@ -395,20 +396,23 @@ function wpbc_show_inline_booking_calendar( calendar_params_arr ){
 				return [ !!false, css_date__standard + ' date_user_unavailable' 	+ ' weekdays_unavailable' ];
 			}
 		}
-
-		// BEFORE_AFTER :: Set unavailable days Before / After the Today date
-		if ( 	( (wpbc_dates__days_between( date, today_date )) < parseInt(_wpbc.get_other_param( 'availability__unavailable_from_today' )) )
-			 || (
-				   ( parseInt( '0' + parseInt( _wpbc.get_other_param( 'availability__available_from_today' ) ) ) > 0 )
-				&& ( wpbc_dates__days_between( date, today_date ) > parseInt( '0' + parseInt( _wpbc.get_other_param( 'availability__available_from_today' ) ) ) )
-				)
-		){
-			return [ !!false, css_date__standard + ' date_user_unavailable' 		+ ' before_after_unavailable' ];
+		// 10.9.6.3.
+		var date_midnight = new Date( parseInt( date.getFullYear() ), (parseInt( date.getMonth() ) - 0), parseInt( date.getDate() ), 0, 0, 0 );
+		// BEFORE_AFTER :: Set unavailable days Before / After the Today date.
+		//if ( ((wpbc_dates__days_between( date, real_today_date )) < parseInt( _wpbc.get_other_param( 'availability__unavailable_from_today' ) ))
+		if (
+			( (today_date.getTime() - date_midnight.getTime() ) > 0 )
+			|| (
+				(parseInt( '0' + parseInt( _wpbc.get_other_param( 'availability__available_from_today' ) ) ) > 0)
+				&& (wpbc_dates__days_between( date_midnight, real_today_date ) >= parseInt( '0' + parseInt( _wpbc.get_other_param( 'availability__available_from_today' ) ) ))
+			)
+		) {
+			return [ false, css_date__standard + ' date_user_unavailable' + ' before_after_unavailable' ];
 		}
 
 		// SEASONS ::  					Booking > Resources > Availability page
 		var    is_date_available = calendar_params_arr.season_availability[ sql_class_day ];
-		if ( false === is_date_available ){																				//FixIn: 9.5.4.4
+		if ( false === is_date_available ){																				// FixIn: 9.5.4.4.
 			return [ !!false, css_date__standard + ' date_user_unavailable'		+ ' season_unavailable' ];
 		}
 
@@ -416,7 +420,7 @@ function wpbc_show_inline_booking_calendar( calendar_params_arr ){
 		if ( wpbc_in_array(calendar_params_arr.resource_unavailable_dates, sql_class_day ) ){
 			is_date_available = false;
 		}
-		if (  false === is_date_available ){																			//FixIn: 9.5.4.4
+		if (  false === is_date_available ){																			// FixIn: 9.5.4.4.
 			return [ !false, css_date__standard + ' date_user_unavailable'		+ ' resource_unavailable' ];
 		}
 
@@ -881,9 +885,9 @@ function wpbc_show_inline_booking_calendar( calendar_params_arr ){
 					maxWidth         : 550,
 					theme            : 'wpbc-tippy-times',
 					placement        : 'top',
-					delay			 : [400, 0],			//FixIn: 9.4.2.2
+					delay			 : [400, 0],			// FixIn: 9.4.2.2.
 					ignoreAttributes : true,
-					touch			 : true,				//['hold', 500], // 500ms delay			//FixIn: 9.2.1.5
+					touch			 : true,				//['hold', 500], // 500ms delay			// FixIn: 9.2.1.5.
 					appendTo: () => document.body,
 				});
 		}

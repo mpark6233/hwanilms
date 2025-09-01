@@ -277,30 +277,7 @@ class MetaSlider_Api
             $this->deny_access();
         }
 
-        $data = $this->get_request_data($request, array('page', 'count'));
-        $page = isset($data['page']) ? intval($data['page']) : 1;
-        $count = isset($data['count']) ? intval($data['count']) : 25;
-        $slideshows = $this->slideshows->get($count, $page);
-        $slideshows = array_map(array($this, 'get_slide_data'), $slideshows);
-        $count_sliders = 0;
-        foreach ($slideshows as $slideshow) {
-            if(isset($slideshow['id'])) {
-                $settings = get_post_meta($slideshow['id'], 'ml-slider_settings', true);
-                if (is_array($settings) && isset($settings['type'])) {
-                    $type = $settings['type'];
-                    if($type !== 'flex'){
-                        $count_sliders++;
-                    }
-                }
-            }
-        }
-
-        if (is_wp_error($slideshows)) {
-            wp_send_json_error(array(
-                'message' => $slideshows->get_error_message()
-            ), 400);
-        }
-
+        $count_sliders = $this->slideshows->get_legacy_slideshows();
         wp_send_json_success($count_sliders, 200);
     }
 
@@ -367,12 +344,41 @@ class MetaSlider_Api
             $this->deny_access();
         }
 
-        $data           = $this->get_request_data($request, array('slideshow_id', 'theme'));
+        $manifest       = array();
+        $data           = $this->get_request_data($request, array('slideshow_id', 'theme', 'type'));
         $slideshow_id   = absint($data['slideshow_id']);
         $folder         = sanitize_text_field($data['theme']);
-        
+        $type           = sanitize_text_field($data['type']);
         $settings       = get_post_meta($slideshow_id, 'ml-slider_settings', true);
-        $manifest       = !empty($folder) ? $this->themes->add_base_customize_settings_single($folder) : array();
+
+        // If is not a free theme, maybe override $manifest path
+        if ($type !== 'free') {
+            /**
+             * Check if we have extra themes/ folders added from external sources,
+             * including MetaSlider Pro 
+             * 
+             * e.g. 
+             * array(
+             *  '/path/to/wp-content/plugins/ml-slider-pro/themes/',
+             *  '/path/to/wp-content/themes/my-theme/ms-themes/'
+             * )
+             */
+            $extra_themes = apply_filters('metaslider_extra_themes', array());
+
+            foreach ($extra_themes as $location) {
+                // Check if customize.php file that belongs to $folder as theme name (lowercase) exists
+                if (file_exists($customize_file = trailingslashit($location) . trailingslashit($folder) . 'customize.php')) {
+                    // Get the data from customize.php files
+                    $manifest = $this->themes->add_base_customize_settings_single(
+                        $folder, $customize_file
+                    );
+                    break;
+                }
+            }
+        } else {
+            // Get the data from customize.php files
+            $manifest = $this->themes->add_base_customize_settings_single($folder);
+        }
         
         $data = array(
             'saved_settings' => isset($settings['theme_customize']) 
@@ -573,7 +579,17 @@ class MetaSlider_Api
             $this->deny_access();
         }
 
-        $data = $this->get_request_data($request, array('slideshow_id', 'slider_id'));
+        $data = $this->get_request_data($request, array('slideshow_id', 'slider_id', 'nonce'));
+
+        // Validate nonce
+        if (! isset($data['nonce']) 
+            || empty($data['nonce']) 
+            || ! wp_verify_nonce(sanitize_key($data['nonce']), 'metaslider_delete_slider')
+        ) {
+            wp_send_json_error(array(
+                'message' => 'There was an error. Invalid nonce token.'
+            ), 400);
+        }
 
         // Backwards compatability for slider_id param
         $slideshow_id = is_null($data['slideshow_id']) ? $data['slider_id'] : $data['slideshow_id'];
@@ -810,7 +826,7 @@ class MetaSlider_Api
         if ('title' === $data['setting_key']) {
             wp_update_post(array(
                 'ID' => absint($data['slideshow_id']),
-                'post_title'  => (string) $data['setting_value']
+                'post_title'  => sanitize_text_field( $data['setting_value'] )
             ));
             return wp_send_json_success('OK', 200);
         }
@@ -1125,7 +1141,12 @@ class MetaSlider_Api
             $this->deny_access();
         }
 
-        $data = $this->get_request_data($request, array('slideshow_id', 'theme_id', 'slide_id', 'image_data'));
+        $data = $this->get_request_data($request, array('slideshow_id', 'theme_id', 'slide_id', 'image_data', 'extra'));
+
+        // Sanitize extra data
+        if ( isset( $data['extra'] ) && is_array( $data['extra'] ) ) {
+            $data['extra'] = array_map( 'sanitize_text_field', $data['extra'] );
+        }
 
         // Create a slideshow if one doesn't exist
         if (is_null($data['slideshow_id']) || !absint($data['slideshow_id'])) {
@@ -1141,10 +1162,7 @@ class MetaSlider_Api
         $images = isset($_FILES['files']) ? $this->process_uploads($_FILES['files'], $data['image_data']) : array();
 
         // $images should be an array of image data at this point
-        // Capture the slide markup that is typically echoed from legacy code
-        ob_start();
-
-        $image_ids = MetaSlider_Image::instance()->import($images, $data['theme_id']);
+        $image_ids = MetaSlider_Image::instance()->import($images, $data['theme_id'], $data['extra']);
         if (is_wp_error($image_ids)) {
             wp_send_json_error(array(
                 'message' => $image_ids->get_error_message()
@@ -1152,6 +1170,7 @@ class MetaSlider_Api
         }
 
         $errors = array();
+        $html_rows = array();
         $method = is_null($data['slide_id']) ? 'create_slide' : 'update';
         foreach ($image_ids as $image_id) {
             $slide = new MetaSlider_Slide(absint($data['slideshow_id']), $data['slide_id']);
@@ -1159,11 +1178,16 @@ class MetaSlider_Api
 
             if (is_wp_error($slide->error)) {
                 array_push($errors, $slide->error);
+            } else {
+                $imageSlide = new MetaImageSlide();
+                $imageSlide->set_slide( $slide->slide_id );
+
+                $html_rows[] = array(
+                    'slide_id' => $slide->slide_id,
+                    'html' => $imageSlide->get_admin_slide()
+                );
             }
         }
-
-        // Disregard the output. It's not needed for imports
-        ob_end_clean();
 
         // Send back the first error, if any
         if (isset($errors[0])) {
@@ -1172,7 +1196,7 @@ class MetaSlider_Api
             ), 400);
         }
 
-        wp_send_json_success(wp_get_attachment_thumb_url($slide->slide_data['id']), 200);
+        wp_send_json( $html_rows );
     }
 
     /**
@@ -1219,10 +1243,7 @@ class MetaSlider_Api
             );
         }
 
-        wp_send_json_success(
-            $data, 
-            200
-        );
+        wp_send_json( $new_slides );
     }
 
     /**

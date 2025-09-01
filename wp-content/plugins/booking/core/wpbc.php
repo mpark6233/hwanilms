@@ -15,7 +15,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly
 
 global $wp_version;                                                                                                         
-$min_wp_version = version_compare( WP_BK_MIN_WP_VERSION, $wp_version, '<=' );   //FixIn: 7.0.1.6
+$min_wp_version = version_compare( WP_BK_MIN_WP_VERSION, $wp_version, '<=' );   // FixIn: 7.0.1.6.
 if ( ( ! class_exists( 'Booking_Calendar' ) ) && ( $min_wp_version ) ) :
 
     
@@ -32,6 +32,8 @@ final class Booking_Calendar {
     public $js;
     public $css;
 
+	private $is_wp_inited = false;
+
 /** Get Single Instance of this Class and Init Plugin */
 public static function init() {
     
@@ -40,6 +42,8 @@ public static function init() {
         self::$instance = new Booking_Calendar;
         self::$instance->includes();
         self::$instance->define_version();
+
+		add_action( 'init', array( self::$instance, 'wp_inited' ) );
 
         if ( class_exists( 'WPBC_BookingInstall' ) ) {                                 									// Check if we need to run Install / Uninstal process.
             new WPBC_BookingInstall();
@@ -80,14 +84,30 @@ public static function init() {
     return self::$instance;        
 }
 
+/**
+ * Set WordPress was inited
+ *
+ * @return void
+ */
+public function wp_inited(){
+    self::$instance->is_wp_inited = true;
+}
+
+/**
+ * Check  if WP was inited
+ * @return mixed
+ */
+public function is_wp_inited(){
+    return self::$instance->is_wp_inited;
+}
 
 /** Define Admin Menu items */
 public function define_admin_menu(){
 
     $update_count = wpbc_db_get_number_new_bookings();
-	//FixIn: 9.1.3.3
+	// FixIn: 9.1.3.3.
     $title = 'WPBC ';//__('Booking', 'booking'); //'&#223;<span style="font-size:0.75em;">&#920;&#920;</span>&kgreen;&imath;&eng;';   // __('Booking', 'booking')
-    $is_user_activated = apply_bk_filter('multiuser_is_current_user_active',  true );           //FixIn: 6.0.1.17
+    $is_user_activated = apply_bk_filter('multiuser_is_current_user_active',  true );           // FixIn: 6.0.1.17.
 
     if ( ( $update_count > 0 ) && ( $is_user_activated ) ) {
         $update_count_title = "<span class='update-plugins count-$update_count' title=''><span class='update-count bk-update-count'>" . number_format_i18n($update_count) . "</span></span>" ;
@@ -106,18 +126,11 @@ public function define_admin_menu(){
 	$title .=   '<span style="margin-top:-2px;'.$badge_style.'" class="wpbc_badge_count name_item update-plugins count-'.$update_count.'" title=""><span class="update-count bk-update-count" style="white-space: nowrap;word-wrap: normal;">' . number_format_i18n( $update_count ) . '</span></span>';
 	$title .= '</div>';
 
-	/**
-		global $menu;
-		if ( current_user_can(  ) ) {
-			$menu[] = array( '', 'read', 'separator-wpbc', '', 'wp-menu-separator wpbc' );
-		}
-		debuge($menu);
-	*/
 
     $booking_menu_position = get_bk_option( 'booking_menu_position' );
     switch ( $booking_menu_position ) {
         case 'top':
-            $booking_menu_position = '3.3';										//FixIn: 8.7.7.16
+            $booking_menu_position = '3.3';										// FixIn: 8.7.7.16.
             break;
         case 'middle':
             global $_wp_last_object_menu;                                       // The index of the last top-level menu in the object menu group
@@ -132,37 +145,41 @@ public function define_admin_menu(){
             break;
     }
 
-	//FixIn: 9.0.1.7		//scale image by  this params: viewBox="-2 -1 20 20"
-	if( 0 ) {
-			// calendar4-range		https://icons.getbootstrap.com/icons/calendar4-range/
-			$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewBox="-2 -1 20 20">'
-									  . '<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z"/>'
-									  . '<path d="M9 7.5a.5.5 0 0 1 .5-.5H15v2H9.5a.5.5 0 0 1-.5-.5v-1zm-2 3v1a.5.5 0 0 1-.5.5H1v-2h5.5a.5.5 0 0 1 .5.5z"/>'
-									. '</svg>';
+		// FixIn: 10.11.3.3.
 
-			//calendar-range		https://icons.getbootstrap.com/icons/calendar-range/
-			$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-range" viewBox="-2 -1 20 20">'
-									  . '<path d="M9 7a1 1 0 0 1 1-1h5v2h-5a1 1 0 0 1-1-1zM1 9h4a1 1 0 0 1 0 2H1V9z"/>'
-									  . '<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>'
-									. '</svg>';
+//	//FixIn: 9.0.1.7		//scale image by  this params: viewBox="-2 -1 20 20"
+//	if( 0 ) {
+//			// calendar4-range		https://icons.getbootstrap.com/icons/calendar4-range/
+//			$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewBox="-2 -1 20 20">'
+//									  . '<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z"/>'
+//									  . '<path d="M9 7.5a.5.5 0 0 1 .5-.5H15v2H9.5a.5.5 0 0 1-.5-.5v-1zm-2 3v1a.5.5 0 0 1-.5.5H1v-2h5.5a.5.5 0 0 1 .5.5z"/>'
+//									. '</svg>';
+//
+//			//calendar-range		https://icons.getbootstrap.com/icons/calendar-range/
+//			$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-range" viewBox="-2 -1 20 20">'
+//									  . '<path d="M9 7a1 1 0 0 1 1-1h5v2h-5a1 1 0 0 1-1-1zM1 9h4a1 1 0 0 1 0 2H1V9z"/>'
+//									  . '<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>'
+//									. '</svg>';
+//
+//			//calendar2-range		https://icons.getbootstrap.com/icons/calendar2-range/
+//			$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-range" viewBox="-2 -1 20 20">'
+//									  . '<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>'
+//									  . '<path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4zM9 8a1 1 0 0 1 1-1h5v2h-5a1 1 0 0 1-1-1zm-8 2h4a1 1 0 1 1 0 2H1v-2z"/>'
+//									. '</svg>';
+//	}
+//	// calendar3-range		https://icons.getbootstrap.com/icons/calendar3-range/
+//	$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3-range" viewBox="-2 -1 20 20">'
+//							  . '<path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>'
+//							  . '<path d="M7 10a1 1 0 0 0 0-2H1v2h6zm2-3h6V5H9a1 1 0 0 0 0 2z"/>'
+//							. '</svg>';
 
-			//calendar2-range		https://icons.getbootstrap.com/icons/calendar2-range/
-			$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-range" viewBox="-2 -1 20 20">'
-									  . '<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>'
-									  . '<path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4zM9 8a1 1 0 0 1 1-1h5v2h-5a1 1 0 0 1-1-1zm-8 2h4a1 1 0 1 1 0 2H1v-2z"/>'
-									. '</svg>';
-	}
-	// calendar3-range		https://icons.getbootstrap.com/icons/calendar3-range/
-	$svg_icon_integarted = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3-range" viewBox="-2 -1 20 20">'
-							  . '<path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>'
-							  . '<path d="M7 10a1 1 0 0 0 0-2H1v2h6zm2-3h6V5H9a1 1 0 0 0 0 2z"/>'
-							. '</svg>';
+	$svg_icon_integarted = wpbc_get_svg_logo( '#aaa', '#aaa', '0.4' );   //  '#aaa', '#aaa', '0.2' .
 
     self::$instance->admin_menu['master'] = new WPBC_Admin_Menus(
                                                     'wpbc' , array (
                                                     'in_menu' => 'root'
 												//, 'mune_icon_url' => '/assets/img/icon-16x16.png'
-												  , 'mune_icon_url' => $svg_icon_integarted								//FixIn: 9.0.1.7
+												  , 'mune_icon_url' => $svg_icon_integarted								// FixIn: 9.0.1.7.
                                                   , 'menu_title' => $title
                                                   , 'menu_title_second' => __('Bookings', 'booking')
                                                   , 'page_header' => __('Bookings Listing','booking')
@@ -192,19 +209,19 @@ public function define_admin_menu(){
     self::$instance->admin_menu['new']    = new WPBC_Admin_Menus(
                                                     'wpbc-new' , array (
                                                     'in_menu' => 'wpbc'
-                                                  , 'menu_title'    => ucwords( __('Add booking', 'booking') )
+                                                  , 'menu_title'    => '+ ' . ucwords( __('Add booking', 'booking') )	// FixIn: 10.9.3.1.
                                                   , 'page_header'   => ucwords( __('Add booking','booking') )
                                                   , 'browser_header'=> ucwords( __('Add booking', 'booking') ) . ' - ' . __('Booking Calendar', 'booking')
                                                   , 'user_role' => get_bk_option( 'booking_user_role_addbooking' )
                                                                             )
                                                 );
-    self::$instance->admin_menu['availability']    = new WPBC_Admin_Menus(												//FixIn: 9.3.0.1
+    self::$instance->admin_menu['availability']    = new WPBC_Admin_Menus(												// FixIn: 9.3.0.1.
                                                     'wpbc-availability' , array (
                                                     'in_menu' => 'wpbc'
                                                   , 'menu_title'    => ucwords( __('Availability', 'booking') )
                                                   , 'page_header'   => ucwords( __('Availability','booking') )
                                                   , 'browser_header'=> ucwords( __('Availability', 'booking') ) . ' - ' . __('Booking Calendar', 'booking')
-                                                  , 'user_role' => get_bk_option( 'booking_user_role_availability' )	//FixIn: 9.5.2.2
+                                                  , 'user_role' => get_bk_option( 'booking_user_role_availability' )	// FixIn: 9.5.2.2.
                                                                             )
                                                 );
 	//FixIn: 9.8.15.2.4
@@ -230,19 +247,9 @@ public function define_admin_menu(){
                                                 );
 	}
 
-	if ( WPBC_customize_plugin )
-    self::$instance->admin_menu['customize_plugin']    = new WPBC_Admin_Menus(												//FixIn: 9.8.0.1
-                                                    'wpbc-customize_plugin' , array (
-                                                    'in_menu' => 'wpbc'
-                                                  , 'menu_title'    => ucwords( __('Customize', 'booking') )
-                                                  , 'page_header'   => ucwords( __('Customize','booking') )
-                                                  , 'browser_header'=> ucwords( __('Customize', 'booking') ) . ' - ' . __('Booking Calendar', 'booking')
-                                                  , 'user_role' => get_bk_option( 'booking_user_role_customize_plugin' )				//FixIn: 9.8.15.2.6
-                                                                            )
-                                                );
 
-	if ( ! class_exists( 'wpdev_bk_personal' ) ) {            //FixIn: 10.1.3.1
-	    //FixIn: 9.8.15.7
+	if ( ! class_exists( 'wpdev_bk_personal' ) ) {            // FixIn: 10.1.3.1.
+	    // FixIn: 9.8.15.7.
         self::$instance->admin_menu['resources']    = new WPBC_Admin_Menus(
                                                     'wpbc-resources' , array (
                                                     'in_menu' => 'wpbc'
@@ -265,17 +272,27 @@ public function define_admin_menu(){
                                                                             )
                                                 );
 
-	if ( ( WPBC_setup_plugin ) && ( ! wpbc_setup_wizard_page__db__is_all_steps_completed() ) ) {						//FixIn: 10.2.0.1
-    	self::$instance->admin_menu['setup'] = new WPBC_Admin_Menus(													//FixIn: 9.8.0.1
+
+
+
+		if (
+			( wpbc_is_user_can_access_wizard_page() ) &&
+			( ! wpbc_setup_wizard_page__is_all_steps_completed() )
+		){
+
+		 	$setup_steps = new WPBC_SETUP_WIZARD_STEPS();
+
+    		self::$instance->admin_menu['setup'] = new WPBC_Admin_Menus(
                                                     'wpbc-setup' , array (
                                                     'in_menu'        => 'wpbc'
-                                                  , 'menu_title'     => wpbc_get_plugin_menu_title__setup_progress()
+                                                  , 'menu_title'     => $setup_steps->get_plugin_menu_title__setup_progress()
                                                   , 'page_header'    => ucwords( __('Setup','booking') )
                                                   , 'browser_header' => ucwords( __('Setup', 'booking') ) . ' - ' . __('Booking Calendar', 'booking')
                                                   , 'user_role' 	 => get_bk_option( 'booking_user_role_settings' )				//FixIn: 9.8.15.2.6
                                                                             )
                                                 );
-	}
+		}
+
 
 
 	$simulate_user_id = wpbc_mu__is_simulated_login_as_user();
@@ -292,32 +309,13 @@ public function define_admin_menu(){
 																  .'">'
 																  .__( 'Back to Super Admin', 'booking' )
 																  .'<span>'
-												, 'page_header'   => ucwords( sprintf( __( 'Need even more functionality? Check %s higher versions %s','booking'), '', '' ) )
+												/* translators: 1: ... */
+												, 'page_header'   => ucwords( sprintf( __( 'Need even more functionality? Check %1$s higher versions %2$s', 'booking' ), '', '' ) )
 												, 'browser_header'=> 'Log In as Super Admin'
 												, 'user_role' 	  => get_bk_option( 'booking_user_role_booking' )
 											)
 										);
 	}
-
-
-
-	//FixIn: 8.0.1.6		//FixIn: 10.1.3.1
-	if ( ! class_exists( 'wpdev_bk_personal' ) ) {
-
-		$is_show_this_menu = get_bk_option('booking_menu_go_pro');
-
-		if ( 'hide' !== $is_show_this_menu )
-			self::$instance->admin_menu['go_pro'] = new WPBC_Admin_Menus(
-													'wpbc-go-pro' , array (
-														  'in_menu' 	  => 'wpbc'
-														, 'menu_title'    => __('Get Pro', 'booking')
-														, 'page_header'   => ucwords( sprintf( __( 'Need even more functionality? Check %s higher versions %s','booking'), '', '' ) )
-														, 'browser_header'=> 'Booking Calendar'
-														, 'user_role' 	  => get_bk_option( 'booking_user_role_booking' )
-													)
-												);
-	}
-
 }
 
     
@@ -339,29 +337,40 @@ public function define_admin_menu(){
     
     // Include Files
     private function includes() {
-        require_once WPBC_PLUGIN_DIR . '/core/wpbc-include.php' ; 
+        require_once WPBC_PLUGIN_DIR . '/includes/wpbc-include.php' ;
     }
-    
-        
-    private function define_version() {
-        
-        // GET VERSION NUMBER
-        $plugin_data = wpbc_file__read_header_info(  WPBC_FILE , array( 'Name' => 'Plugin Name', 'PluginURI' => 'Plugin URI', 'Version' => 'Version', 'Description' => 'Description', 'Author' => 'Author', 'AuthorURI' => 'Author URI', 'TextDomain' => 'Text Domain', 'DomainPath' => 'Domain Path' ) , 'plugin' );
-        if (!defined('WPDEV_BK_VERSION'))    define('WPDEV_BK_VERSION',   $plugin_data['Version'] );
-    }
+
+
+	private function define_version() {
+
+		// GET VERSION NUMBER
+		$plugin_data = wpbc_file__read_header_info( WPBC_FILE, array(
+			'Name'        => 'Plugin Name',
+			'PluginURI'   => 'Plugin URI',
+			'Version'     => 'Version',
+			'Description' => 'Description',
+			'Author'      => 'Author',
+			'AuthorURI'   => 'Author URI',
+			'TextDomain'  => 'Text Domain',
+			'DomainPath'  => 'Domain Path',
+		), 'plugin' );
+		if ( ! defined( 'WPDEV_BK_VERSION' ) ) {
+			define( 'WPDEV_BK_VERSION', $plugin_data['Version'] );
+		}
+	}
 
 
     // Cloning instances of the class is forbidden
     public function __clone() {
 
-        _doing_it_wrong( __FUNCTION__, __( 'Action is not allowed!' ), '1.0' );
+        _doing_it_wrong( __FUNCTION__, esc_html__( 'Action is not allowed!', 'booking' ), '1.0' );
     }
 
     
     // Unserializing instances of the class is forbidden
     public function __wakeup() {
 
-        _doing_it_wrong( __FUNCTION__, __( 'Action is not allowed!' ), '1.0' );
+        _doing_it_wrong( __FUNCTION__, esc_html__( 'Action is not allowed!', 'booking' ), '1.0' );
     }
 
     
@@ -406,11 +415,11 @@ public function define_admin_menu(){
 
 else:   // Its seems that  some instance of Booking Calendar still activted!!!
     
-    //FixIn: 7.0.1.6
+    // FixIn: 7.0.1.6.
     global $wp_version;                                                     
     $min_wp_version = version_compare( WP_BK_MIN_WP_VERSION, $wp_version, '<=' );
 
-    //FixIn: 7.0.1.6
+    // FixIn: 7.0.1.6.
     function wpbc_show_min_wp_version_error() {
 
         $message_type = 'error';
@@ -448,8 +457,8 @@ else:   // Its seems that  some instance of Booking Calendar still activted!!!
         $message_content .= '</div>';
 
         $message_content .= '<div class="clear"></div>';
-        
-        echo $message_content;
+
+        echo wp_kses_post( $message_content );
     }    
     
     function wpbc_show_activation_error() {
@@ -486,14 +495,14 @@ else:   // Its seems that  some instance of Booking Calendar still activted!!!
 
         $message_content .= '<div class="clear"></div>';
         
-        echo $message_content;
-    }    
-    
-    
-    if ( ! $min_wp_version )                                                    //FixIn: 7.0.1.6
-        add_action('admin_notices', 'wpbc_show_min_wp_version_error');    
-    else 
-        add_action('admin_notices', 'wpbc_show_activation_error');    
+        echo wp_kses_post( $message_content );
+    }
+
+
+    if ( ! $min_wp_version )                                                    // FixIn: 7.0.1.6.
+        add_action('admin_notices', 'wpbc_show_min_wp_version_error');
+    else
+        add_action('admin_notices', 'wpbc_show_activation_error');
     
     return;         // Exit
 
@@ -520,13 +529,14 @@ WPBC();
 
  //add_action( 'admin_footer', 'show_debug_info', 130 ); 
 function show_debug_info() {
-    
-    $request_uri = $_SERVER['REQUEST_URI'];                                 //FixIn:5.4.1
+
+	$server_request_uri = ( ( isset( $_SERVER['REQUEST_URI'] ) ) ? sanitize_text_field( $_SERVER['REQUEST_URI'] ) : '' );  /* phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash */ /* FixIn: sanitize_unslash */
+    $request_uri = $server_request_uri;                                 //FixIn:5.4.1
     if ( strpos( $request_uri, 'page=wpbc') === false ) {
         return;
     }
     echo '<div style="width:800px;margin:10px auto;"><style type="text/css"> a:link{background: inherit !important; } pre { white-space: pre-wrap; }</style>'; 
-    
+// phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_phpinfo
 phpinfo();  echo '</div>'; return;
     
     ?><div style="width:auto;margin:0 0 0 215px;font-size:11px;    "><?php 
@@ -552,11 +562,11 @@ phpinfo();  echo '</div>'; return;
             }
         }
 
-        echo '<div><pre class="prettyprint linenums" style="font-size:18px;">[' . $total_num . '/' . $total_time . '] WPBC Requests TOTAL TIME</pre></div>';
+	echo '<div><pre class="prettyprint linenums" style="font-size:18px;">[' . esc_html( $total_num . '/' . $total_time ) . '] WPBC Requests TOTAL TIME</pre></div>';
     
-        echo '<div class="clear"></div>'; 
+        echo '<div class="clear"></div>';
 
-        echo '<div><pre class="prettyprint linenums" style="font-size:18px;">' . get_num_queries(). '/'  . timer_stop(0, 3) . 'qps</pre></div>';
+	echo '<div><pre class="prettyprint linenums" style="font-size:18px;">' . esc_html( get_num_queries() . '/' . timer_stop( 0, 3 ) ) . 'qps</pre></div>';
         
         echo '<div class="clear"></div>'; 
             

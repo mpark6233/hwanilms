@@ -14,62 +14,63 @@ jQuery(document).ready(function() {
 		return false;
 	});
 
-	jQuery(document).on('click', '.um-modal .um-single-file-preview a.cancel', function(e){
-		e.preventDefault();
+	// jQuery(document).on('click', '.um-modal .um-single-file-preview a.cancel', function(e){
+	// 	e.preventDefault();
+	//
+	// 	var parent = jQuery(this).parents('.um-modal-body');
+	// 	var src = jQuery(this).parents('.um-modal-body').find('.um-single-fileinfo a').attr('href');
+	// 	var mode = parent.find('.um-single-file-upload').data('set_mode');
+	//
+	// 	jQuery.ajax({
+	// 		url: wp.ajax.settings.url,
+	// 		type: 'post',
+	// 		data: {
+	// 			action: 'um_remove_file',
+	// 			src: src,
+	// 			mode: mode,
+	// 			nonce: um_scripts.nonce
+	// 		},
+	// 		success: function() {
+	// 			parent.find('.um-single-file-preview').hide();
+	// 			parent.find('.ajax-upload-dragdrop').show();
+	// 			parent.find('.um-modal-btn.um-finish-upload').addClass('disabled');
+	// 			um_modal_responsive();
+	// 		}
+	// 	});
+	//
+	// 	return false;
+	// });
 
-		var parent = jQuery(this).parents('.um-modal-body');
-		var src = jQuery(this).parents('.um-modal-body').find('.um-single-fileinfo a').attr('href');
-		var mode = parent.find('.um-single-file-upload').data('set_mode');
-
-		jQuery.ajax({
-			url: wp.ajax.settings.url,
-			type: 'post',
-			data: {
-				action: 'um_remove_file',
-				src: src,
-				mode: mode,
-				nonce: um_scripts.nonce
-			},
-			success: function() {
-				parent.find('.um-single-file-preview').hide();
-				parent.find('.ajax-upload-dragdrop').show();
-				parent.find('.um-modal-btn.um-finish-upload').addClass('disabled');
-				um_modal_responsive();
-			}
-		});
-
-		return false;
-	});
-
-	jQuery(document).on('click', '.um-modal .um-single-image-preview a.cancel', function(e){
-		e.preventDefault();
-
-		var parent = jQuery(this).parents('.um-modal-body');
-		var src = jQuery(this).parents('.um-modal-body').find('.um-single-image-preview img').attr('src');
-		var mode = parent.find('.um-single-image-upload').data('set_mode');
-
-		jQuery.ajax({
-			url: wp.ajax.settings.url,
-			type: 'post',
-			data: {
-				action: 'um_remove_file',
-				src: src,
-				mode: mode,
-				nonce: um_scripts.nonce
-			},
-			success: function() {
-				jQuery('img.cropper-hidden').cropper( 'destroy' );
-				parent.find('.um-single-image-preview img').attr( 'src', '' );
-				parent.find('.um-single-image-preview').hide();
-				parent.find('.ajax-upload-dragdrop').show();
-				parent.find('.um-modal-btn.um-finish-upload').addClass( 'disabled' );
-
-				um_modal_responsive();
-			}
-		});
-
-		return false;
-	});
+	// jQuery(document).on('click', '.um-modal .um-single-image-preview a.cancel', function(e){
+	// 	e.preventDefault();
+	//
+	// 	var parent = jQuery(this).parents('.um-modal-body');
+	// 	var src = jQuery(this).parents('.um-modal-body').find('.um-single-image-preview img').attr('src');
+	// 	var mode = parent.find('.um-single-image-upload').data('set_mode');
+	//
+	// 	jQuery.ajax({
+	// 		url: wp.ajax.settings.url,
+	// 		type: 'post',
+	// 		data: {
+	// 			action: 'um_remove_file',
+	// 			src: src,
+	// 			mode: mode,
+	// 			nonce: um_scripts.nonce
+	// 		},
+	// 		success: function() {
+	// 			wp.hooks.doAction( 'um_after_removing_preview' );
+	//
+	// 			parent.find('.um-single-image-preview img').attr( 'src', '' );
+	// 			parent.find('.um-single-image-preview').hide();
+	// 			parent.find('.ajax-upload-dragdrop').show();
+	// 			parent.find('.um-modal-btn.um-finish-upload').addClass( 'disabled' );
+	//
+	// 			um_modal_responsive();
+	// 		}
+	// 	});
+	//
+	// 	return false;
+	// });
 
 	jQuery(document).on('click', '.um-finish-upload.file:not(.disabled)', function(){
 
@@ -95,7 +96,7 @@ jQuery(document).ready(function() {
 		var key = jQuery(this).attr('data-key');
 		var img_c = jQuery(this).parents('.um-modal-body').find('.um-single-image-preview');
 		var src = img_c.find('img').attr('src');
-		var coord = img_c.attr('data-coord');
+
 		var file = img_c.find('img').data('file');
 		var user_id = 0;
 		if ( jQuery(this).parents('#um_upload_single').data('user_id')  ) {
@@ -106,12 +107,17 @@ jQuery(document).ready(function() {
 		var form_id = 0;
 		var mode = '';
 		if ( jQuery('div.um-field-image[data-key="' + key + '"]').length === 1 ) {
-			var $formWrapper = jQuery('div.um-field-image[data-key="' + key + '"]').closest('.um-form');
-			form_id = $formWrapper.find('input[name="form_id"]').val();
-			mode = $formWrapper.attr('data-mode');
+			let $formWrapper = jQuery('div.um-field-image[data-key="' + key + '"]').closest('.um-form');
+			form_id = $formWrapper.data('form_id') || $formWrapper.find('input[name="form_id"]').val(); // 'input[name="form_id"]' is a backward compatibility.
+			mode = $formWrapper.data('mode');
+		} else {
+			console.warn( wp.i18n.__( 'UM Warning: No field associated with image uploader.', 'ultimate-member' ) );
+			return;
 		}
 
-		if ( coord ) {
+		if ( jQuery('.cropper-hidden').length > 0 && UM.frontend.cropper.obj ) {
+			var data = UM.frontend.cropper.obj.getData();
+			var coord = Math.round(data.x) + ',' + Math.round(data.y) + ',' + Math.round(data.width) + ',' + Math.round(data.height);
 
 			jQuery(this).html( jQuery(this).attr('data-processing') ).addClass('disabled');
 
@@ -137,11 +143,38 @@ jQuery(document).ready(function() {
 
 						if ( key === 'profile_photo' ) {
 							jQuery('.um-profile-photo-img img').attr('src', response.data.image.source_url + "?"+d.getTime());
+
+							let $dropdown = jQuery('.um-profile-photo .um-dropdown');
+							if ( ! $dropdown.find('.um-reset-profile-photo').hasClass('um-is-visible') ) {
+								let $dropdownItem = $dropdown.find('.um-manual-trigger[data-parent=".um-profile-photo"]');
+								let altText = $dropdownItem.data('alt_text');
+								$dropdownItem.data( 'alt_text', $dropdownItem.text() ).text( altText );
+
+								$dropdown.find('.um-reset-profile-photo').addClass('um-is-visible').show();
+							}
+
+							if ( ! jQuery('.um').hasClass('um-editing') ) {
+								$dropdown.remove();
+							}
 						} else if ( key === 'cover_photo' ) {
 							jQuery('.um-cover-e').empty().html('<img src="' + response.data.image.source_url + "?"+d.getTime() + '" alt="" />');
+
+							let $dropdown = jQuery('.um-cover .um-dropdown');
+							if ( ! $dropdown.find('.um-reset-cover-photo').hasClass('um-is-visible') ) {
+								let $dropdownItem = $dropdown.find('.um-manual-trigger[data-parent=".um-cover"]');
+								let altText = $dropdownItem.data('alt_text');
+								$dropdownItem.data( 'alt_text', $dropdownItem.text() ).text( altText );
+
+								$dropdown.find('.um-reset-cover-photo').addClass('um-is-visible').show();
+							}
+
 							if ( jQuery('.um').hasClass('um-editing') ) {
 								jQuery('.um-cover-overlay').show();
+							} else {
+								$dropdown.remove();
 							}
+
+							um_responsive();
 						}
 
 						jQuery('.um-single-image-preview[data-key='+key+']').fadeIn().find('img').attr('src', response.data.image.source_url + "?"+d.getTime());
@@ -159,18 +192,15 @@ jQuery(document).ready(function() {
 			});
 
 		} else {
+			d = new Date();
 
-					d = new Date();
+			jQuery('.um-single-image-preview[data-key='+key+']').fadeIn().find('img').attr('src', src + "?"+d.getTime());
 
-					jQuery('.um-single-image-preview[data-key='+key+']').fadeIn().find('img').attr('src', src + "?"+d.getTime());
+			um_remove_modal();
 
-					um_remove_modal();
+			jQuery('.um-single-image-preview[data-key='+key+']').parents('.um-field').find('.um-btn-auto-width').html( elem.attr('data-change') );
 
-					jQuery('.um-single-image-preview[data-key='+key+']').parents('.um-field').find('.um-btn-auto-width').html( elem.attr('data-change') );
-
-					jQuery('.um-single-image-preview[data-key='+key+']').parents('.um-field').find('input[type=hidden]').val( file );
-
-
+			jQuery('.um-single-image-preview[data-key='+key+']').parents('.um-field').find('input[type=hidden]').val( file );
 		}
 	});
 

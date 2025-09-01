@@ -22,8 +22,9 @@ class WPBC_AJX__Availability {
 		 */
 		public function init_load_css_js_tpl() {
 
+			$server_request_uri = ( ( isset( $_SERVER['REQUEST_URI'] ) ) ? sanitize_text_field( $_SERVER['REQUEST_URI'] ) : '' );  /* phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash */ /* FixIn: sanitize_unslash */
 			// Load only  at  specific  Page
-			if  ( strpos( $_SERVER['REQUEST_URI'], 'page=wpbc-availability' ) !== false ) {
+			if  ( strpos( $server_request_uri, 'page=wpbc-availability' ) !== false ) {
 
 				add_action( 'wpbc_enqueue_js_files',  array( $this, 'js_load_files' ),     50 );
 				add_action( 'wpbc_enqueue_css_files', array( $this, 'enqueue_css_files' ), 50 );
@@ -42,16 +43,12 @@ class WPBC_AJX__Availability {
 			if ( ( is_admin() ) && ( in_array( $where_to_load, array( 'admin', 'both' ) ) ) ) {
 
 				wp_enqueue_script(    'wpbc-ajx_availability_page'
-									, trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/availability_page.js'         /* wpbc_plugin_url( '/_out/js/codemirror.js' ) */
+									, trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/availability_page.js'         /* wpbc_plugin_url( '/_out/js/code_mirror.js' ) */
 									, array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );                     //FixIn: 9.8.1
 
-				wp_enqueue_script( 'wpbc-general_ui_js_css'
-					, wpbc_plugin_url( '/includes/_general_ui_js_css/_out/wpbc_main_ui_funcs.js' )
-					, array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );										//FixIn: 9.8.1
-
-				wp_enqueue_script( 'wpbc_all',         wpbc_plugin_url( '/_dist/all/_out/wpbc_all.js' ),                 	array( 'jquery' ), WP_BK_VERSION_NUM );          //FixIn: 9.8.6.1
-				wp_enqueue_script( 'wpbc-main-client', wpbc_plugin_url( '/js/client.js' ),     array( 'wpbc-datepick' ),    WP_BK_VERSION_NUM );
-				wp_enqueue_script( 'wpbc-times',       wpbc_plugin_url( '/js/wpbc_times.js' ), array( 'wpbc-main-client' ), WP_BK_VERSION_NUM );
+				wp_enqueue_script( 'wpbc_all',         wpbc_plugin_url( '/_dist/all/_out/wpbc_all.js' ),                 	array( 'jquery' ), WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );          // FixIn: 9.8.6.1.
+				wp_enqueue_script( 'wpbc-main-client', wpbc_plugin_url( '/js/client.js' ),     array( 'wpbc-datepick' ),    WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );
+				wp_enqueue_script( 'wpbc-times',       wpbc_plugin_url( '/js/wpbc_times.js' ), array( 'wpbc-main-client' ), WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );
 				/**
 				 *
 				 * wp_localize_script( 'wpbc_all', 'wpbc_live_request_obj'
@@ -92,7 +89,7 @@ class WPBC_AJX__Availability {
 		$default_resource_id = wpbc_get_default_resource();
 
 		return  array(
-			  'do_action'	    	=> array( 'validate' => array( 'none', 'set_availability', 'make_reset', 'erase_availability' ),     'default' => 'none' )
+			  'do_action'	    	=> array( 'validate' => array( 'none', 'set_availability', 'make_reset', 'erase_availability', 'change_month_number_in_row' ),     'default' => 'none' )			// FixIn: 10.8.1.5.
 
 		    , 'resource_id' 		=> array( 'validate' => 'd',  	'default' => $default_resource_id )	    	// 'digit_or_csd' can check about 'digit_or_csd' in arrays, as well         // if ['0'] - All  booking resources
 			, 'dates_selection' 	=> array( 'validate' => 's', 	'default' => '' )
@@ -105,7 +102,7 @@ class WPBC_AJX__Availability {
 			, 'calendar__start_week_day' 		=> array( 'validate' => array( '0','1','2','3','4','5','6' ),	'default' => intval(get_bk_option( 'booking_start_day_weeek' )) )
 			, 'calendar__days_selection_mode' 	=> array( 'validate' => array( 'multiple', 'dynamic' ),     	'default' => 'dynamic' )
 			, 'calendar__view__visible_months' 	=> array( 'validate' => 'd',  	'default' => 12 )
-			, 'calendar__view__months_in_row' 	=> array( 'validate' => 'd',  	'default' => 4 )
+			, 'calendar__view__months_in_row' 	=> array( 'validate' => 'd',  	'default' => 3 )						// FixIn: 10.8.1.5.
 			, 'calendar__view__width' 			=> array( 'validate' => 's',  	'default' => '100%' )
 			, 'calendar__view__max_width' 		=> array( 'validate' => 's',  	'default' => '' )			// default ''   it's will be set  as 341px,
 			, 'calendar__view__cell_height' 	=> array( 'validate' => 's',  	'default' => '38px' )			// '48px' || ''
@@ -160,12 +157,12 @@ class WPBC_AJX__Availability {
 		 */
 		public function hook__page_footer_tmpl( $page ){
 
-			// page=wpbc&view_mode=vm_booking_listing
+			// page=wpbc&tab=vm_booking_listing
 			if ( 'wpbc-ajx_booking_availability'  === $page ) {		// from >>	do_action( 'wpbc_hook_settings_page_footer', 'wpbc-ajx_booking_availability' ); as availability_page.php in bottom  of content method
 				$this->template__main_page_content();
 
 				$this->template_toolbar_select_booking_resource();
-
+				$this->template_toolbar_select_month_number_in_row();        // FixIn: 10.8.1.5.
 				$this->template__widget_available_unavailable();
 				$this->template__widget_calendar_legend();
 			}
@@ -197,7 +194,7 @@ class WPBC_AJX__Availability {
 							$is_booking_change_over_days_triangles = get_bk_option( 'booking_change_over_days_triangles' );
 							$is_booking_change_over_days_triangles = ( $is_booking_change_over_days_triangles !== 'Off' ) ? "wpbc_change_over_triangle" : '';
 						?>
-						<div class="wpbc_ajx_avy__calendar <?php echo $is_booking_change_over_days_triangles;  ?>"><?php _e('Calendar is loading...', 'booking'); ?></div>
+						<div class="wpbc_ajx_avy__calendar <?php echo esc_attr( $is_booking_change_over_days_triangles ); ?>"><?php esc_html_e('Calendar is loading...', 'booking'); ?></div>
 					</div>
 					<div class="wpbc_ajx_avy__section_right">
 						<div class="wpbc_widgets">
@@ -208,6 +205,10 @@ class WPBC_AJX__Availability {
 
 							var wpbc_widget__available_unavailable = wp.template( 'wpbc_ajx_widget_available_unavailable' );
 							var wpbc_widget__calendar_legend       = wp.template( 'wpbc_ajx_widget_calendar_legend' );
+
+							// FixIn: 10.8.1.5.
+							var wpbc_ajx_select_month_number_in_row = wp.template( 'wpbc_ajx_select_month_number_in_row' );
+							jQuery( '#wpbc_template__select_month_number_in_row').html( wpbc_ajx_select_month_number_in_row( data	) );
 
 						<?php if (0) { ?></script><?php } ?>
 						#>
@@ -227,7 +228,7 @@ class WPBC_AJX__Availability {
 		    ?><script type="text/html" id="tmpl-wpbc_ajx_widget_available_unavailable">
 				<div class="wpbc_widget wpbc_widget_available_unavailable">
 					<div class="wpbc_widget_header">
-						<span class="wpbc_widget_header_text"><?php _e('Apply availability', 'booking'); ?></span>
+						<span class="wpbc_widget_header_text"><?php esc_html_e('Apply availability', 'booking'); ?></span>
 						<a href="/" class="wpbc_widget_header_settings_link"><i class="menu_icon icon-1x wpbc_icn_settings"></i></a>
 					</div>
 					<div class="wpbc_widget_content wpbc_ajx_toolbar" style="margin:0 0 20px;">
@@ -288,7 +289,7 @@ class WPBC_AJX__Availability {
 		    ?><script type="text/html" id="tmpl-wpbc_ajx_widget_calendar_legend">
 				<div class="wpbc_widget wpbc_widget_calendar_legend">
 					<div class="wpbc_widget_header">
-						<span class="wpbc_widget_header_text"><?php _e('Calendar Legend', 'booking'); ?></span>
+						<span class="wpbc_widget_header_text"><?php esc_html_e('Calendar Legend', 'booking'); ?></span>
 						<a href="/" class="wpbc_widget_header_settings_link"><i class="menu_icon icon-1x wpbc_icn_settings"></i></a>
 					</div>
 					<div class="wpbc_widget_content wpbc_ajx_toolbar" style="margin:0 0 20px;">
@@ -297,14 +298,14 @@ class WPBC_AJX__Availability {
 
 								?><div class="ui_element ui_nowrap"><?php
 
-									//echo wpbc_replace_shortcodes_in_booking_form__legend_items( '[legend_items]' );
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									echo wpbc_replace_shortcodes_in_booking_form__legend_items(
 												'[legend_items'
 												            . ' items="resource_unavailable"'
 												            . ' titles="resource_unavailable={'
 																								. htmlspecialchars( __( "Resource unavailable days", 'booking' ), ENT_QUOTES)
 																						 . '}"'
-															. ' text_for_day_cell="' . date( 'd' ) . '"'
+															. ' text_for_day_cell="' . gmdate( 'd' ) . '"'
 															. ' unavailable_day_cell_tag="a"'
 												.']'
 										);
@@ -313,6 +314,7 @@ class WPBC_AJX__Availability {
 								?><div style="border-top:1px solid #d3d3d3;width:100%;margin: 10px 0 -5px;"></div><?php
 
 								?><div class="ui_element ui_nowrap"><?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									echo wpbc_replace_shortcodes_in_booking_form__legend_items(
 												'[legend_items'
 																. ' items="unavailable,available,pending,approved,partially"'
@@ -320,7 +322,7 @@ class WPBC_AJX__Availability {
 																			//.' unavailable={' . htmlspecialchars(  __( "Unavailable", 'booking' ), ENT_QUOTES ) . '}'
 																			//.' pending={' . htmlspecialchars(  __( "Pending", 'booking' ), ENT_QUOTES ) . '}'
 																		 .'"'
-																. ' text_for_day_cell="' . date( 'd' ) . '"'
+																. ' text_for_day_cell="' . gmdate( 'd' ) . '"'
 																. ' unavailable_day_cell_tag="span"'
 												.']'
 										);
@@ -351,9 +353,7 @@ class WPBC_AJX__Availability {
 					echo '</script>';
 					return  false;
 				}
-				/*
-				?><# console.log( ' == TEMPLATE PARAMS "wpbc_ajx_change_booking_resource" == ', data ); #><?php
-				*/
+
 				$booking_action = 'select_booking_resource';
 
 				$el_id = 'ui_btn_' . $booking_action;
@@ -369,12 +369,12 @@ class WPBC_AJX__Availability {
 							wpbc_flex_label(
 												array(
 													  'id' 	  => $el_id
-													, 'label' => '<span class="" style="font-weight:600;">' . __( 'Booking resource', 'booking' ) . ':</span>'
+													, 'label' => '<span class="" style="font-weight:600;">' . esc_html__( 'Booking resource', 'booking' ) . ':</span>'
 												)
 										   );
 
 							?><select class="wpbc_ui_control wpbc_ui_select change_booking_resource_selectbox"
-									  id="<?php echo $el_id; ?>" name="<?php echo $el_id; ?>"
+									  id="<?php echo esc_attr( $el_id ); ?>" name="<?php echo esc_attr( $el_id ); ?>"
 
 									  <?php /* ?>onfocus="javascript:console.log( 'ON FOCUS:', jQuery( this ).val(), 'in element:' , jQuery( this ) );"<?php /**/ ?>
 
@@ -423,6 +423,60 @@ class WPBC_AJX__Availability {
 			?></script><?php
 		}
 
+
+
+		private function template_toolbar_select_month_number_in_row(){                                                 // FixIn: 10.8.1.5.
+
+			// Template
+			?><script type="text/html" id="tmpl-wpbc_ajx_select_month_number_in_row"><?php
+
+				/*
+				?><# console.log( ' == TEMPLATE PARAMS "wpbc_ajx_change_month_number_in_row" == ', data ); #><?php
+				*/
+				$booking_action = 'select_month_number_in_row';
+
+				$el_id = 'ui_btn_' . $booking_action;
+
+				?><div class="ui_element"><?php
+					?><div class="wpbc_ui_separtor" style="margin-left: 8px;"></div><?php
+				?></div><?php
+
+				?><div class="ui_element"><?php
+
+					wpbc_flex_label(
+										array(
+											  'id' 	  => $el_id
+											, 'label' => '<span class="" style="font-weight:600;">' . esc_html__( 'Number of months in a row', 'booking' ) . ':</span>'
+										)
+								   );
+
+					?><select class="wpbc_ui_control wpbc_ui_select change_month_number_in_row_selectbox"
+							  id="<?php echo esc_attr( $el_id ); ?>" name="<?php echo esc_attr( $el_id ); ?>"
+
+							  <?php /* ?>onfocus="javascript:console.log( 'ON FOCUS:', jQuery( this ).val(), 'in element:' , jQuery( this ) );"<?php /**/ ?>
+
+							  onchange="javascript:wpbc_admin_show_message_processing( '' );wpbc_ajx_availability__send_request_with_params( {
+																									  'calendar__view__months_in_row': jQuery( '.change_month_number_in_row_selectbox option:selected' ).val()
+																									, 'do_action': 'change_month_number_in_row'
+																								} );"
+					  ><#
+						for (var month_index = 2; month_index < 7; month_index++ ){
+						#><option value="{{month_index}}"
+									  <#
+										if ( data.ajx_cleaned_params.calendar__view__months_in_row == month_index ) {
+											#> selected="SELECTED" <#
+										}
+									  #>
+							>{{month_index}}</option><#
+						}
+						#>
+					</select><?php
+
+				?></div><?php
+
+			?></script><?php
+		}
+
 	// </editor-fold>
 
 
@@ -452,6 +506,7 @@ class WPBC_AJX__Availability {
 		 */
 		public function ajax_WPBC_AJX_AVAILABILITY() {
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 			if ( ! isset( $_POST['search_params'] ) || empty( $_POST['search_params'] ) ) { exit; }
 
 			// Security  -----------------------------------------------------------------------------------------------    // in Ajax Post:   'nonce': wpbc_ajx_booking_listing.get_secure_param( 'nonce' ),
@@ -459,7 +514,7 @@ class WPBC_AJX__Availability {
 			$nonce_post_key = 'nonce';
 			$result_check   = check_ajax_referer( $action_name, $nonce_post_key );
 
-			$user_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) )  ?  intval( $_REQUEST['wpbc_ajx_user_id'] )  :  wpbc_get_current_user_id();
+			$user_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) )  ?  intval( $_REQUEST['wpbc_ajx_user_id'] )  :  wpbc_get_current_user_id();  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 			/**
 			 * SQL  ---------------------------------------------------------------------------
@@ -496,7 +551,7 @@ class WPBC_AJX__Availability {
 
 			$resources_arr_sorted = wpbc_ajx_get_sorted_booking_resources_arr( $resources_arr );
 
-			//FixIn: 10.3.0.7
+			// FixIn: 10.3.0.7.
 			// Check  if $request_params['resource_id'] exist in $resources_arr_sorted,  because it possible situation,  when  some  booking resources was deleted and we do not need to  load old data.
 			$is_resource_exist = false;
 			foreach ( $resources_arr_sorted as $resource_index => $resource_value_arr ) {
@@ -528,11 +583,13 @@ class WPBC_AJX__Availability {
 
 				if ( false !== $row_number ) {
 					if ( 'available' == $request_params['dates_availability'] ) {
-						$data_arr['ajx_after_action_message'] = sprintf( _n( '%s date has been set as %s available %s', '%s dates has been set as %s available %s', $row_number, 'booking' )
+						/* translators: 1: ... */
+						$data_arr['ajx_after_action_message'] = sprintf( _n( '%1$s date has been set as %2$s available %3$s', '%1$s dates has been set as %2$s available %3$s', $row_number, 'booking' )
 																, '<strong>' . $row_number . '</strong>'
 																, '<strong style="color:#11be4c;">', '</strong>' );
 					} else {
-						$data_arr['ajx_after_action_message'] = sprintf( _n( '%s date has been set as %s unavailable %s', '%s dates has been set as %s unavailable %s', $row_number, 'booking' )
+						/* translators: 1: ... */
+						$data_arr['ajx_after_action_message'] = sprintf( _n( '%1$s date has been set as %2$s unavailable %3$s', '%1$s dates has been set as %2$s unavailable %3$s', $row_number, 'booking' )
 																, '<strong>' . $row_number . '</strong>'
 																, '<strong style="color:#e43939;">', '</strong>' );
 					}
@@ -550,13 +607,20 @@ class WPBC_AJX__Availability {
 												  'dates_selection' => 'all'   	  // '2023-04-04 | 2023-04-07'
 											) );
 				$data_arr['ajx_after_action_message'] = ( $row_number > 0 )
+														/* translators: 1: ... */
 														? sprintf( __( 'All %s unavailable dates has been removed', 'booking' ), '<strong>' . $row_number . '</strong>' )
 														: sprintf( __( 'No unavailable dates.', 'booking' ), $row_number );
 				$data_arr['ajx_after_action_result'] = ( $row_number > 0 ) ? 1 : 0;
 
 			}
 
-
+			// FixIn: 10.8.1.5.
+			if ( 'change_month_number_in_row' == $request_params['do_action'] ) {
+				// $request_params['calendar__view__months_in_row'];		// Saving this parameter
+				/* translators: 1: ... */
+				$data_arr['ajx_after_action_message'] = sprintf( __( 'Set month number in a row as %s', 'booking' ), '<strong>' . $request_params['calendar__view__months_in_row'] . '</strong>' );
+				$data_arr['ajx_after_action_result']  = 1;
+			}
 
 			$data_arr['booked_dates'] = wpbc__sql__get_booked_dates( array(
 																			'resource_id' => $request_params['resource_id']
@@ -580,28 +644,34 @@ class WPBC_AJX__Availability {
 
 			$data_arr['popover_hints'] = array();
 
-			$data_arr['popover_hints']['season_unavailable'] = '<strong>' . __( 'Season unavailable day', 'booking' ) . '</strong><hr>'
-											 	. sprintf( __( 'Change this date status at %sBooking Calendar %s Availability %s Season Availability page.', 'booking' ), '<br>', '&gt;', '&gt;' );
-			$data_arr['popover_hints']['weekdays_unavailable'] = '<strong>' . __( 'Unavailable week day', 'booking' ) . '</strong><hr>'
-											   . sprintf( __( 'Change this date status at %sBooking Calendar %s Settings General page %s in "Availability" section.', 'booking' ), '<br>', '&gt;', '<br>' );
-			$data_arr['popover_hints']['before_after_unavailable'] = '<strong>' . __( 'Unavailable day, depends on today day', 'booking' ) . '</strong><hr>'
-											   . sprintf( __( 'Change this date status at %sBooking Calendar %s Settings General page %s in "Availability" section.', 'booking' ), '<br>', '&gt;', '<br>' );
+			$data_arr['popover_hints']['season_unavailable'] = '<strong>' . esc_html__( 'Season unavailable day', 'booking' ) . '</strong><hr>'
+											 	/* translators: 1: ... */
+											 	. sprintf( __( 'Change this date status at %1$sBooking Calendar %2$s Availability %3$s Season Availability page.', 'booking' ), '<br>', '&gt;', '&gt;' );
+			$data_arr['popover_hints']['weekdays_unavailable'] = '<strong>' . esc_html__( 'Unavailable week day', 'booking' ) . '</strong><hr>'
+											   /* translators: 1: ... */
+											   . sprintf( __( 'Change this date status at %1$sBooking Calendar %2$s Settings General page %3$s in "Availability" section.', 'booking' ), '<br>', '&gt;', '<br>' );
+			$data_arr['popover_hints']['before_after_unavailable'] = '<strong>' . esc_html__( 'Unavailable day, depends on today day', 'booking' ) . '</strong><hr>'
+											   /* translators: 1: ... */
+											   . sprintf( __( 'Change this date status at %1$sBooking Calendar %2$s Settings General page %3$s in "Availability" section.', 'booking' ), '<br>', '&gt;', '<br>' );
 
 
 
 			$data_arr['popover_hints']['toolbar_text'] = '<span style="font-size: 1.05em;line-height: 1.8em;">'.
-											   sprintf( __('%sSelect days%s in calendar then select %sAvailable%s / %sUnavailable%s status and click %sApply%s availability button.' ,'booking')
+											   /* translators: 1: ... */
+											   sprintf( __( '%1$sSelect days%2$s in calendar then select %3$sAvailable%4$s / %5$sUnavailable%6$s status and click %7$sApply%8$s availability button.', 'booking' )
 														, '<strong>', '&nbsp;</strong>'
 														, '<strong>&nbsp;', '&nbsp;</strong>'
 														, '<strong>&nbsp;', '&nbsp;</strong>'
 														, '<strong>&nbsp;', '&nbsp;</strong>'
 											   )
 											.'</span>';
-			$data_arr['popover_hints']['toolbar_text_available'] = sprintf( __( 'Set dates %s as %s available.', 'booking' )
+			/* translators: 1: ... */
+			$data_arr['popover_hints']['toolbar_text_available'] = sprintf( __( 'Set dates %1$s as %2$s available.', 'booking' )
 																			, '_DATES_'
 																			, '_HTML_'
 																		);
-			$data_arr['popover_hints']['toolbar_text_unavailable'] = sprintf( __( 'Set dates %s as %s unavailable.', 'booking' )
+			/* translators: 1: ... */
+			$data_arr['popover_hints']['toolbar_text_unavailable'] = sprintf( __( 'Set dates %1$s as %2$s unavailable.', 'booking' )
 																			, '_DATES_'
 																			, '_HTML_'
 																		);
@@ -622,7 +692,7 @@ class WPBC_AJX__Availability {
 				unset( $request_params_to_save['do_action'] );
 				unset( $request_params_to_save['dates_selection'] );
 				// Do not save "Do not change background color for partially booked days" option ! it must reflect from Booking > Settings General page and not from User options
-				unset( $request_params_to_save['calendar__timeslot_day_bg_as_available'] );                             //FixIn: 9.5.5.4
+				unset( $request_params_to_save['calendar__timeslot_day_bg_as_available'] );                             // FixIn: 9.5.5.4.
 
 				$is_success_update = $user_request->user_request_params__db_save( $request_params_to_save );					// Save to DB		// - $request_params - serialized here automatically
 			}
@@ -631,6 +701,7 @@ class WPBC_AJX__Availability {
 			// Send JSON. Its will make "wp_json_encode" - so pass only array, and This function call wp_die( '', '', array( 'response' => null, ) )		Pass JS OBJ: response_data in "jQuery.post( " function on success.
 			wp_send_json( array(
 								'ajx_data'              => $data_arr,
+								// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 								'ajx_search_params'     => $_REQUEST[ $request_prefix ],								// $_REQUEST[ 'search_params' ]
 								'ajx_cleaned_params'    => $request_params
 							) );

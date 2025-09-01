@@ -1,20 +1,20 @@
-=== Slider, Gallery, and Carousel by MetaSlider - Responsive WordPress Image Sliders ===
+=== Slider, Gallery, and Carousel by MetaSlider - Image Slider, Video Slider ===
 Contributors: andergmartins, htmgarcia, publishpress, stevejburge, rochdesigns
-Tags: slider, slider, image slider, carousel slider, gallery
+Tags: slider, video slider, image slider, carousel slider, gallery
 Requires at least: 5.0
-Stable tag: 3.91.0
+Stable tag: 3.100.1
 Requires PHP: 7.0
-Tested up to: 6.6.1
+Tested up to: 6.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-The best slider, gallery, carousel plugin for WordPress. Build your image slider, video slider, post slider, or WooCommerce product slider.
+Slider, gallery, carousel plugin for WordPress. Build your image slider, video slider, post slider, YouTube slider, or WooCommerce product slider.
 
 == Description ==
 
 With MetaSlider, you can create a powerful, SEO-optimized slider, slideshow, carousel, or gallery in minutes. MetaSlider is world’s #1 responsive WordPress slider plugin. MetaSlider is the best choice for image, photo, video (YouTube, Vimeo, TikTok, local, and external), layer, WooCommerce products, and post feed sliders!
 
-[youtube https://www.youtube.com/watch?v=yuRh0FsanaY]
+[youtube https://www.youtube.com/watch?v=zBFMhVjlGhs]
 
 ### Introducing MetaSlider
 
@@ -319,6 +319,207 @@ Yes, you can build Elementor slides and Beaver Builder slideshows. You can creat
 
 The format is based on [Keep a Changelog recommendations](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+= [3.100.1] - Jul 24, 2025 =
+
+* FIXED: Remove body overflow when swipe is enabled, #1791;
+
+= [3.100.0] - Jul 21, 2025 =
+
+* ADDED: Slide visibility support, #1667;
+* ADDED: Ad for new custom width/height crop settings, #1765;
+* ADDED: Ad for Advanced tab, #1764;
+* FIXED: Margin for thumbnails is gone, #1742;
+* FIXED: slider is undefined, #1752;
+* FIXED: Active slide class doesn't match with visible slide when reverse is enabled, #1518;
+* FIXED: Slide delay tooltip is out of date, #1758;
+* FIXED: Theme promos overlap in medium to small screensizes, #1763;
+* FIXED: Call to member function add_page in null, #1767;
+* FIXED: Website overflow to improve touch swipe, #1781;
+* FIXED: Precognition theme propagates its navigation to other slideshows, #1780;
+* CHANGED: Move "Reverse" to Transition Options, #1540;
+* CHANGED: Set Carousel mode default to more than 1, #1732;
+* CHANGED: Enable all Accessibility options by default, #1753;
+
+= [3.99.0] - Jun 11, 2025 =
+
+* ADDED: Make it easier to add buttons for users, #1658;
+* FIXED: FlexSlider (Nexus): Cropped slide caption, #1581;
+* FIXED: CSS conclicts when there are more than one slideshow on same page, #1635;
+* FIXED: Number of slides is zero in trash listing, #1494;
+* FIXED: Text change, #1669;
+* FIXED: Clarity arrows are buggy in Theme editor, #1683;
+* FIXED: Update Link on Export Page, #1682;
+* FIXED: Remove "The" to "The Architekt" theme, #1681;
+* FIXED: Button label in quickstart page, #1639;
+* FIXED: Bubble Theme Arrow Misalignment, #1678;
+* FIXED: Databold theme: Add focus indicator on Play / Pause button, #1643;
+* FIXED: Architekt recommended transition: fade, #1671;
+* FIXED: Sanitize aria-label through JS, #1696;
+* FIXED: On Thanks for using MetaSlider popup, the email text box accepts NULL value, #1650;
+* FIXED: Promote the Ken Burns etc effects in Free version, #1706;
+* FIXED: ReferenceError: __ is not defined, #1710;
+* FIXED: Is carousel tooltip correct?, #1708;
+* FIXED: Unable to close the "Thanks for using MetaSlider" and "Add a Slide" popups using the ESC key, #1651;
+* FIXED: Accessibility improvements, #1630, #1640, #1665;
+* FIXED: UI elements displays Incorrectly with multiple FlexSlider slideshows (navigation arrows as white boxes), #1579;
+* FIXED: When importing a carousel slideshow with captions, the default General>Caption should be Media Caption instead of Manual Entry, #1717;
+* FIXED: Disable "Insert" button when no text or link is added, #1715;
+* FIXED: Disable border-color in slideshow edit page when default border-width is 0, #1721;
+* FIXED: Fails to Process/Store Very Long URLs (Buffer/Parsing Limit Exceeded) in URL field, #1728;
+* FIXED: Sanitize 'Add Button' Inputs, #1725;
+* CHANGED: Add a tooltip on Theme > Caption > Color to explain color override, #1594;
+* CHANGED: Group carousel settings in a separate section, #1508;
+* CHANGED: Should we lead with the manual caption?, #1076;
+
+= [3.98.0] - May 01, 2025 =
+
+* ADDED: Allow to change slideshow settings through a theme, #1597;
+* ADDED: Message for Legacy users, #1575;
+* ADDED: Add responsive support to arrows, #1582;
+* ADDED: Add status messages in Quick Start > Drop files to upload or Select Files, #1621;
+* FIXED: Accessibility issues with the Base theme, #1525;
+* FIXED: Accessibility issues with the Clarity theme, #1526;
+* FIXED: Play/pause button has a different design depending the theme, #1536;
+* FIXED: Fix spacing for some caption options #1537;
+* FIXED: Italian, Spanish and French translation updates, #1484;
+* FIXED: Theme color customization headers sometimes have extra spacing, #1552;
+* FIXED: Should the "Hover" option work for the whole slides, #1573;
+* FIXED: Ask for email popup is closed unintentionally after creating a quickstart slideshow, #1559;
+* FIXED: Drag-and-drop slides reorder triggers an error when TinyMCE is disabled, #1560;
+* FIXED: Delay navigation on hover, #1563;
+* FIXED: wp_cache_delete problems, #1565;
+* FIXED: 2 accessibility bugs reported, #1566;
+* FIXED: Typo in Carousel items, #1567;
+* FIXED: Developer options are disabled for legacy libraries, #1574;  
+* FIXED: FlexSlider (Simply Dark): Slide caption overlaps with Play/Pause Text, #1580;
+* FIXED: FlexSlider (Base): Arrows (Visible On Hover) - Arrows are not displayed even when hovered on, #1586;
+* FIXED: The slide crop position does not update correctly unless the slideshow's width or height is changed., #1595;
+* FIXED: Adjust play/pause button in each theme, #1607;
+* FIXED: Captions are missing when choosing "Carousel Slideshow with Captions", #1611;
+* CHANGED: Axios to 1.8.2, #1376;
+* CHANGED: Revelio thumbnail doesn't need "Revelio Theme" in big text, #1623;
+* CHANGED: Add "Default" to extra default settings, #1543;
+* CHANGED: Update "Not in use", #1547;
+* CHANGED: Update 100% Width text, #1553;
+* CHANGED: Add back the Classic Editor button, #1554;
+* CHANGED: Device settings, #1555;
+* CHANGED: Hide Legacy options if not used, #1576;
+* REMOVED: slider-settings-legacy.php, #1504;
+
+= [3.97.0] - 21 Mar 2025 =
+
+* ADDED: Way to hide elements on screen sizes, #1010;
+* ADDED: Hide / Show / Hover for Navigation, #1498;
+* ADDED: Allow users to customize the number of slides at once for Carousel mode, #1462;
+* ADDED: Allow users to show different slideshows for different screen sizes, #1194;
+* ADDED: Can we show users if their slideshows are being used, #1330;
+* FIXED: PHP 8.3 depreciations, #1480;
+* FIXED: Hover pause conflicts with Play/pause button, #1469;
+* FIXED: Italian, Spanish and French translation updates, #1484;
+* FIXED: Do we need getRecentSlideshows call?, #1493;
+* FIXED: Conflict with Plugins using body:after{content}, #1491;
+* FIXED: $options['start'] is not declared, #1486;
+* FIXED: Empty "Slide" box in Theme area, #1538;
+* FIXED: Make Shortcode Syntax Consistent, #1533;
+* CHANGED: Check on the state of transitions, #1485;
+* CHANGED: Replace "Mobile" with "Device", #1515;
+* CHANGED: Update thumbnail image for Hero theme, #1527;
+* CHANGED: Add Custom HTML sldies to sales table, #1487;
+* CHANGED: Update "Not in use" and "View Pages" text, #1530;
+* CHANGED: "Transition Options" under the "Theme", #1541;
+* REMOVED: $slideshow_id param in metaslider_extra_themes, #1349;
+
+= [3.96.0] - 13 Feb 2025 =
+
+* ADDED: Allow users to sort slides in a slideshow by different criteria, #995;
+* ADDED: Allow users to customize the Play / Pause button with text, #1420;
+* ADDED: Hide Progress Bar Option when Autoplay Is Disabled #1408;
+* ADDED: Add labels to two vertical sliders, #1459;
+* ADDED: Active color on most themes not filled in, #1426;
+* ADDED: Custom HTML Slide Type Ad, #1470;
+* FIXED: Execution delay when slideshow is inside a tab content, #1355;
+* FIXED: Sanitize slideshow data on save, #1434;
+* FIXED: Undefined array key "crop_position", #1387;
+* FIXED: Warning: Undefined array key "start" #1463;
+* FIXED: Precognition navigation sync issue, #1461;
+* FIXED: loop is missing from default settings, #1285;
+* CHANGED: Order of tabs free vs pro, #1222;
+* CHANGED: Allow users to choose Auto Play and Play button options, #1389;
+* CHANGED: Update Precognition instruction, #1412;
+* CHANGED: Updated import text, #1436;
+* CHANGED: Update import subheader style, #1437;
+* CHANGED: Update text for "Transition Effect", #1443;
+* CHANGED: "Endlessly" not "Continuously", #1448;
+* REMOVED: Remove the old button for Classic Editor / Elementor, #1290;
+
+= [3.95.0] - 27 Jan, 2025 =
+
+* FIXED: Interrupt slideshow import if data is invalid, #1421;
+* FIXED: Sanitize CSS output from theme customize, #1433;
+* FIXED: Sanitize theme customize settings on slideshow save, #1439;
+* FIXED: Can't have more than one slideshow based on the same theme on the same page, #1427;
+
+= [3.94.0] - 18 Dec, 2024 =
+
+* ADDED: Allow users to sort slides in a slideshow by different criteria, #995;
+* ADDED: Add new pro themes screenshots to promote Pro, #1393;
+* ADDED: Progress bar, #1045;
+* ADDED: Allow users to choose the background color for their slideshow, #1332;
+* FIXED: Improve the thumbnails for Highway, Bubble and Outline, #1388;
+* FIXED: Italian, Spanish and French translation updates, #1379;
+* FIXED: Update AppSero, #1392;
+* FIXED: Simply Dark preview shows "Previous" and "Next", #1397;
+* FIXED: Improve the Nexus and other thumbnails, #1238;
+* FIXED: rgba missing in color customization in slideshow edit, #1394;
+* FIXED: Arrow should be hidden when first or last slide is active, #1345;
+* FIXED: Documentation link is wrong, #1380;
+* FIXED: Trash, restore and delete translations not working, #1336;
+* FIXED: Precognition theme double navigation, #1413;
+
+= [3.93.0] - 14 Nov, 2024 =
+
+* ADDED: Execute crop feature when changing crop position, #997;
+* ADDED: Add back the "Theme" column to "Home", #1329;
+* ADDED: Allow theme customizations for pro and external themes, #1351, #1369;
+* ADDED: Image crop size from 1x to 4x, #1048, #1364, #1365;
+* ADDED: Add the color pickers to all free FlexSlider themes, #1220;
+* CHANGED: Create "Base Theme" and set by default for new slideshows, #944, #1247, #1360;
+* CHANGED: Convert theme's arrow icons into SVG, #1322;
+* CHANGED: Make theme customize settings shorter, #1308;
+* CHANGED: Optimize dynamic CSS from theme customize, #1301;
+* FIXED: Issue with Post Feed and no images, #1356;
+* FIXED: Validate JS for logged out users, #1315;
+* FIXED: Theme settings: navigation, active vs inactive, #1249;
+* FIXED: Italian, Spanish and French translation updates, #1335;
+* FIXED: JS translations are not being outputted, #1326;
+* FIXED: Wrong message when trash section is empty, #1321;
+* FIXED: Sometimes color picker is cropped, #1325;
+* FIXED: Theme customize navigation should be visible only when Navigation uses 'Dots', #1323;
+* FIXED: Play button theme customize settings are showing even though Play / Pause button is disabled, #1362;
+
+= [3.92.1] - 23 Oct, 2024 =
+
+* FIXED: Verify nonce on slideshow trash, restore and delete, #1316;
+* FIXED: Main admin page loads slowly or generates error 500, #1327;
+
+= [3.92.0] - 09 Oct, 2024 =
+
+* ADDED: Customize colors for the new themes, #1258, #1298, #1306;
+* ADDED: New sorting / filtering options for /admin.php?page=metaslider, #1178;
+* ADDED: Make the the table headers clickable in main admin page, #1297;
+* CHANGED: Improve theme texts, #1241, #1242, #1243, #1246, #1239, #1244, #1245, #1300;
+* CHANGED: Update "Create a slideshow with sample images", #1251;
+* CHANGED: Move general theme customization settings to the bottom, #1296;
+* FIXED: Retain saved theme color customizations from older plugin versions, #1305;
+* FIXED: __ is not defined (admin.js), #1291;
+* FIXED: Odd text display when you hover over the "Upgrade" area when choosing a theme, #1240;
+* FIXED: Italian, Spanish and French translation updates, #1266;
+* FIXED: Toggle settings can't be disabled, #1286;
+* FIXED: Add number of slides and Type of Slides, #1151;
+* FIXED: Disable copying settings from previous slide, #1262;
+* FIXED: Quickstart options skips the arrows and navigation, #1281;
+* FIXED: Hide "Carousel margin" when "Carousel mode" is disabled, #1171;
 
 = [3.91.0] - 09 Sep, 2024 =
 

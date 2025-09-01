@@ -31,7 +31,8 @@ if ( ! class_exists( 'um\core\Permalinks' ) ) {
 
 			add_action( 'init',  array( &$this, 'check_for_querystrings' ), 1 );
 
-			add_action( 'init',  array( &$this, 'activate_account_via_email_link' ), 1 );
+			// don't use lower than 2 priority because there is sending email inside, but Action Scheduler is init on 1st priority.
+			add_action( 'init',  array( &$this, 'activate_account_via_email_link' ), 2 );
 		}
 
 		/**
@@ -113,104 +114,133 @@ if ( ! class_exists( 'um\core\Permalinks' ) ) {
 				 isset( $_REQUEST['user_id'] ) && is_numeric( $_REQUEST['user_id'] ) ) { // valid token
 
 				$user_id = absint( $_REQUEST['user_id'] );
+				if ( is_user_logged_in() && get_current_user_id() !== $user_id ) {
+					// Cannot activate another user account. Please log out and try again.
+					wp_safe_redirect( um_user_profile_url( get_current_user_id() ) );
+					exit;
+				}
+
 				delete_option( "um_cache_userdata_{$user_id}" );
 
 				$account_secret_hash = get_user_meta( $user_id, 'account_secret_hash', true );
 				if ( empty( $account_secret_hash ) || strtolower( sanitize_text_field( $_REQUEST['hash'] ) ) !== strtolower( $account_secret_hash ) ) {
-					wp_die( __( 'This activation link is expired or have already been used.', 'ultimate-member' ) );
+					wp_safe_redirect( add_query_arg( 'err', 'activation_link_used', um_get_core_page( 'login' ) ) );
+					exit;
 				}
 
 				$account_secret_hash_expiry = get_user_meta( $user_id, 'account_secret_hash_expiry', true );
 				if ( ! empty( $account_secret_hash_expiry ) && time() > $account_secret_hash_expiry ) {
-					wp_die( __( 'This activation link is expired.', 'ultimate-member' ) );
+					wp_safe_redirect( add_query_arg( 'err', 'activation_link_expired', um_get_core_page( 'login' ) ) );
+					exit;
 				}
 
-				um_fetch_user( $user_id );
-				UM()->user()->approve();
-				um_reset_user();
+				// Activate account link is valid. Can be approved below.
 
-				$user_role = UM()->roles()->get_priority_user_role( $user_id );
+				um_fetch_user( $user_id ); // @todo maybe don't need to fetch.
+				UM()->common()->users()->approve( $user_id, true );
+
+				$user_role      = UM()->roles()->get_priority_user_role( $user_id );
 				$user_role_data = UM()->roles()->role_data( $user_role );
 
-				// log in automatically
+				// Log in automatically after activation.
 				$login = ! empty( $user_role_data['login_email_activate'] ); // Role setting "Login user after validating the activation link?"
-				if ( ! is_user_logged_in() && $login ) {
-					$user = get_userdata( $user_id );
-
-					// update wp user
-					wp_set_current_user( $user_id, $user->user_login );
-					wp_set_auth_cookie( $user_id );
-
-					ob_start();
-					do_action( 'wp_login', $user->user_login, $user );
-					ob_end_clean();
+				if ( $login && ! is_user_logged_in() ) {
+					UM()->user()->auto_login( $user_id );
 				}
 
 				/**
-				 * UM hook
+				 * Fires on user activation after visit link for email confirmation.
 				 *
-				 * @type action
-				 * @title um_after_email_confirmation
-				 * @description Action on user activation
-				 * @input_vars
-				 * [{"var":"$user_id","type":"int","desc":"User ID"}]
-				 * @change_log
-				 * ["Since: 2.0"]
-				 * @usage add_action( 'um_after_email_confirmation', 'function_name', 10, 1 );
-				 * @example
-				 * <?php
-				 * add_action( 'um_after_email_confirmation', 'my_after_email_confirmation', 10, 1 );
+				 * @hook um_after_email_confirmation
+				 *
+				 * @param {int} $user_id The user ID.
+				 *
+				 * @since 2.0
+				 *
+				 * @example <caption>Doing some code after email confirmation and approved $user_id.</caption>
 				 * function my_after_email_confirmation( $user_id ) {
 				 *     // your code here
 				 * }
-				 * ?>
+				 * add_filter( 'um_after_email_confirmation', 'my_after_email_confirmation' );
 				 */
 				do_action( 'um_after_email_confirmation', $user_id );
 
-				$redirect = empty( $user_role_data['url_email_activate'] ) ? um_get_core_page( 'login', 'account_active' ) : trim( $user_role_data['url_email_activate'] ); // Role setting "URL redirect after e-mail activation"
+				// Prepare redirect link.
+				$set_password_required = get_user_meta( $user_id, 'um_set_password_required', true );
+				if ( empty( $set_password_required ) ) {
+					// Role setting "URL redirect after email activation".
+					$redirect = empty( $user_role_data['url_email_activate'] ) ? um_get_core_page( 'login', 'account_active' ) : trim( $user_role_data['url_email_activate'] );
+				} else {
+					// Redirect to the change password page if there is no password for this user.
+					$redirect = UM()->password()->reset_url( $user_id );
+				}
+				/**
+				 * Filter to change the redirect URL after email confirmation.
+				 *
+				 * @hook um_after_email_confirmation_redirect
+				 *
+				 * @param {string} $redirect The redirect URL.
+				 * @param {int}    $user_id  The user ID.
+				 * @param {bool}   $login    Auto login has been applied and user currently is logged in.
+				 *
+				 * @since 2.0
+				 *
+				 * @example <caption>Change redirect after confirmation only for the user with ID=99.</caption>
+				 * function my_after_email_confirmation_redirect( $redirect, $user_id, $login ) {
+				 *     // your code here
+				 *     if ( $user_id === 99 ) {
+				 *         $redirect = 'custom_url';
+				 *     }
+				 *     return $redirect;
+				 * }
+				 * add_filter( 'um_after_email_confirmation_redirect', 'my_after_email_confirmation_redirect', 10, 3 );
+				 */
 				$redirect = apply_filters( 'um_after_email_confirmation_redirect', $redirect, $user_id, $login );
-
-				exit( wp_redirect( $redirect ) );
+				um_safe_redirect( $redirect );
 			}
 		}
 
 		/**
 		 * Makes an activate link for any user
 		 *
-		 * @return bool|string
+		 * @return string
 		 */
-		public function activate_url() {
-			if ( ! um_user( 'account_secret_hash' ) ) {
-				return false;
+		public function activate_url( $user_id = null ) {
+			if ( is_null( $user_id ) ) {
+				$user_id = um_user( 'ID' );
+			}
+
+			$account_secret_hash = get_user_meta( $user_id, 'account_secret_hash', true );
+			if ( empty( $account_secret_hash ) ) {
+				return '';
 			}
 
 			/**
-			 * UM hook
+			 * Filter to change the base URL for the user activation link.
 			 *
-			 * @type filter
-			 * @title um_activate_url
-			 * @description Change activate user URL
-			 * @input_vars
-			 * [{"var":"$url","type":"string","desc":"Activate URL"}]
-			 * @change_log
-			 * ["Since: 2.0"]
-			 * @usage
-			 * <?php add_filter( 'um_activate_url', 'function_name', 10, 1 ); ?>
-			 * @example
-			 * <?php
-			 * add_filter( 'um_activate_url', 'my_activate_url', 10, 1 );
-			 * function my_activate_url( $url ) {
+			 * @hook um_activate_url
+			 *
+			 * @param {string} $url The base URL. `home_url()` by default
+			 *
+			 * @since 1.3.x
+			 *
+			 * @example <caption>Change activate user base URL.</caption>
+			 * function my_after_email_confirmation_redirect( $url ) {
 			 *     // your code here
 			 *     return $url;
 			 * }
-			 * ?>
+			 * add_filter( 'um_activate_url', 'my_um_activate_url' );
 			 */
-			$url =  apply_filters( 'um_activate_url', home_url() );
-			$url =  add_query_arg( 'act', 'activate_via_email', $url );
-			$url =  add_query_arg( 'hash', um_user( 'account_secret_hash' ), $url );
-			$url =  add_query_arg( 'user_id', um_user( 'ID' ), $url );
+			$base_url = apply_filters( 'um_activate_url', home_url() );
 
-			return $url;
+			return add_query_arg(
+				array(
+					'act'     => 'activate_via_email',
+					'hash'    => $account_secret_hash,
+					'user_id' => $user_id,
+				),
+				$base_url
+			);
 		}
 
 		/**
@@ -488,86 +518,6 @@ if ( ! class_exists( 'um\core\Permalinks' ) ) {
 			}
 
 			return $user_in_url;
-		}
-
-		/**
-		 * Get action url for admin use
-		 *
-		 * @param $action
-		 * @param $subaction
-		 *
-		 * @deprecated 2.6.9
-		 *
-		 * @return mixed|string|void
-		 */
-		public function admin_act_url( $action, $subaction ) {
-			_deprecated_function( __METHOD__, '2.6.9' );
-			$url = add_query_arg(
-				array(
-					'um_adm_action' => $action,
-					'sub'           => $subaction,
-					'user_id'       => um_user( 'ID' ),
-					'_wpnonce'      => wp_create_nonce( $action ),
-				)
-			);
-			return $url;
-		}
-
-		/**
-		 * SEO canonical href bugfix
-		 *
-		 * @deprecated since version 2.1.7
-		 *
-		 * @todo remove since 2.7.0
-		 * @see function um_profile_remove_wpseo()
-		 */
-		public function um_rel_canonical_() {
-			_deprecated_function( __METHOD__, '2.1.7', 'um_profile_remove_wpseo()' );
-			global $wp_the_query;
-
-			if ( ! is_singular() )
-				return;
-
-			/**
-			 * UM hook
-			 *
-			 * @type filter
-			 * @title um_allow_canonical__filter
-			 * @description Allow canonical
-			 * @input_vars
-			 * [{"var":"$allow_canonical","type":"bool","desc":"Allow?"}]
-			 * @change_log
-			 * ["Since: 2.0"]
-			 * @usage
-			 * <?php add_filter( 'um_allow_canonical__filter', 'function_name', 10, 1 ); ?>
-			 * @example
-			 * <?php
-			 * add_filter( 'um_allow_canonical__filter', 'my_allow_canonical', 10, 1 );
-			 * function my_allow_canonical( $allow_canonical ) {
-			 *     // your code here
-			 *     return $allow_canonical;
-			 * }
-			 * ?>
-			 */
-			$enable_canonical = apply_filters( "um_allow_canonical__filter", true );
-
-			if( ! $enable_canonical )
-				return;
-
-			if ( !$id = $wp_the_query->get_queried_object_id() )
-				return;
-
-			if ( UM()->config()->permalinks['user'] == $id ) {
-				$link = esc_url( $this->get_current_url() );
-				echo "<link rel='canonical' href='$link' />\n";
-				return;
-			}
-
-			$link = get_permalink( $id );
-			if ( $page = get_query_var( 'cpage' ) ) {
-				$link = get_comments_pagenum_link( $page );
-				echo "<link rel='canonical' href='$link' />\n";
-			}
 		}
 	}
 }

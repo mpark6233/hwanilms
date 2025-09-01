@@ -11,7 +11,7 @@
  *
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly			//FixIn: 9.8.15.7
+if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly			// FixIn: 9.8.15.7.
 
 
 /**
@@ -20,9 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
  *  Define Slug
  *  Define where to show
  */
-class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
+class WPBC_Page_Settings__bresource extends WPBC_Page_Structure {
 
     public function in_page() {
+		if ( class_exists( 'wpdev_bk_personal' ) ) {
+			return (string) wp_rand( 100000, 1000000 );
+		}
         return 'wpbc-resources';
     }
 
@@ -32,14 +35,14 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 
         $tabs[ 'resources' ] = array(
                               'title'       => __('Resource','booking')            // Title of TAB
-                            , 'hint'        => __('Customization of booking resource', 'booking')                      // Hint
+                            , 'hint'        => __('Create unique calendars with individual availability.', 'booking')                      // Hint
                             , 'page_title'  => ucwords( __('Booking resource','booking') )                               // Title of Page
                             //, 'link'      => ''                                 // Can be skiped,  then generated link based on Page and Tab tags. Or can  be external link
                             //, 'position'  => 'left'                             // 'left'  ||  'right'  ||  ''
                             //, 'css_classes'=> ''                                // CSS class(es)
                             //, 'icon'      => ''                                 // Icon - link to the real PNG img
-                            , 'font_icon' => 'wpbc_icn_checklist'           // CSS definition  of font Icon
-                            , 'default'   => true                           // Is this tab activated by default or not: true || false.
+                            , 'font_icon' => 'wpbc-bi-list 0wpbc_icn_checklist'           // CSS definition  of font Icon
+                            , 'default'   => ( ! class_exists( 'wpdev_bk_personal' ) )                           // Is this tab activated by default or not: true || false.
                             //, 'disabled'  => false                        // Is this tab disabled: true || false.
                             , 'hided'     => true                           // Is this tab hided: true || false.
                             , 'subtabs'   => array()
@@ -65,6 +68,7 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 
         $submit_form_name = 'wpbc_bresources';                         // Define form name
 		/*
+	        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 	        if ( isset( $_POST['is_form_sbmitted_'. $submit_form_name ] ) ) {
 	            // Nonce checking    {Return false if invalid, 1 if generated between, 0-12 hours ago, 2 if generated between 12-24 hours ago. }
 	            $nonce_gen_time = check_admin_referer( 'wpbc_settings_page_' . $submit_form_name );  // Its stop show anything on submiting, if its not refear to the original page
@@ -97,7 +101,7 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
         ?>
         <div class="wpdvlp-sub-tabs" style="background:none;border:none;box-shadow: none;padding:0;">
 	        <span class="nav-tabs" style="text-align:right;">
-                <a href="javascript:void(0);" onclick="javascript:wpbc_scroll_to('#wpbc_booking_resource_table' );" original-title="" class="nav-tab go-to-link"><span><?php _e('Resource' ,'booking'); ?></span></a>
+                <a href="javascript:void(0);" onclick="javascript:wpbc_scroll_to('#wpbc_booking_resource_table' );" original-title="" class="nav-tab go-to-link"><span><?php esc_html_e('Resource' ,'booking'); ?></span></a>
             </span>
         </div>
         <div class="clear"></div>
@@ -111,11 +115,11 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
         ?>
         <div class="clear"></div>
         <span class="metabox-holder">
-            <form  name="<?php echo $submit_form_name; ?>" id="<?php echo $submit_form_name; ?>" action="" method="post" autocomplete="off">
+            <form  name="<?php echo esc_attr( $submit_form_name ); ?>" id="<?php echo esc_attr( $submit_form_name ); ?>" action="" method="post" autocomplete="off">
                 <?php
                    // N o n c e   field, and key for checking   S u b m i t
                    wp_nonce_field( 'wpbc_settings_page_' . $submit_form_name );
-                ?><input type="hidden" name="is_form_sbmitted_<?php echo $submit_form_name; ?>" id="is_form_sbmitted_<?php echo $submit_form_name; ?>" value="1" /><?php
+                ?><input type="hidden" name="is_form_sbmitted_<?php echo esc_attr( $submit_form_name ); ?>" id="is_form_sbmitted_<?php echo esc_attr( $submit_form_name ); ?>" value="1" /><?php
                 ?><div class="clear" style="margin-top:20px;"></div>
                 <div id="wpbc_booking_resource_table" class="wpbc_settings_row wpbc_settings_row_rightNO">
                     <?php
@@ -202,10 +206,9 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
     // </editor-fold>
 
 
-    ////////////////////////////////////////////////////////////////////////////
+	// -----------------------------------------------------------------------------------------------------------------
     // Toolbar
-    ////////////////////////////////////////////////////////////////////////////
-
+	// -----------------------------------------------------------------------------------------------------------------
     /** Show Toolbar  - Add new booking resources */
     private function toolbar() {
 
@@ -217,24 +220,25 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 												'class' => 'wpbc_panel_get_started_dismiss',
 												'css'   => 'background: #fff;border-radius: 7px;margin-bottom: -100%;z-index: 4;position: relative;top: 12px;right: 13px;'
 											));
-		 ?><script type="text/javascript"> jQuery('#<?php echo $wpbc_hidded_element_id; ?>').hide(); </script><?php
+		 ?><script type="text/javascript"> jQuery('#<?php echo esc_attr( $wpbc_hidded_element_id ); ?>').hide(); </script><?php
 		$dismiss_button_content = ob_get_clean();
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $dismiss_button_content;
 
 		if ( $is_panel_visible ) {
 			?>
-			<div id="toolbar_booking_resources" style="position:relative;margin-bottom:5em;">
+			<div id="toolbar_booking_resources" style="position:relative;margin-bottom: 5em;padding:1px;border:5px solid #fff;border-radius:5px;box-shadow: 0 3px 15px 0px #d4d4d4;">
 				<div class="wpdvlp-top-tabs wpbc_blur">
 					<div class="wpdvlp-tabs-wrapper">
 						<div class="nav-tabs">
 							<a href="javascript:void(0);" class="nav-tab nav-tab-active ">
 								<i class="menu_icon icon-1x wpbc_icn_add _circle_outline"></i>
-								<span class="nav-tab-text">&nbsp;&nbsp;<?php echo __('Add Resource', 'booking') . ' ( ' . __('Calendar', 'booking') . ' )'; ?></span>
+								<span class="nav-tab-text">&nbsp;&nbsp;<?php echo esc_html__('Add Resource', 'booking') . ' ( ' . esc_html__('Calendar', 'booking') . ' )'; ?></span>
 							</a>
 							<a href="javascript:void(0);" class="nav-tab ">
 								<i class="menu_icon icon-1x wpbc_icn_tune"></i>
-								<span class="nav-tab-text">&nbsp;&nbsp;<?php echo __('Options', 'booking'); ?></span>
+								<span class="nav-tab-text">&nbsp;&nbsp;<?php echo esc_html__('Options', 'booking'); ?></span>
 							</a>
 						</div><!-- nav-tabs -->
 					</div><!-- wpdvlp-tabs-wrapper -->
@@ -253,13 +257,13 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 								<div class="ui_element">
 									<a  class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_primary tooltip_top " id="ui_btn_erase_availability"
 										href="javascript:void(0);"
-										data-original-title="<?php esc_attr_e( 'Add New Booking Resource(s)' ,'booking'); ?>>"><span><?php _e('Add New', 'booking'); ?>&nbsp;&nbsp;&nbsp;</span><i
+										data-original-title="<?php esc_attr_e( 'Add New Booking Resource(s)' ,'booking'); ?>>"><span><?php esc_html_e('Add New', 'booking'); ?>&nbsp;&nbsp;&nbsp;</span><i
 											class="menu_icon icon-1x wpbc_icn_add _circle_outline"></i></a>
 								</div>
 								<div class="ui_element" style="margin-left:15px;">
 									<label for="resources_count"
 										   class="wpbc_ui_control_label "
-										   style=""><span style="font-weight:400"><?php _e('Resources count', 'booking'); ?> </span></label>
+										   style=""><span style="font-weight:400"><?php esc_html_e('Resources count', 'booking'); ?> </span></label>
 									<select id="resources_count" name="resources_count" class="wpbc_ui_control wpbc_ui_select " style="max-width: 69px;" autocomplete="off">
 										<option value="1" class="" style="">1</option>
 									</select>
@@ -296,10 +300,9 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+	// -----------------------------------------------------------------------------------------------------------------
     //   B o o k i n g      R e s o u r c e s      T a b l e
-    ////////////////////////////////////////////////////////////////////////////
-
+	// -----------------------------------------------------------------------------------------------------------------
     /** Show booking resources table */
     public function wpbc_resources_table__show() {
 
@@ -310,9 +313,9 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
                 <thead class="wpbc_selectable_head">
                     <tr>
 	                    <th class="" style="width:5em;text-align: center;"><span href="javascript:void(0);">ID </span></th>
-	                    <th class="wpbc_hide_mobile"><span href="javascript:void(0);"><?php _e( 'Resource Name', 'booking' ); ?> </span></th>
-	                    <th class="" style="text-align:center;"><?php _e( 'Shortcode for page', 'booking' ); ?></th>
-	                    <th class="" style="text-align:center;"><?php _e( 'Actions', 'booking' ); ?></th>
+	                    <th class="wpbc_hide_mobile"><span href="javascript:void(0);"><?php esc_html_e( 'Resource Name', 'booking' ); ?> </span></th>
+	                    <th class="" style="text-align:center;"><?php esc_html_e( 'Shortcode for page', 'booking' ); ?></th>
+	                    <th class="" style="text-align:center;"><?php esc_html_e( 'Actions', 'booking' ); ?></th>
                     </tr>
                 </thead>
 	            <tbody class="wpbc_selectable_body">
@@ -349,7 +352,7 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 										<a href="javascript:void(0)" onclick="javascript:wpbc_resource_page_btn_click(1);"
 										   id="ui_btn_erase_availability" class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger0 tooltip_top "
 										   title="<?php esc_attr_e( 'Customize Booking Calendar shortcode','booking'); ?>"  >
-												<span style="display: none;"><?php _e('Customize','booking'); ?>&nbsp;&nbsp;&nbsp;</span>
+												<span style="display: none;"><?php esc_html_e('Customize','booking'); ?>&nbsp;&nbsp;&nbsp;</span>
 												<i class="menu_icon icon-1x wpbc_icn_tune"></i>
 										</a>
 									</div-->
@@ -362,7 +365,7 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 							<a href="javascript:void(0)" onclick="javascript:wpbc_resource_page_btn_click(1);"
 							   id="ui_btn_erase_availability" class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger0 tooltip_top "
 							   title="<?php esc_attr_e( 'Customize Booking Calendar shortcode','booking'); ?>"  >
-									<span style="display: none;"><?php _e('Customize','booking'); ?>&nbsp;&nbsp;&nbsp;</span>
+									<span style="display: none;"><?php esc_html_e('Customize','booking'); ?>&nbsp;&nbsp;&nbsp;</span>
 									<i class="menu_icon icon-1x wpbc_icn_tune"></i>
 							</a>
 						</div>
@@ -370,10 +373,10 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 			               onclick="javascript: wpbc_modal_dialog__show__resource_publish( 1 );"
 			               class="button button-primary tooltip_top"
 						   title="<?php esc_attr_e('Embed your booking form into the page', 'booking'); ?>"
-						><?php _e( 'Publish', 'booking' ); ?></a>
+						><?php esc_html_e( 'Publish', 'booking' ); ?></a>
 		            </td>
  					<?php */
-					//FixIn: 10.3.0.8
+					// FixIn: 10.3.0.8.
 					?>
 					<td colspan="2" class="wpbc_flextable_col">
 						<div class="wpbc_ajx_toolbar">
@@ -397,7 +400,7 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 										   id="ui_btn_erase_availability"
 										   class="wpbc_ui_control wpbc_ui_button wpbc_ui_button_danger0 tooltip_top "
 										   data-original-title="<?php echo esc_attr( __('Customize Booking Calendar shortcode','booking') ); ?>">
-												<span style="display: none;"><?php _e('Customize','booking'); ?>&nbsp;&nbsp;&nbsp;</span>
+												<span style="display: none;"><?php esc_html_e('Customize','booking'); ?>&nbsp;&nbsp;&nbsp;</span>
 												<i class="menu_icon icon-1x wpbc_icn_tune"></i>
 										</a>
 									</div>
@@ -406,7 +409,7 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 										   href="javascript:void(0);"
 										   onclick="javascript: wpbc_modal_dialog__show__resource_publish( 1 );"
 										   data-original-title="<?php echo esc_attr( __('Embed your booking form into the page','booking') ); ?>">
-											<span><?php _e('Publish','booking'); ?></span>
+											<span><?php esc_html_e('Publish','booking'); ?></span>
 											<i class="menu_icon icon-1x wpbc_icn_tune" style="display: none;"></i>
 										</a>
 									</div>
@@ -425,9 +428,8 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 		    </div>
 			<div class="clear"></div>
 			<?php
-				echo  '<a style="margin:0;" class="button button" href="' . wpbc_get_settings_url()
-															 . '&system_info=show&_wpnonce='. wp_create_nonce( 'wpbc_settings_url_nonce' ) .'&restore_dismissed=On#wpbc_general_settings_restore_dismissed_metabox">'
-															 . __('Restore all dismissed windows' ,'booking')
+				echo  '<a style="margin:0;" class="button button" href="' . esc_url( wpbc_get_settings_url() . '&system_info=show&_wpnonce='. wp_create_nonce( 'wpbc_settings_url_nonce' ) ) .'&restore_dismissed=On#wpbc_general_settings_restore_dismissed_metabox">' .
+					  esc_html__( 'Restore all dismissed windows', 'booking' )
 					. '</a>';
 			?>
 		</div>
@@ -436,4 +438,4 @@ class WPBC_Page_Settings__bresources extends WPBC_Page_Structure {
 
 }
 
-add_action('wpbc_menu_created', array( new WPBC_Page_Settings__bresources() , '__construct') );    // Executed after creation of Menu
+add_action('wpbc_menu_created', array( new WPBC_Page_Settings__bresource() , '__construct') );    // Executed after creation of Menu

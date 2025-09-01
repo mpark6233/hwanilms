@@ -1,15 +1,12 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	// TablePress: Comment out next seven lines to force creation of a global jSuites object.
-	// if(typeof exports === 'object' && typeof module === 'object')
-	//	module.exports = factory();
-	// else if(typeof define === 'function' && define.amd)
-	//	define([], factory);
-	// else if(typeof exports === 'object')
-	//	exports["jSuites"] = factory();
-	// else
-		root["jSuites"] = factory();
-})(window, function() { // TablePress: Use `window` instead of `this` to get a global jSuites object.
-return /******/ (function() { // webpackBootstrap
+;(function (global, factory) {
+	// TablePress: Comment out next two lines to force creation of a global jSuites object.
+	// typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	// typeof define === 'function' && define.amd ? define(factory) :
+	global.jSuites = factory();
+}(window, (function () { // TablePress: Use `window` instead of `this` to get a global jSuites object.
+
+var jSuites;
+/******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 195:
@@ -26,8 +23,7 @@ return /******/ (function() { // webpackBootstrap
  */
 
 ;(function (global, factory) {
-		true ? module.exports = factory() :
-	0;
+	true ? module.exports = factory() : 0;
 }(this, (function () {
 
 	return (function(str) {
@@ -599,11 +595,9 @@ function HelpersDate() {
 			jsDate = new Date(jsDate + '  GMT+0');
 		}
 		var jsDateInMilliseconds = jsDate.getTime();
-
 		if (jsDateInMilliseconds >= excelLeapYearBug) {
 			jsDateInMilliseconds += millisecondsPerDay;
 		}
-
 		jsDateInMilliseconds -= excelInitialTime;
 
 		return jsDateInMilliseconds / millisecondsPerDay;
@@ -616,7 +610,6 @@ function HelpersDate() {
 	 */
 	Component.numToDate = function (excelSerialNumber) {
 		var jsDateInMilliseconds = excelInitialTime + excelSerialNumber * millisecondsPerDay;
-
 		if (jsDateInMilliseconds >= excelLeapYearBug) {
 			jsDateInMilliseconds -= millisecondsPerDay;
 		}
@@ -690,25 +683,26 @@ var translate = function(t) {
 
 /* harmony default export */ var dictionary = ({ setDictionary, translate });
 ;// CONCATENATED MODULE: ./src/utils/tracking.js
-function Tracking(component, state) {
-	if (state == true) {
-		document.jsuitesComponents = document.jsuitesComponents.filter(function(v) {
+const Tracking = function(component, state) {
+	if (state === true) {
+		Tracking.state = Tracking.state.filter(function(v) {
 			return v !== null;
 		});
 
 		// Start after all events
 		setTimeout(function() {
-			document.jsuitesComponents.push(component);
+			Tracking.state.push(component);
 		}, 0);
 
 	} else {
-		var index = document.jsuitesComponents.indexOf(component);
+		var index = Tracking.state.indexOf(component);
 		if (index >= 0) {
-			document.jsuitesComponents.splice(index, 1);
+			Tracking.state.splice(index, 1);
 		}
 	}
 }
 
+/* harmony default export */ var tracking = (Tracking);
 ;// CONCATENATED MODULE: ./src/utils/path.js
 function Path(str, val, remove) {
 	str = str.split('.');
@@ -781,37 +775,54 @@ function Sorting(el, options) {
 	el.classList.add('jsorting');
 
 	el.addEventListener('dragstart', function(e) {
-		var position = Array.prototype.indexOf.call(e.target.parentNode.children, e.target);
-		dragElement = {
-			element: e.target,
-			o: position,
-			d: position
+		let target = e.target;
+		if (target.nodeType === 3) {
+			if (target.parentNode.getAttribute('draggable') === 'true') {
+				target = target.parentNode;
+			} else {
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
 		}
-		e.target.style.opacity = '0.25';
 
-		if (typeof(obj.options.ondragstart) == 'function') {
-			obj.options.ondragstart(el, e.target, e);
+		if (target.getAttribute('draggable') === 'true') {
+			let position = Array.prototype.indexOf.call(target.parentNode.children, target);
+			dragElement = {
+				element: target,
+				o: position,
+				d: position
+			}
+			target.style.opacity = '0.25';
+
+			if (typeof (obj.options.ondragstart) == 'function') {
+				obj.options.ondragstart(el, target, e);
+			}
+
+			e.dataTransfer.setDragImage(target,0,0);
 		}
 	});
 
 	el.addEventListener('dragover', function(e) {
 		e.preventDefault();
 
-		if (getElement(e.target) && dragElement) {
-			if (e.target.getAttribute('draggable') == 'true' && dragElement.element != e.target) {
-				if (! obj.options.direction) {
-					var condition = e.target.clientHeight / 2 > e.offsetY;
-				} else {
-					var condition = e.target.clientWidth / 2 > e.offsetX;
-				}
+		if (dragElement) {
+			if (getElement(e.target)) {
+				if (e.target.getAttribute('draggable') == 'true' && dragElement.element != e.target) {
+					if (!obj.options.direction) {
+						var condition = e.target.clientHeight / 2 > e.offsetY;
+					} else {
+						var condition = e.target.clientWidth / 2 > e.offsetX;
+					}
 
-				if (condition) {
-					e.target.parentNode.insertBefore(dragElement.element, e.target);
-				} else {
-					e.target.parentNode.insertBefore(dragElement.element, e.target.nextSibling);
-				}
+					if (condition) {
+						e.target.parentNode.insertBefore(dragElement.element, e.target);
+					} else {
+						e.target.parentNode.insertBefore(dragElement.element, e.target.nextSibling);
+					}
 
-				dragElement.d = Array.prototype.indexOf.call(e.target.parentNode.children, dragElement.element);
+					dragElement.d = Array.prototype.indexOf.call(e.target.parentNode.children, dragElement.element);
+				}
 			}
 		}
 	});
@@ -843,14 +854,16 @@ function Sorting(el, options) {
 	el.addEventListener('drop', function(e) {
 		e.preventDefault();
 
-		if (dragElement && (dragElement.o != dragElement.d)) {
-			if (typeof(obj.options.ondrop) == 'function') {
-				obj.options.ondrop(el, dragElement.o, dragElement.d, dragElement.element, e.target, e);
+		if (dragElement) {
+			if (dragElement.o !== dragElement.d) {
+				if (typeof (obj.options.ondrop) == 'function') {
+					obj.options.ondrop(el, dragElement.o, dragElement.d, dragElement.element, e.target, e);
+				}
 			}
-		}
 
-		dragElement.element.style.opacity = '';
-		dragElement = null;
+			dragElement.element.style.opacity = '';
+			dragElement = null;
+		}
 	});
 
 	var getElement = function(element) {
@@ -1276,17 +1289,17 @@ function Animation() {
 
 	Component.slideLeft = function (element, direction, done) {
 		if (direction == true) {
-			element.classList.add('slide-left-in');
+			element.classList.add('jslide-left-in');
 			setTimeout(function () {
-				element.classList.remove('slide-left-in');
+				element.classList.remove('jslide-left-in');
 				if (typeof (done) == 'function') {
 					done();
 				}
 			}, 400);
 		} else {
-			element.classList.add('slide-left-out');
+			element.classList.add('jslide-left-out');
 			setTimeout(function () {
-				element.classList.remove('slide-left-out');
+				element.classList.remove('jslide-left-out');
 				if (typeof (done) == 'function') {
 					done();
 				}
@@ -1296,17 +1309,17 @@ function Animation() {
 
 	Component.slideRight = function (element, direction, done) {
 		if (direction === true) {
-			element.classList.add('slide-right-in');
+			element.classList.add('jslide-right-in');
 			setTimeout(function () {
-				element.classList.remove('slide-right-in');
+				element.classList.remove('jslide-right-in');
 				if (typeof (done) == 'function') {
 					done();
 				}
 			}, 400);
 		} else {
-			element.classList.add('slide-right-out');
+			element.classList.add('jslide-right-out');
 			setTimeout(function () {
-				element.classList.remove('slide-right-out');
+				element.classList.remove('jslide-right-out');
 				if (typeof (done) == 'function') {
 					done();
 				}
@@ -1316,17 +1329,17 @@ function Animation() {
 
 	Component.slideTop = function (element, direction, done) {
 		if (direction === true) {
-			element.classList.add('slide-top-in');
+			element.classList.add('jslide-top-in');
 			setTimeout(function () {
-				element.classList.remove('slide-top-in');
+				element.classList.remove('jslide-top-in');
 				if (typeof (done) == 'function') {
 					done();
 				}
 			}, 400);
 		} else {
-			element.classList.add('slide-top-out');
+			element.classList.add('jslide-top-out');
 			setTimeout(function () {
-				element.classList.remove('slide-top-out');
+				element.classList.remove('jslide-top-out');
 				if (typeof (done) == 'function') {
 					done();
 				}
@@ -1336,17 +1349,17 @@ function Animation() {
 
 	Component.slideBottom = function (element, direction, done) {
 		if (direction === true) {
-			element.classList.add('slide-bottom-in');
+			element.classList.add('jslide-bottom-in');
 			setTimeout(function () {
-				element.classList.remove('slide-bottom-in');
+				element.classList.remove('jslide-bottom-in');
 				if (typeof (done) == 'function') {
 					done();
 				}
 			}, 400);
 		} else {
-			element.classList.add('slide-bottom-out');
+			element.classList.add('jslide-bottom-out');
 			setTimeout(function () {
-				element.classList.remove('slide-bottom-out');
+				element.classList.remove('jslide-bottom-out');
 				if (typeof (done) == 'function') {
 					done();
 				}
@@ -1356,9 +1369,9 @@ function Animation() {
 
 	Component.fadeIn = function (element, done) {
 		element.style.display = '';
-		element.classList.add('fade-in');
+		element.classList.add('jfade-in');
 		setTimeout(function () {
-			element.classList.remove('fade-in');
+			element.classList.remove('jfade-in');
 			if (typeof (done) == 'function') {
 				done();
 			}
@@ -1366,10 +1379,10 @@ function Animation() {
 	}
 
 	Component.fadeOut = function (element, done) {
-		element.classList.add('fade-out');
+		element.classList.add('jfade-out');
 		setTimeout(function () {
 			element.style.display = 'none';
-			element.classList.remove('fade-out');
+			element.classList.remove('jfade-out');
 			if (typeof (done) == 'function') {
 				done();
 			}
@@ -2065,7 +2078,7 @@ function Mask() {
 				if (parseInt(v) < 10) {
 					this.date[i] = this.values[this.index] += v;
 					this.index++;
-					}
+				 }
 			}
 		},
 		'MI': function(v) {
@@ -2370,11 +2383,11 @@ function Mask() {
 
 	var toPlainString = function(num) {
 		return (''+ +num).replace(/(-?)(\d*)\.?(\d*)e([+-]\d+)/,
-			function(a,b,c,d,e) {
+		  function(a,b,c,d,e) {
 			return e < 0
-				? b + '0.' + Array(1-e-c.length).join(0) + c + d
-				: b + c + d + Array(e-d.length+1).join(0);
-			});
+			  ? b + '0.' + Array(1-e-c.length).join(0) + c + d
+			  : b + c + d + Array(e-d.length+1).join(0);
+		  });
 	}
 
 	/**
@@ -2504,6 +2517,7 @@ function Mask() {
 						d[0] = d[0].replace('*', '\t');
 						d[0] = d[0].replace(new RegExp(/_-/g), '');
 						d[0] = d[0].replace(new RegExp(/_/g), '');
+						d[0] = d[0].replace(new RegExp(/"/g), '');
 						d[0] = d[0].replace('##0.###','##0.000');
 						d[0] = d[0].replace('##0.##','##0.00');
 						d[0] = d[0].replace('##0.#','##0.0');
@@ -2590,8 +2604,8 @@ function Mask() {
 					// Extract the number
 					o.number = Extract.call(o, v);
 					// Keep the raw data as a property of the tag
-					if (o.type == 'percentage' && v.indexOf('%') !== -1) {
-						label = o.number / 100;
+					if (o.type == 'percentage' && (''+v).indexOf('%') !== -1) {
+						label = obj.adjustPrecision(o.number / 100);
 					} else {
 						label = o.number;
 					}
@@ -2616,6 +2630,37 @@ function Mask() {
 				}
 			}
 		}
+	}
+
+	obj.adjustPrecision = function(num) {
+		if (typeof num === 'number' && !Number.isInteger(num)) {
+			const v = num.toString().split('.');
+
+			if (v[1] && v[1].length > 10) {
+				let t0 = 0;
+				const t1 = v[1][v[1].length - 2];
+
+				if (t1 == 0 || t1 == 9) {
+					for (let i = v[1].length - 2; i > 0; i--) {
+						if (t0 >= 0 && v[1][i] == t1) {
+							t0++;
+							if (t0 > 6) {
+								break;
+							}
+						} else {
+							t0 = 0;
+							break;
+						}
+					}
+
+					if (t0) {
+						return parseFloat(parseFloat(num).toFixed(v[1].length - 1));
+					}
+				}
+			}
+		}
+
+		return num;
 	}
 
 	// Get the type of the mask
@@ -2711,7 +2756,7 @@ function Mask() {
 		} else {
 			value = Extract.call(options, v);
 			// Percentage
-			if (type === 'percentage' && v.indexOf('%') !== -1) {
+			if (type === 'percentage' && (''+v).indexOf('%') !== -1) {
 				value /= 100;
 			}
 			var o = options;
@@ -2790,8 +2835,8 @@ function Mask() {
 			}
 		} else {
 			// Percentage
-			if (type == 'percentage') {
-				value *= 100;
+			if (type === 'percentage') {
+				value = obj.adjustPrecision(value*100);
 			}
 			// Number of decimal places
 			if (typeof(value) === 'number') {
@@ -2803,6 +2848,13 @@ function Mask() {
 						d = (''+d[1].match(/[0-9]+/g))
 						d = d.length;
 						t = value.toFixed(d);
+						let n = value.toString().split('.');
+						let fraction = n[1];
+						if (fraction && fraction.length > d && fraction[fraction.length-1] === '5') {
+							t = parseFloat(n[0] + '.' + fraction + '1').toFixed(d);
+						} else {
+							t = value.toFixed(d);
+						}
 					} else {
 						t = value.toFixed(0);
 					}
@@ -2901,7 +2953,7 @@ function Mask() {
 
 		var complete = false;
 
-		if (o.values.length === o.tokens.length && o.values[o.values.length - 1].length >= o.tokens[o.tokens.length - 1].length) {
+		if (o.values && o.values.length === o.tokens.length && o.values[o.values.length - 1].length >= o.tokens[o.tokens.length - 1].length) {
 			complete = true;
 		}
 
@@ -2924,7 +2976,11 @@ function Mask() {
 
 		// Labels
 		if (options && typeof (options) == 'object') {
-			var format = options.format;
+			if (options.format) {
+				var format = options.format;
+			} else if (options.mask) {
+				var format = options.mask;
+			}
 		} else {
 			var format = options;
 		}
@@ -3272,7 +3328,7 @@ function Calendar() {
 					// Current
 					Component.current = obj;
 					// Start tracking
-					Tracking(obj, true);
+					tracking(obj, true);
 					// Create the days
 					obj.getDays();
 					// Render months
@@ -3367,7 +3423,7 @@ function Calendar() {
 				// Hide
 				calendar.classList.remove('jcalendar-focus');
 				// Stop tracking
-				Tracking(obj, false);
+				tracking(obj, false);
 				// Current
 				Component.current = null;
 			}
@@ -4379,23 +4435,25 @@ function Tabs(el, options) {
 	var border = null;
 
 	// Helpers
-	var setBorder = function(index) {
+	const setBorder = function(index) {
 		if (obj.options.animation) {
-			var rect = obj.headers.children[index].getBoundingClientRect();
+			setTimeout(function() {
+				let rect = obj.headers.children[index].getBoundingClientRect();
 
-			if (obj.options.palette === 'modern') {
-				border.style.width = rect.width - 4 + 'px';
-				border.style.left = obj.headers.children[index].offsetLeft + 2 + 'px';
-			} else {
-				border.style.width = rect.width + 'px';
-				border.style.left = obj.headers.children[index].offsetLeft + 'px';
-			}
+				if (obj.options.palette === 'modern') {
+					border.style.width = rect.width - 4 + 'px';
+					border.style.left = obj.headers.children[index].offsetLeft + 2 + 'px';
+				} else {
+					border.style.width = rect.width + 'px';
+					border.style.left = obj.headers.children[index].offsetLeft + 'px';
+				}
 
-			if (obj.options.position === 'bottom') {
-				border.style.top = '0px';
-			} else {
-				border.style.bottom = '0px';
-			}
+				if (obj.options.position === 'bottom') {
+					border.style.top = '0px';
+				} else {
+					border.style.bottom = '0px';
+				}
+			}, 50);
 		}
 	}
 
@@ -4434,6 +4492,10 @@ function Tabs(el, options) {
 
 	// Set value
 	obj.open = function(index) {
+		if (! obj.content.children[index]) {
+			return;
+		}
+
 		var previous = null;
 		for (var i = 0; i < obj.headers.children.length; i++) {
 			if (obj.headers.children[i].classList.contains('jtabs-selected')) {
@@ -4462,9 +4524,6 @@ function Tabs(el, options) {
 		if (obj.options.hideHeaders == true && (obj.headers.children.length < 3 && obj.options.allowCreate == false)) {
 			obj.headers.parentNode.style.display = 'none';
 		} else {
-			// Set border
-			setBorder(index);
-
 			obj.headers.parentNode.style.display = '';
 
 			var x1 = obj.headers.children[index].offsetLeft;
@@ -4476,6 +4535,9 @@ function Tabs(el, options) {
 				// Out of the viewport
 				updateControls(x1 - 1);
 			}
+
+			// Set border
+			setBorder(index);
 		}
 	}
 
@@ -4493,7 +4555,7 @@ function Tabs(el, options) {
 			title = prompt('New title', obj.headers.children[i].innerText);
 		}
 		obj.headers.children[i].innerText = title;
-		obj.open(i);
+		setBorder(obj.getActive());
 	}
 
 	obj.create = function(title, url) {
@@ -4512,7 +4574,7 @@ function Tabs(el, options) {
 			obj.options.oncreate(el, div)
 		}
 
-		setBorder();
+		setBorder(obj.getActive());
 
 		return div;
 	}
@@ -4539,6 +4601,8 @@ function Tabs(el, options) {
 	}
 
 	obj.deleteElement = function(index) {
+		let current = obj.getActive();
+
 		if (! obj.headers.children[index]) {
 			return false;
 		} else {
@@ -4546,14 +4610,19 @@ function Tabs(el, options) {
 			obj.content.removeChild(obj.content.children[index]);
 		}
 
-		obj.open(0);
+		if (current === index) {
+			obj.open(0);
+		} else {
+			let current = obj.getActive() || 0;
+			setBorder(current);
+		}
 
 		if (typeof(obj.options.ondelete) == 'function') {
 			obj.options.ondelete(el, index)
 		}
 	}
 
-	obj.appendElement = function(title, cb) {
+	obj.appendElement = function(title, cb, openTab, position) {
 		if (! title) {
 			var title = prompt('Title?', '');
 		}
@@ -4561,20 +4630,36 @@ function Tabs(el, options) {
 		if (title) {
 			// Add content
 			var div = document.createElement('div');
-			obj.content.appendChild(div);
 
 			// Add headers
 			var h = document.createElement('div');
 			h.innerHTML = title;
 			h.content = div;
-			obj.headers.insertBefore(h, obj.headers.lastChild);
+
+			if (typeof(position) === 'undefined') {
+				obj.content.appendChild(div);
+				obj.headers.insertBefore(h, obj.headers.lastChild);
+			} else {
+				let r = obj.content.children[position];
+				if (r) {
+					obj.content.insertBefore(div, r);
+				} else {
+					obj.content.appendChild(div);
+				}
+				r = obj.headers.children[position] || obj.headers.lastChild;
+				obj.headers.insertBefore(h, r);
+			}
 
 			// Sortable
 			if (obj.options.allowChangePosition) {
 				h.setAttribute('draggable', 'true');
 			}
+
 			// Open new tab
-			obj.selectIndex(h);
+			if (openTab !== false) {
+				// Open new tab
+				obj.selectIndex(h);
+			}
 
 			// Callback
 			if (typeof(cb) == 'function') {
@@ -4589,10 +4674,10 @@ function Tabs(el, options) {
 	obj.getActive = function() {
 		for (var i = 0; i < obj.headers.children.length; i++) {
 			if (obj.headers.children[i].classList.contains('jtabs-selected')) {
-				return i
+				return i;
 			}
 		}
-		return 0;
+		return false;
 	}
 
 	obj.updateContent = function(position, newContent) {
@@ -4612,7 +4697,7 @@ function Tabs(el, options) {
 		setBorder();
 	}
 
-	obj.updatePosition = function(f, t) {
+	obj.updatePosition = function(f, t, ignoreEvents, openTab) {
 		// Ondrop update position of content
 		if (f > t) {
 			obj.content.insertBefore(obj.content.children[f], obj.content.children[t]);
@@ -4621,22 +4706,30 @@ function Tabs(el, options) {
 		}
 
 		// Open destination tab
-		obj.open(t);
+		if (openTab !== false) {
+			obj.open(t);
+		} else {
+			const activeIndex = obj.getActive();
+
+			if (t < activeIndex) {
+				obj.setBorder(activeIndex);
+			}
+		}
 
 		// Call event
-		if (typeof(obj.options.onchangeposition) == 'function') {
+		if (! ignoreEvents && typeof(obj.options.onchangeposition) == 'function') {
 			obj.options.onchangeposition(obj.headers, f, t);
 		}
 	}
 
-	obj.move = function(f, t) {
+	obj.move = function(f, t, ignoreEvents, openTab) {
 		if (f > t) {
 			obj.headers.insertBefore(obj.headers.children[f], obj.headers.children[t]);
 		} else {
 			obj.headers.insertBefore(obj.headers.children[f], obj.headers.children[t].nextSibling);
 		}
 
-		obj.updatePosition(f, t);
+		obj.updatePosition(f, t, ignoreEvents, openTab);
 	}
 
 	obj.setBorder = setBorder;
@@ -4981,7 +5074,7 @@ function Color(el, options) {
 	obj.open = function() {
 		if (! container.classList.contains('jcolor-focus')) {
 			// Start tracking
-			Tracking(obj, true);
+			tracking(obj, true);
 
 			// Show color picker
 			container.classList.add('jcolor-focus');
@@ -5056,7 +5149,7 @@ function Color(el, options) {
 				obj.options.onclose(el, obj);
 			}
 			// Stop  the object
-			Tracking(obj, false);
+			tracking(obj, false);
 		}
 
 		return obj.options.value;
@@ -5592,7 +5685,7 @@ function Contextmenu() {
 			}
 
 			// Add to the opened components monitor
-			Tracking(obj, true);
+			tracking(obj, true);
 
 			// Show context menu
 			el.classList.add('jcontextmenu-focus');
@@ -5650,7 +5743,7 @@ function Contextmenu() {
 			if (el.classList.contains('jcontextmenu-focus')) {
 				el.classList.remove('jcontextmenu-focus');
 			}
-			Tracking(obj, false);
+			tracking(obj, false);
 		}
 
 		/**
@@ -6969,7 +7062,7 @@ function Dropdown() {
 				Component.current = obj;
 
 				// Start tracking
-				Tracking(obj, true);
+				tracking(obj, true);
 
 				// Add focus
 				el.classList.add('jdropdown-focus');
@@ -7058,7 +7151,7 @@ function Dropdown() {
 				// Remove focus
 				el.classList.remove('jdropdown-focus');
 				// Start tracking
-				Tracking(obj, false);
+				tracking(obj, false);
 				// Current dropdown
 				Component.current = null;
 			}
@@ -7796,7 +7889,7 @@ function Picker(el, options) {
 	obj.open = function() {
 		if (! el.classList.contains('jpicker-focus')) {
 			// Start tracking the element
-			Tracking(obj, true);
+			tracking(obj, true);
 
 			// Open picker
 			el.classList.add('jpicker-focus');
@@ -7842,7 +7935,7 @@ function Picker(el, options) {
 			el.classList.remove('jpicker-focus');
 
 			// Start tracking the element
-			Tracking(obj, false);
+			tracking(obj, false);
 
 			if (typeof obj.options.onclose == 'function') {
 				obj.options.onclose(el, obj);
@@ -8140,13 +8233,13 @@ function Toolbar(el, options) {
 
 		toolbarArrow.children[0].focus();
 		// Start tracking
-		Tracking(obj, true);
+		tracking(obj, true);
 	}
 
 	obj.close = function() {
 		toolbarArrow.classList.remove('jtoolbar-arrow-selected')
 		// End tracking
-		Tracking(obj, false);
+		tracking(obj, false);
 	}
 
 	obj.refresh = function() {
@@ -8772,68 +8865,68 @@ function Editor() {
 		var validStyle = ['color', 'font-weight', 'font-size', 'background', 'background-color', 'margin'];
 
 		var parse = function(element) {
-			// Remove attributes
-			if (element.attributes && element.attributes.length) {
-				var image = null;
-				var style = null;
-				// Process style attribute
-				var elementStyle = element.getAttribute('style');
-				if (elementStyle) {
-					style = [];
-					var t = elementStyle.split(';');
-					for (var j = 0; j < t.length; j++) {
-						var v = t[j].trim().split(':');
-						if (validStyle.indexOf(v[0].trim()) >= 0) {
-							var k = v.shift();
-							var v = v.join(':');
-							style.push(k + ':' + v);
-						}
-					}
-				}
-				// Process image
-				if (element.tagName.toUpperCase() == 'IMG') {
-					if (! obj.options.acceptImages || ! element.src) {
-						element.parentNode.removeChild(element);
-					} else {
-						// Check if is data
-						element.setAttribute('tabindex', '900');
-						// Check attributes for persistence
-						obj.addImage(element.src);
-					}
-				}
-				// Remove attributes
-				var attr = [];
-				for (var i = 0; i < element.attributes.length; i++) {
-					attr.push(element.attributes[i].name);
-				}
-				if (attr.length) {
-					attr.forEach(function(v) {
-						if (validProperty.indexOf(v) == -1) {
-							element.removeAttribute(v);
-						} else {
-							// Protection XSS
-							if (element.attributes[i].value.indexOf('<') !== -1) {
-								element.attributes[i].value.replace('<', '&#60;');
-							}
-						}
-					});
-				}
-				element.style = '';
-				// Add valid style
-				if (style && style.length) {
-					element.setAttribute('style', style.join(';'));
-				}
-			}
-			// Parse children
-			if (element.children.length) {
-				for (var i = 0; i < element.children.length; i++) {
-					parse(element.children[i]);
-				}
-			}
+		   // Remove attributes
+		   if (element.attributes && element.attributes.length) {
+			   var image = null;
+			   var style = null;
+			   // Process style attribute
+			   var elementStyle = element.getAttribute('style');
+			   if (elementStyle) {
+				   style = [];
+				   var t = elementStyle.split(';');
+				   for (var j = 0; j < t.length; j++) {
+					   var v = t[j].trim().split(':');
+					   if (validStyle.indexOf(v[0].trim()) >= 0) {
+						   var k = v.shift();
+						   var v = v.join(':');
+						   style.push(k + ':' + v);
+					   }
+				   }
+			   }
+			   // Process image
+			   if (element.tagName.toUpperCase() == 'IMG') {
+				   if (! obj.options.acceptImages || ! element.src) {
+					   element.parentNode.removeChild(element);
+				   } else {
+					   // Check if is data
+					   element.setAttribute('tabindex', '900');
+					   // Check attributes for persistence
+					   obj.addImage(element.src);
+				   }
+			   }
+			   // Remove attributes
+			   var attr = [];
+			   for (var i = 0; i < element.attributes.length; i++) {
+				   attr.push(element.attributes[i].name);
+			   }
+			   if (attr.length) {
+				   attr.forEach(function(v) {
+					   if (validProperty.indexOf(v) == -1) {
+						   element.removeAttribute(v);
+					   } else {
+						   // Protection XSS
+						   if (element.attributes[i].value.indexOf('<') !== -1) {
+							   element.attributes[i].value.replace('<', '&#60;');
+						   }
+					   }
+				   });
+			   }
+			   element.style = '';
+			   // Add valid style
+			   if (style && style.length) {
+				   element.setAttribute('style', style.join(';'));
+			   }
+		   }
+		   // Parse children
+		   if (element.children.length) {
+			   for (var i = 0; i < element.children.length; i++) {
+				   parse(element.children[i]);
+			   }
+		   }
 
-			if (remove.indexOf(element.constructor) >= 0) {
-				element.remove();
-			}
+		   if (remove.indexOf(element.constructor) >= 0) {
+			   element.remove();
+		   }
 		}
 
 		var select = function(e) {
@@ -9714,7 +9807,7 @@ function Validations() {
 	 */
 
 	const isNumeric = function(num) {
-		return !isNaN(num) && num !== null && num !== '';
+		return !isNaN(num) && num !== null && (typeof num !== 'string' || num.trim() !== '');
 	}
 
 	const numberCriterias = {
@@ -9808,15 +9901,15 @@ function Validations() {
 	// Component router
 	const component = function(value, options) {
 		if (typeof(component[options.type]) === 'function') {
-			if (options.allowBlank && value === '') {
+			if (options.allowBlank && (typeof value === 'undefined' || value === '' || value === null)) {
 				return true;
 			}
-			return component[options.type](value, options);
+			return component[options.type].call(this, value, options);
 		}
 		return null;
 	}
 
-	component.url = function() {
+	component.url = function(data) {
 		var pattern = new RegExp(/(((https?:\/\/)|(www\.))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]+)/ig);
 		return pattern.test(data) ? true : false;
 	}
@@ -9827,44 +9920,40 @@ function Validations() {
 	}
 
 	component.required = function(data) {
-		return data.trim() ? true : false;
-	}
-
-	component.exist = function(data, options) {
-		return !!data.toString().trim();
-	}
-
-	component['not exist'] = function(data, options) {
-		return !data.toString().trim();
+		return data && data.trim() ? true : false;
 	}
 
 	component.empty = function(data) {
-		return !data.toString().trim();
+		return typeof data === 'undefined' || data === null || (typeof data === 'string' && !data.toString().trim());
 	}
+
+	component['not exist'] = component.empty;
 
 	component.notEmpty = function(data) {
-		return !!data.toString().trim();
+		return !component.empty(data);
 	}
 
+	component.exist = component.notEmpty;
+
 	component.number = function(data, options) {
-		if (! isNumeric(data)) {
-			return false;
-		}
+	   if (! isNumeric(data)) {
+		   return false;
+	   }
 
-		if (!options || !options.criteria) {
-			return true;
-		}
+	   if (!options || !options.criteria) {
+		   return true;
+	   }
 
-		if (!numberCriterias[options.criteria]) {
-			return false;
-		}
+	   if (!numberCriterias[options.criteria]) {
+		   return false;
+	   }
 
-		let values = options.value.map(function(num) {
-			return parseFloat(num);
-		})
+	   let values = options.value.map(function(num) {
+		  return parseFloat(num);
+	   })
 
-		return numberCriterias[options.criteria](data, values);
-	};
+	   return numberCriterias[options.criteria](data, values);
+   };
 
 	component.login = function(data) {
 		let pattern = new RegExp(/^[a-zA-Z0-9._-]+$/);
@@ -9968,7 +10057,9 @@ function Validations() {
 	}
 
 	component.text = function(data, options) {
-		if (typeof data !== 'string') {
+		if (typeof data === 'undefined' || data === null) {
+			data = '';
+		} else if (typeof data !== 'string') {
 			return false;
 		}
 
@@ -10258,9 +10349,9 @@ function Form() {
 				return hash;
 			} else {
 				for (i = 0; i < str.length; i++) {
-					chr = str.charCodeAt(i);
-					hash = ((hash << 5) - hash) + chr;
-					hash |= 0;
+				  chr = str.charCodeAt(i);
+				  hash = ((hash << 5) - hash) + chr;
+				  hash |= 0;
 				}
 			}
 
@@ -12463,7 +12554,7 @@ function Upload(el, options) {
 		var lastContentLength = null;
 		var content = canvas.toDataURL(type, compression);
 		while (obj.options.maxJpegSizeBytes && type === 'image/jpeg' &&
-				content.length > obj.options.maxJpegSizeBytes && content.length !== lastContentLength) {
+			   content.length > obj.options.maxJpegSizeBytes && content.length !== lastContentLength) {
 			// Apply the compression
 			compression *= 0.9;
 			lastContentLength = content.length;
@@ -12656,7 +12747,7 @@ var jSuites = {
 	...dictionary,
 	...helpers,
 	/** Current version */
-	version: '5.0.24',
+	version: '5.4.2',
 	/** Bind new extensions to Jsuites */
 	setExtensions: function(o) {
 		if (typeof(o) == 'object') {
@@ -12666,7 +12757,7 @@ var jSuites = {
 			}
 		}
 	},
-	tracking: Tracking,
+	tracking: tracking,
 	path: Path,
 	sorting: Sorting,
 	lazyLoading: LazyLoading,
@@ -12716,7 +12807,7 @@ jSuites.sha512 = (sha512_default());
 /** Core events */
 const Events = function() {
 
-	document.jsuitesComponents = [];
+	tracking.state = [];
 
 	const find = function(DOMElement, component) {
 		if (DOMElement[component.type] && DOMElement[component.type] == component) {
@@ -12732,10 +12823,10 @@ const Events = function() {
 	}
 
 	const isOpened = function(e) {
-		if (document.jsuitesComponents && document.jsuitesComponents.length > 0) {
-			for (var i = 0; i < document.jsuitesComponents.length; i++) {
-				if (document.jsuitesComponents[i] && ! find(e, document.jsuitesComponents[i])) {
-					document.jsuitesComponents[i].close();
+		if (tracking.state && tracking.state.length > 0) {
+			for (var i = 0; i < tracking.state.length; i++) {
+				if (tracking.state[i] && ! find(e, tracking.state[i])) {
+					tracking.state[i].close();
 				}
 			}
 		}
@@ -12760,51 +12851,38 @@ const Events = function() {
 	let tooltip = document.createElement('div')
 	tooltip.classList.add('jtooltip');
 
+	const isWebcomponent = function(e) {
+		return e.shadowRoot || e.tagName.includes('-');
+	}
+
+	const getElement = function(e) {
+		let d;
+		let element;
+		// Which component I am clicking
+		let path = e.path || (e.composedPath && e.composedPath());
+
+		// If path available get the first element in the chain
+		if (path) {
+			element = path[0];
+			// Adjustment sales force
+			if (element && isWebcomponent(element) && ! element.shadowRoot && e.toElement) {
+				element = e.toElement;
+			}
+		} else {
+			// Try to guess using the coordinates
+			if (e.target && isWebcomponent(e.target)) {
+				d = e.target.shadowRoot;
+			} else {
+				d = document;
+			}
+			// Get the first target element
+			element = d.elementFromPoint(x, y);
+		}
+		return element;
+	}
+
 	// Events
 	const mouseDown = function(e) {
-		// Check if this is the floating
-		var item = jSuites.findElement(e.target, 'jpanel');
-		// Jfloating found
-		if (item && ! item.classList.contains("readonly")) {
-			// Add focus to the chart container
-			item.focus();
-			// Keep the tracking information
-			var rect = e.target.getBoundingClientRect();
-			editorAction = {
-				e: item,
-				x: e.clientX,
-				y: e.clientY,
-				w: rect.width,
-				h: rect.height,
-				d: item.style.cursor,
-				resizing: item.style.cursor ? true : false,
-				actioned: false,
-			}
-
-			// Make sure width and height styling is OK
-			if (! item.style.width) {
-				item.style.width = rect.width + 'px';
-			}
-
-			if (! item.style.height) {
-				item.style.height = rect.height + 'px';
-			}
-
-			// Remove any selection from the page
-			var s = window.getSelection();
-			if (s.rangeCount) {
-				for (var i = 0; i < s.rangeCount; i++) {
-					s.removeRange(s.getRangeAt(i));
-				}
-			}
-
-			e.preventDefault();
-			e.stopPropagation();
-		} else {
-			// No floating action found
-			editorAction = false;
-		}
-
 		// Verify current components tracking
 		if (e.changedTouches && e.changedTouches[0]) {
 			var x = e.changedTouches[0].clientX;
@@ -12814,24 +12892,84 @@ const Events = function() {
 			var y = e.clientY;
 		}
 
-		// Which component I am clicking
-		var path = e.path || (e.composedPath && e.composedPath());
-
-		// If path available get the first element in the chain
-		if (path) {
-			element = path[0];
-		} else {
-			// Try to guess using the coordinates
-			if (e.target && e.target.shadowRoot) {
-				var d = e.target.shadowRoot;
-			} else {
-				var d = document;
+		let element = getElement(e);
+		// Editable
+		let editable = element && element.tagName === 'DIV' && element.getAttribute('contentEditable');
+		// Check if this is the floating
+		let item = jSuites.findElement(element, 'jpanel');
+		// Jfloating found
+		if (item && ! item.classList.contains("readonly") && ! editable) {
+			// Keep the tracking information
+			let rect = item.getBoundingClientRect();
+			let angle = 0;
+			if (item.style.rotate) {
+				// Extract the angle value from the match and convert it to a number
+				angle = parseFloat(item.style.rotate);
 			}
-			// Get the first target element
-			element = d.elementFromPoint(x, y);
+			let action = 'move';
+			if (element.getAttribute('data-action')) {
+				action = element.getAttribute('data-action');
+			} else {
+				if (item.style.cursor) {
+					action = 'resize';
+				} else {
+					item.style.cursor = 'move';
+				}
+			}
+
+			// Action
+			editorAction = {
+				action: action,
+				a: angle,
+				e: item,
+				x: x,
+				y: y,
+				l: rect.left,
+				t: rect.top,
+				b: rect.bottom,
+				r: rect.right,
+				w: rect.width,
+				h: rect.height,
+				d: item.style.cursor,
+				actioned: false,
+			}
+			// Make sure width and height styling is OK
+			if (! item.style.width) {
+				item.style.width = rect.width + 'px';
+			}
+			if (! item.style.height) {
+				item.style.height = rect.height + 'px';
+			}
+		} else {
+			// No floating action found
+			editorAction = false;
 		}
 
 		isOpened(element);
+
+		focus(e);
+	}
+
+	const calculateAngle = function(x1, y1, x2, y2, x3, y3) {
+		// Calculate dx and dy for the first line
+		const dx1 = x2 - x1;
+		const dy1 = y2 - y1;
+		// Calculate dx and dy for the second line
+		const dx2 = x3 - x1;
+		const dy2 = y3 - y1;
+		// Calculate the angle for the first line
+		let angle1 = Math.atan2(dy1, dx1);
+		// Calculate the angle for the second line
+		let angle2 = Math.atan2(dy2, dx2);
+		// Calculate the angle difference in radians
+		let angleDifference = angle2 - angle1;
+		// Convert the angle difference to degrees
+		angleDifference = angleDifference * (180 / Math.PI);
+		// Normalize the angle difference to be within [0, 360) degrees
+		if (angleDifference < 0) {
+			angleDifference += 360;
+		}
+		return angleDifference;
 	}
 
 	const mouseUp = function(e) {
@@ -12853,16 +12991,16 @@ const Events = function() {
 
 	const mouseMove = function(e) {
 		if (editorAction) {
-			var x = e.clientX || e.pageX;
-			var y = e.clientY || e.pageY;
+			let x = e.clientX || e.pageX;
+			let y = e.clientY || e.pageY;
+
+			if (state.x == null && state.y == null) {
+				state.x = x;
+				state.y = y;
+			}
 
 			// Action on going
-			if (! editorAction.resizing) {
-				if (state.x == null && state.y == null) {
-					state.x = x;
-					state.y = y;
-				}
-
+			if (editorAction.action === 'move') {
 				var dx = x - state.x;
 				var dy = y - state.y;
 				var top = editorAction.e.offsetTop + dy;
@@ -12871,41 +13009,65 @@ const Events = function() {
 				// Update position
 				editorAction.e.style.top = top + 'px';
 				editorAction.e.style.left = left + 'px';
-				editorAction.e.style.cursor = "move";
-
-				state.x = x;
-				state.y = y;
-
 
 				// Update element
-				if (typeof(editorAction.e.refresh) == 'function') {
+				if (typeof (editorAction.e.refresh) == 'function') {
 					state.actioned = true;
 					editorAction.e.refresh('position', top, left);
 				}
-			} else {
-				var width = null;
-				var height = null;
+			} else if (editorAction.action === 'rotate') {
+				let ox = editorAction.l+editorAction.w/2;
+				let oy = editorAction.t+editorAction.h/2;
+				let angle = calculateAngle(ox, oy, editorAction.x, editorAction.y, x, y);
+				angle = angle + editorAction.a % 360;
+				angle = Math.round(angle / 2) * 2;
+				editorAction.e.style.rotate = `${angle}deg`;
+				// Update element
+				if (typeof (editorAction.e.refresh) == 'function') {
+					state.actioned = true;
+					editorAction.e.refresh('rotate', angle);
+				}
+			} else if (editorAction.action === 'resize') {
+				let top = null;
+				let left = null;
+				let width = null;
+				let height = null;
 
 				if (editorAction.d == 'e-resize' || editorAction.d == 'ne-resize' || editorAction.d == 'se-resize') {
-					// Update width
-					width = editorAction.w + (x - editorAction.x);
-					editorAction.e.style.width = width + 'px';
+					width = editorAction.e.offsetWidth + (x - state.x);
 
-					// Update Height
 					if (e.shiftKey) {
-						var newHeight = (x - editorAction.x) * (editorAction.h / editorAction.w);
-						height = editorAction.h + newHeight;
-						editorAction.e.style.height = height + 'px';
-					} else {
-						var newHeight = false;
+						height = editorAction.e.offsetHeight + (x - state.x) * (editorAction.e.offsetHeight / editorAction.e.offsetWidth);
+					}
+				} else if (editorAction.d === 'w-resize' || editorAction.d == 'nw-resize'|| editorAction.d == 'sw-resize') {
+					left = editorAction.e.offsetLeft + (x - state.x);
+					width = editorAction.e.offsetLeft + editorAction.e.offsetWidth - left;
+
+					if (e.shiftKey) {
+						height = editorAction.e.offsetHeight - (x - state.x) * (editorAction.e.offsetHeight / editorAction.e.offsetWidth);
 					}
 				}
 
-				if (! newHeight) {
-					if (editorAction.d == 's-resize' || editorAction.d == 'se-resize' || editorAction.d == 'sw-resize') {
-						height = editorAction.h + (y - editorAction.y);
-						editorAction.e.style.height = height + 'px';
+				if (editorAction.d == 's-resize' || editorAction.d == 'se-resize' || editorAction.d == 'sw-resize') {
+					if (! height) {
+						height = editorAction.e.offsetHeight + (y - state.y);
 					}
+				} else if (editorAction.d === 'n-resize' || editorAction.d == 'ne-resize' || editorAction.d == 'nw-resize') {
+					top = editorAction.e.offsetTop + (y - state.y);
+					height = editorAction.e.offsetTop + editorAction.e.offsetHeight - top;
+				}
+
+				if (top) {
+					editorAction.e.style.top = top + 'px';
+				}
+				if (left) {
+					editorAction.e.style.left = left + 'px';
+				}
+				if (width) {
+					editorAction.e.style.width = width + 'px';
+				}
+				if (height) {
+					editorAction.e.style.height = height + 'px';
 				}
 
 				// Update element
@@ -12914,13 +13076,27 @@ const Events = function() {
 					editorAction.e.refresh('dimensions', width, height);
 				}
 			}
+
+			state.x = x;
+			state.y = y;
 		} else {
-			// Resizing action
-			var item = jSuites.findElement(e.target, 'jpanel');
+			let element = getElement(e);
+			// Resize action
+			let item = jSuites.findElement(element, 'jpanel');
 			// Found eligible component
 			if (item) {
-				if (item.getAttribute('tabindex')) {
-					var rect = item.getBoundingClientRect();
+				// Resizing action
+				let controls = item.classList.contains('jpanel-controls');
+				if (controls) {
+					let position = element.getAttribute('data-position');
+					if (position) {
+						item.style.cursor = position;
+					} else {
+						item.style.cursor = '';
+					}
+				} else if (item.getAttribute('tabindex')) {
+					let rect = item.getBoundingClientRect();
+					//console.log(e.clientY - rect.top, rect.width - (e.clientX - rect.left), cornerSize)
 					if (e.clientY - rect.top < cornerSize) {
 						if (rect.width - (e.clientX - rect.left) < cornerSize) {
 							item.style.cursor = 'ne-resize';
@@ -12949,8 +13125,49 @@ const Events = function() {
 		}
 	}
 
+	let position = ['n','ne','e','se','s','sw','w','nw','rotate'];
+	position.forEach(function(v, k) {
+		position[k] = document.createElement('div');
+		position[k].classList.add('jpanel-action');
+		if (v === 'rotate') {
+			position[k].setAttribute('data-action', 'rotate');
+		} else {
+			position[k].setAttribute('data-action', 'resize');
+			position[k].setAttribute('data-position', v + '-resize');
+		}
+	});
+
+	let currentElement;
+
+	const focus = function(e) {
+		let element = getElement(e);
+		// Check if this is the floating
+		let item = jSuites.findElement(element, 'jpanel');
+		if (item && ! item.classList.contains("readonly") && item.classList.contains('jpanel-controls')) {
+			item.append(...position);
+
+			if (! item.classList.contains('jpanel-rotate')) {
+				position[position.length-1].remove();
+			}
+
+			currentElement = item;
+		} else {
+			blur(e);
+		}
+	}
+
+	const blur = function(e) {
+		if (currentElement) {
+			position.forEach(function(v) {
+				v.remove();
+			});
+			currentElement = null;
+		}
+	}
+
 	const mouseOver = function(e) {
-		var message = e.target.getAttribute('data-tooltip');
+		let element = getElement(e);
+		var message = element.getAttribute('data-tooltip');
 		if (message) {
 			// Instructions
 			tooltip.innerText = message;
@@ -12970,14 +13187,6 @@ const Events = function() {
 		} else if (tooltip.innerText) {
 			tooltip.innerText = '';
 			document.body.removeChild(tooltip);
-		}
-	}
-
-	const dblClick = function(e) {
-		var item = jSuites.findElement(e.target, 'jpanel');
-		if (item && typeof(item.dblclick) == 'function') {
-			// Create edition
-			item.dblclick(e);
 		}
 	}
 
@@ -13018,8 +13227,8 @@ const Events = function() {
 			}
 		}
 
-		if (document.jsuitesComponents && document.jsuitesComponents.length) {
-			item = document.jsuitesComponents[document.jsuitesComponents.length - 1]
+		if (tracking.state && tracking.state.length) {
+			item = tracking.state[tracking.state.length - 1]
 			if (item) {
 				if (e.key === "Escape" && typeof(item.isOpened) == 'function' && typeof(item.close) == 'function') {
 					if (item.isOpened()) {
@@ -13038,24 +13247,25 @@ const Events = function() {
 		}
 	}
 
+	document.addEventListener('focusin', focus);
 	document.addEventListener('mouseup', mouseUp);
 	document.addEventListener("mousedown", mouseDown);
 	document.addEventListener('mousemove', mouseMove);
 	document.addEventListener('mouseover', mouseOver);
-	document.addEventListener('dblclick', dblClick);
 	document.addEventListener('keydown', keyDown);
 	document.addEventListener('contextmenu', contextMenu);
 	document.addEventListener('input', input);
 }
 
-if (typeof(document) !== "undefined" && ! document.jsuitesComponents) {
+if (typeof(document) !== "undefined" && ! tracking.state) {
 	Events();
 }
 
 /* harmony default export */ var jsuites = (jSuites);
 }();
-__webpack_exports__ = __webpack_exports__["default"];
-/******/ 	return __webpack_exports__;
+jSuites = __webpack_exports__["default"];
 /******/ })()
 ;
-});
+
+	return jSuites;
+})));

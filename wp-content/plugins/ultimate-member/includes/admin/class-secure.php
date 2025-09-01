@@ -49,20 +49,7 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 			add_action( 'um_settings_before_save', array( $this, 'check_secure_changes' ) );
 			add_action( 'um_settings_save', array( $this, 'on_settings_save' ) );
 
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
-
 			add_action( 'wp_ajax_um_secure_scan_affected_users', array( $this, 'ajax_scanner' ) );
-		}
-
-		public function admin_scripts( $hook ) {
-			// phpcs:disable WordPress.Security.NonceVerification
-			if ( 'ultimate-member_page_um_options' !== $hook || ( isset( $_GET['tab'] ) && 'secure' !== $_GET['tab'] ) ) {
-				return;
-			}
-			// phpcs:enable WordPress.Security.NonceVerification
-
-			wp_register_script( 'um_admin_secure', UM()->admin()->enqueue()->js_url . 'um-admin-secure.js', array( 'jquery' ), UM_VERSION, true );
-			wp_enqueue_script( 'um_admin_secure' );
 		}
 
 		/**
@@ -79,13 +66,16 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 				$date_to   = isset( $_GET['um_secure_date_to'] ) ? $_GET['um_secure_date_to'] : null;
 				// phpcs:enable WordPress.Security.NonceVerification
 				if ( $date_from ) {
+
 					$date_query_attr = array(
-						'after'     => human_time_diff( $date_from, strtotime( current_time( 'mysql' ) ) ) . ' ago',
-						'inclusive' => true,
+						'after'  => gmdate( get_option( 'date_format', 'F j, Y' ), strtotime( '-1 day', $date_from ) ),
+						'before' => gmdate( get_option( 'date_format', 'F j, Y' ), strtotime( '+1 day', $date_from ) ),
 					);
+
 					if ( $date_to ) {
-						$date_query_attr['before'] = human_time_diff( $date_to, strtotime( current_time( 'mysql' ) ) ) . ' ago';
+						$date_query_attr['before'] = gmdate( get_option( 'date_format', 'F j, Y' ), strtotime( '+1 day', $date_to ) );
 					}
+
 					$query->set( 'date_query', $date_query_attr );
 				}
 			}
@@ -100,12 +90,6 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 		 */
 		public function admin_init() {
 			global $wpdb;
-			// Dismiss admin notice after the first visit to Secure settings page.
-			if ( isset( $_REQUEST['page'] ) && isset( $_REQUEST['tab'] ) &&
-				'um_options' === sanitize_key( $_REQUEST['page'] ) && 'secure' === sanitize_key( $_REQUEST['tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-				UM()->admin()->notices()->dismiss( 'secure_settings' );
-			}
-
 			if ( isset( $_REQUEST['um_secure_expire_all_sessions'] ) && ! wp_doing_ajax() ) {
 				if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'um-secure-expire-session-nonce' ) || ! current_user_can( 'manage_options' ) ) {
 					// This nonce is not valid or current logged-in user has no administrative rights.
@@ -166,7 +150,8 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 				}
 				// Restore Account Status.
 				if ( isset( $metadata['account_status'] ) ) {
-					UM()->user()->set_status( $metadata['account_status'] );
+					// Force update of the user status without email notifications.
+					UM()->common()->users()->set_status( $user_id, $metadata['account_status'] );
 				}
 
 				// Delete blocked meta.
@@ -177,7 +162,7 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 				// Don't need to reset a password.
 				if ( UM()->options()->get( 'display_login_form_notice' ) ) {
 					update_user_meta( $user_id, 'um_secure_has_reset_password', true );
-					update_user_meta( $user_id, 'um_secure_has_reset_password__timestamp', current_time( 'mysql' ) );
+					update_user_meta( $user_id, 'um_secure_has_reset_password__timestamp', current_time( 'mysql', true ) );
 				}
 
 				// Clear Cache.
@@ -198,7 +183,6 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 		 */
 		public function add_settings( $settings ) {
 			$nonce       = wp_create_nonce( 'um-secure-expire-session-nonce' );
-			$count_users = count_users();
 
 			$banned_capabilities       = array();
 			$banned_admin_capabilities = UM()->common()->secure()->get_banned_capabilities_list();
@@ -215,7 +199,7 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 			$scan_status       = get_option( 'um_secure_scan_status' );
 			$last_scanned_time = get_option( 'um_secure_last_time_scanned' );
 			if ( ! empty( $last_scanned_time ) ) {
-				$scanner_content .= human_time_diff( strtotime( $last_scanned_time ), strtotime( current_time( 'mysql' ) ) ) . ' ' . esc_html__( 'ago', 'ultimate-member' );
+				$scanner_content .= human_time_diff( strtotime( $last_scanned_time ) ) . ' ' . esc_html__( 'ago', 'ultimate-member' );
 				if ( 'started' === $scan_status ) {
 					$scanner_content .= ' - ' . esc_html__( 'Not Completed.', 'ultimate-member' );
 				}
@@ -246,20 +230,25 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 					'description' => __( 'Scan your site to check for vulnerabilities prior to Ultimate Member version 2.6.7 and get recommendations to secure your site.', 'ultimate-member' ),
 				),
 				array(
-					'id'          => 'lock_register_forms',
-					'type'        => 'checkbox',
-					'label'       => __( 'Lock All Register Forms', 'ultimate-member' ),
-					'description' => __( 'This prevents all users from registering with Ultimate Member on your site.', 'ultimate-member' ),
+					'id'             => 'lock_register_forms',
+					'type'           => 'checkbox',
+					'label'          => __( 'Lock All Register Forms', 'ultimate-member' ),
+					'checkbox_label' => __( 'Lock Forms', 'ultimate-member' ),
+					'description'    => __( 'This prevents all users from registering with Ultimate Member on your site.', 'ultimate-member' ),
 				),
 				array(
-					'id'          => 'display_login_form_notice',
-					'type'        => 'checkbox',
-					'label'       => __( 'Display Login form notice to reset passwords', 'ultimate-member' ),
-					'description' => __( 'Enforces users to reset their passwords( one-time ) and prevent from entering old password.', 'ultimate-member' ),
+					'id'             => 'display_login_form_notice',
+					'type'           => 'checkbox',
+					'label'          => __( 'Display Login form notice to reset passwords', 'ultimate-member' ),
+					'checkbox_label' => __( 'Enable Login form notice', 'ultimate-member' ),
+					'description'    => __( 'Enforces users to reset their passwords (one-time) and prevent from entering old password.', 'ultimate-member' ),
 				),
 			);
 
-			$count_users_exclude_me = $count_users['total_users'] - 1;
+			global $wpdb;
+			$count_users = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" );
+
+			$count_users_exclude_me = $count_users - 1;
 			if ( $count_users_exclude_me > 0 ) {
 				$secure_fields[] = array(
 					'id'          => 'force_reset_passwords',
@@ -275,17 +264,19 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 				$secure_fields,
 				array(
 					array(
-						'id'          => 'secure_ban_admins_accounts',
-						'type'        => 'checkbox',
-						'label'       => __( 'Enable ban for administrative capabilities', 'ultimate-member' ),
-						'description' => __( ' When someone tries to inject capabilities to the Account, Profile & Register forms submission, it will be banned.', 'ultimate-member' ),
+						'id'             => 'secure_ban_admins_accounts',
+						'type'           => 'checkbox',
+						'label'          => __( 'Administrative capabilities ban', 'ultimate-member' ),
+						'checkbox_label' => __( 'Enable ban for administrative capabilities', 'ultimate-member' ),
+						'description'    => __( ' When someone tries to inject capabilities to the Account, Profile & Register forms submission, it will be banned.', 'ultimate-member' ),
 					),
 					array(
-						'id'          => 'secure_notify_admins_banned_accounts',
-						'type'        => 'checkbox',
-						'label'       => __( 'Notify Administrators', 'ultimate-member' ),
-						'description' => __( 'When enabled, All administrators will be notified when someone has suspicious activities in the Account, Profile & Register forms.', 'ultimate-member' ),
-						'conditional' => array( 'secure_ban_admins_accounts', '=', 1 ),
+						'id'             => 'secure_notify_admins_banned_accounts',
+						'type'           => 'checkbox',
+						'label'          => __( 'Notify Administrators', 'ultimate-member' ),
+						'checkbox_label' => __( 'Enable notification', 'ultimate-member' ),
+						'description'    => __( 'When enabled, All administrators will be notified when someone has suspicious activities in the Account, Profile & Register forms.', 'ultimate-member' ),
+						'conditional'    => array( 'secure_ban_admins_accounts', '=', 1 ),
 					),
 					array(
 						'id'          => 'secure_notify_admins_banned_accounts__interval',
@@ -302,14 +293,21 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 						'id'          => 'secure_allowed_redirect_hosts',
 						'type'        => 'textarea',
 						'label'       => __( 'Allowed hosts for safe redirect (one host per line)', 'ultimate-member' ),
-						'description' => __( 'Extend allowed hosts for frontend pages redirects', 'ultimate-member' ),
+						'description' => __( 'Extend allowed hosts for frontend pages redirects.', 'ultimate-member' ),
 					),
 				)
 			);
 
-			$settings['secure'] = array(
-				'title'  => __( 'Secure', 'ultimate-member' ),
-				'fields' => $secure_fields,
+			$settings['advanced']['sections'] = UM()->array_insert_before(
+				$settings['advanced']['sections'],
+				'developers',
+				array(
+					'security' => array(
+						'title'       => __( 'Security', 'ultimate-member' ),
+						'description' => __( 'This feature scans for suspicious registered accounts, bans the usage of administrative capabilities to site subscribers/members, allows the website administrators to force all users to reset their passwords, preventing users from logging-in using their old passwords that may have been exposed.', 'ultimate-member' ),
+						'fields'      => $secure_fields,
+					),
+				)
 			);
 
 			return $settings;
@@ -330,15 +328,15 @@ if ( ! class_exists( 'um\admin\Secure' ) ) {
 			if ( 'account_status' === $column_name ) {
 				um_fetch_user( $user_id );
 				$is_blocked     = um_user( 'um_user_blocked' );
-				$account_status = um_user( 'account_status' );
+				$account_status = UM()->common()->users()->get_status( $user_id );
 				if ( ! empty( $is_blocked ) && in_array( $account_status, array( 'rejected', 'inactive' ), true ) ) {
 					$datetime            = um_user( 'um_user_blocked__timestamp' );
 					$val                .= '<div><small>' . esc_html__( 'Blocked Due to Suspicious Activity', 'ultimate-member' ) . '</small></div>';
 					$nonce               = wp_create_nonce( 'um-security-restore-account-nonce-' . $user_id );
 					$restore_account_url = admin_url( 'users.php?user_id=' . $user_id . '&um_secure_restore_account=1&_wpnonce=' . $nonce );
-					$action              = ' &#183; <a href=" ' . esc_attr( $restore_account_url ) . ' " onclick=\'return confirm("' . esc_js( __( 'Are you sure that you want to restore this account after getting flagged for suspicious activity?', 'ultimate-member' ) ) . '");\'><small>' . esc_html__( 'Restore Account', 'ultimate-member' ) . '</small></a>';
+					$action              = ' &#183; <a href=" ' . esc_url( $restore_account_url ) . ' " onclick=\'return confirm("' . esc_js( __( 'Are you sure that you want to restore this account after getting flagged for suspicious activity?', 'ultimate-member' ) ) . '");\'><small>' . esc_html__( 'Restore Account', 'ultimate-member' ) . '</small></a>';
 					if ( ! empty( $datetime ) ) {
-						$val .= '<div><small>' . human_time_diff( strtotime( $datetime ), strtotime( current_time( 'mysql' ) ) ) . ' ' . __( 'ago', 'ultimate-member' ) . '</small>' . $action . '</div>';
+						$val .= '<div><small>' . human_time_diff( strtotime( $datetime ) ) . ' ' . __( 'ago', 'ultimate-member' ) . '</small>' . $action . '</div>';
 					}
 				}
 				um_reset_user();

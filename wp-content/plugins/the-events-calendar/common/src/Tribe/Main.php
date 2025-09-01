@@ -1,30 +1,41 @@
 <?php
-/**
- * Main Tribe Common class.
- */
 
-// Don't load directly
-
+use TEC\Common\Libraries;
+use TEC\Common\Translations_Loader;
+use Tribe\Admin\Settings;
 use Tribe\DB_Lock;
+use TEC\Common\Asset;
+use TEC\Common\StellarWP\Assets\Config as Assets_Config;
+use TEC\Common\Controller as Common_Controller;
+use TEC\Common\StellarWP\ContainerContract\ContainerInterface;
 
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( class_exists( 'Tribe__Main' ) ) {
+if ( class_exists( 'Tribe__Main', false ) ) {
 	return;
 }
 
 class Tribe__Main {
-	const EVENTSERROROPT      = '_tribe_events_errors';
-	const OPTIONNAME          = 'tribe_events_calendar_options';
-	const OPTIONNAMENETWORK   = 'tribe_events_calendar_network_options';
-
-	const VERSION             = '4.15.4.1';
-	const FEED_URL            = 'https://theeventscalendar.com/feed/';
+	const EVENTSERROROPT    = '_tribe_events_errors';
+	const OPTIONNAME        = 'tribe_events_calendar_options';
+	const OPTIONNAMENETWORK = 'tribe_events_calendar_network_options';
+	const FEED_URL          = 'https://theeventscalendar.com/feed/';
+	const VERSION           = '6.9.0.1';
 
 	protected $plugin_context;
 	protected $plugin_context_class;
+
+	/**
+	 * Holds the path to the main file of the parent plugin.
+	 *
+	 * @since 5.1.0
+	 *
+	 * @var string
+	 */
+	protected $parent_plugin_file = '';
 
 	public static $tribe_url = 'http://tri.be/';
 	public static $tec_url   = 'https://theeventscalendar.com/';
@@ -32,6 +43,7 @@ class Tribe__Main {
 	public $plugin_dir;
 	public $plugin_path;
 	public $plugin_url;
+	public $parent_plugin_dir;
 
 	/**
 	 * Static Singleton Holder
@@ -40,9 +52,9 @@ class Tribe__Main {
 	protected static $instance;
 
 	/**
-	 * Get (and instantiate, if necessary) the instance of the class
+	 * Get (and instantiate, if necessary) the instance of the class.
 	 *
-	 * @param  mixed $context An instance of the Main class of the plugin that instantiated Common
+	 * @param mixed $context An instance of the Main class of the plugin that instantiated Common.
 	 *
 	 * @return self
 	 */
@@ -55,7 +67,7 @@ class Tribe__Main {
 	}
 
 	/**
-	 * Constructor for Common Class
+	 * Constructor for Common Class.
 	 *
 	 * We are using a `public` constructor here for backwards compatibility.
 	 *
@@ -67,9 +79,11 @@ class Tribe__Main {
 			return;
 		}
 
-		require_once realpath( dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/autoload.php' );
+		$vendor_folder = dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/';
+		require_once realpath( $vendor_folder . 'vendor-prefixed/autoload.php' );
+		require_once realpath( $vendor_folder . 'autoload.php' );
 
-		// the DI container class
+		// The DI container class.
 		require_once dirname( __FILE__ ) . '/Container.php';
 
 		if ( is_object( $context ) ) {
@@ -79,19 +93,19 @@ class Tribe__Main {
 
 		$this->plugin_path = trailingslashit( dirname( dirname( dirname( __FILE__ ) ) ) );
 		$this->plugin_dir  = trailingslashit( basename( $this->plugin_path ) );
-		$parent_plugin_dir = trailingslashit( plugin_basename( $this->plugin_path ) );
-		$this->plugin_url  = plugins_url( $parent_plugin_dir === $this->plugin_dir ? $this->plugin_dir : $parent_plugin_dir );
+		$this->parent_plugin_dir = trailingslashit( plugin_basename( $this->plugin_path ) );
+		$this->plugin_url  = plugins_url( $this->parent_plugin_dir === $this->plugin_dir ? $this->plugin_dir : $this->parent_plugin_dir );
 
 		$this->promoter_connector();
 
-		add_action( 'plugins_loaded', [ $this, 'plugins_loaded' ], 1 );
+		add_action( 'plugins_loaded', [ $this, 'plugins_loaded' ], -1 );
 		add_action( 'tribe_common_loaded', [ $this, 'tribe_common_app_store' ], 10 );
 		add_action( 'customize_controls_print_styles', [ $this, 'load_tec_variables' ], 10 );
 
 		if ( did_action( 'plugins_loaded' ) && ! doing_action( 'plugins_loaded' ) ) {
 			/*
 			 * This might happen in the context of a plugin activation.
-			 * Complete the loading now and set the singleton instance to avoid infinite loops.
+			 * Complete the loading now and set the singleton instanceo avoid infinite loops.
 			 */
 			self::$instance = $this;
 			$this->plugins_loaded();
@@ -99,7 +113,7 @@ class Tribe__Main {
 	}
 
 	/**
-	 *
+	 * Plugins loaded.
 	 */
 	public function plugins_loaded() {
 
@@ -126,16 +140,22 @@ class Tribe__Main {
 	}
 
 	/**
-	 * Setup the autoloader for common files
+	 * Setup the autoloader for common files.
 	 */
 	protected function init_autoloading() {
 		if ( ! class_exists( 'Tribe__Autoloader' ) ) {
 			require_once dirname( __FILE__ ) . '/Autoloader.php';
 		}
 
+		// Aliases for backwards compatibility with our Extensions and Pods.
+		require_once realpath( dirname( dirname( __FILE__ ) ) . '/functions/aliases.php' );
+
 		$autoloader = Tribe__Autoloader::instance();
 
-		$prefixes = [ 'Tribe__' => dirname( __FILE__ ) ];
+		$prefixes = [
+				'TEC\\Common\\' => dirname( __DIR__ ) . '/Common',
+				'Tribe__'       => __DIR__,
+		];
 		$autoloader->register_prefixes( $prefixes );
 
 		foreach ( glob( $this->plugin_path . 'src/deprecated/*.php' ) as $file ) {
@@ -174,20 +194,26 @@ class Tribe__Main {
 	}
 
 	/**
-	 * initializes all required libraries
+	 * Initializes all required libraries.
 	 */
 	public function init_libraries() {
+		require_once $this->plugin_path . 'src/functions/time.php';
 		require_once $this->plugin_path . 'src/functions/utils.php';
 		require_once $this->plugin_path . 'src/functions/conditionals.php';
+		require_once $this->plugin_path . 'src/functions/transient.php';
 		require_once $this->plugin_path . 'src/functions/url.php';
 		require_once $this->plugin_path . 'src/functions/query.php';
 		require_once $this->plugin_path . 'src/functions/multibyte.php';
+		require_once $this->plugin_path . 'src/functions/files.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/general.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/date.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/html.php';
 		require_once $this->plugin_path . 'src/functions/template-tags/post.php';
 
 		Tribe__Debug::instance();
+		tec_timed_option();
+
+		tribe( 'updater' )->hook();
 		tribe( 'assets' );
 		tribe( 'assets.pipeline' );
 		tribe( 'settings.manager' );
@@ -195,25 +221,57 @@ class Tribe__Main {
 		tribe( 'plugins.api' );
 		tribe( 'ajax.dropdown' );
 		tribe( 'logger' );
+
+		/*
+		 * Register the `/build` directory assets as a different group to ensure back-compatibility.
+		 * This needs to happen early in the plugin bootstrap routine.
+		 */
+		Assets_Config::add_group_path(
+			self::class,
+			self::instance()->plugin_path,
+			'build/',
+			true
+		);
+
+		/*
+		 * Register the `/build` directory as root for packages.
+		 * The difference from the group registration above is that packages are not expected to use prefix directories
+		 * like `/js` or `/css`.
+		 */
+		Assets_Config::add_group_path(
+			self::class . '-packages',
+			self::instance()->plugin_path,
+			'build/',
+			false
+		);
 	}
 
 	/**
-	 * Registers resources that can/should be enqueued
+	 * Registers resources that can/should be enqueued.
 	 */
 	public function load_assets() {
-		// These ones are only registered
-		tribe_assets(
+		Asset::add(
+			'tribe-clipboard',
+			'vendor/clipboard.js',
+			self::VERSION
+		)
+		->prefix_asset_directory( false )
+		->use_asset_file( false )
+		->register();
+
+		// These ones are only registered.
+		tec_assets(
 			$this,
 			[
 				[ 'tribe-accessibility-css', 'accessibility.css' ],
 				[ 'tribe-query-string', 'utils/query-string.js' ],
-				[ 'tribe-clipboard', 'node_modules/clipboard/dist/clipboard.min.js' ],
 				[ 'datatables', 'vendor/datatables/datatables.js', [ 'jquery' ] ],
 				[ 'tribe-select2', 'vendor/tribe-selectWoo/dist/js/selectWoo.full.js', [ 'jquery' ] ],
 				[ 'tribe-select2-css', 'vendor/tribe-selectWoo/dist/css/selectWoo.css' ],
 				[ 'tribe-utils-camelcase', 'utils-camelcase.js', [ 'underscore' ] ],
-				[ 'tribe-moment', 'vendor/momentjs/moment.js' ],
-				[ 'tribe-moment-locales', 'vendor/momentjs/locale.min.js' ],
+				[ 'tec-dayjs', 'vendor/dayjs/dayjs.min.js' ],
+				[ 'tec-dayjs-isoweek', 'vendor/dayjs/plugin/isoWeek.min.js', [ 'tec-dayjs' ] ],
+				[ 'tec-dayjs-customparseformat', 'vendor/dayjs/plugin/customParseFormat.min.js', [ 'tec-dayjs' ] ],
 				[ 'tribe-tooltipster', 'vendor/tooltipster/tooltipster.bundle.js', [ 'jquery' ] ],
 				[ 'tribe-tooltipster-css', 'vendor/tooltipster/tooltipster.bundle.css' ],
 				[ 'datatables-css', 'datatables.css' ],
@@ -228,10 +286,31 @@ class Tribe__Main {
 				[ 'tribe-attrchange', 'vendor/attrchange/js/attrchange.js' ],
 				[ 'tec-ky-module', 'vendor/ky/ky.js', [], null, [ 'module' => true ] ],
 				[ 'tec-ky', 'vendor/ky/tec-ky.js', [ 'tec-ky-module' ], null, [ 'module' => true ] ],
+				[ 'tec-common-php-date-formatter', 'node_modules/php-date-formatter/js/php-date-formatter.js' ],
 			]
 		);
 
-		tribe_assets(
+		tec_asset(
+			$this,
+			'tec-copy-to-clipboard',
+			'utils/tec-copy-to-clipboard.js',
+			'tribe-clipboard',
+			'admin_enqueue_scripts',
+			[
+				'localize' => [
+					'tribeCopyToClipboard',
+					[
+						'name' => 'tribeCopyToClipboard',
+						'data' => [
+							'clipboard_copied_text' => _x( 'Copied to Clipboard!', 'Copy to clipboard success message', 'tribe-common' ),
+							'clipboard_fail_text'   => _x( 'Failed to copy.', 'Copy to clipboard failed message', 'tribe-common' ),
+						],
+					],
+				],
+			]
+		);
+
+		tec_assets(
 			$this,
 			[
 				[ 'tec-variables-skeleton', 'variables-skeleton.css', ],
@@ -242,19 +321,20 @@ class Tribe__Main {
 			null
 		);
 
-		// These ones will be enqueued on `admin_enqueue_scripts` if the conditional method on filter is met
-		tribe_assets(
+		// These ones will be enqueued on `admin_enqueue_scripts` if the conditional method on filter is met.
+		tec_assets(
 			$this,
 			[
 				[ 'tribe-ui', 'tribe-ui.css', [ 'tec-variables-full' ] ],
 				[ 'tribe-buttonset', 'buttonset.js', [ 'jquery', 'underscore' ] ],
-				[ 'tribe-common-admin', 'tribe-common-admin.css', [ 'tec-variables-full', 'tribe-dependency-style', 'tribe-bumpdown-css', 'tribe-buttonset-style', 'tribe-select2-css' ] ],
-				[ 'tribe-validation', 'validation.js', [ 'jquery', 'underscore', 'tribe-common', 'tribe-utils-camelcase', 'tribe-tooltipster' ] ],
+				[ 'tribe-common-admin', 'tribe-common-admin.css', [ 'editor-buttons', 'tec-variables-skeleton', 'tec-variables-full', 'tribe-dependency-style', 'tribe-bumpdown-css', 'tribe-buttonset-style', 'tribe-select2-css' ] ],
+				[ 'tribe-validation', 'validation.js', [ 'jquery', 'underscore', 'tribe-common', 'tribe-utils-camelcase', 'tribe-tooltipster', 'tec-dayjs', 'tec-dayjs-customparseformat' ] ],
 				[ 'tribe-validation-style', 'validation.css', [ 'tec-variables-full', 'tribe-tooltipster-css' ] ],
 				[ 'tribe-dependency', 'dependency.js', [ 'jquery', 'underscore', 'tribe-common' ] ],
 				[ 'tribe-dependency-style', 'dependency.css', [ 'tribe-select2-css' ] ],
 				[ 'tribe-pue-notices', 'pue-notices.js', [ 'jquery' ] ],
 				[ 'tribe-datepicker', 'datepicker.css' ],
+				[ 'tec-nav-modal', 'admin/settings-nav-modals.js', [ 'jquery' ] ],
 			],
 			'admin_enqueue_scripts',
 			[
@@ -263,7 +343,7 @@ class Tribe__Main {
 			]
 		);
 
-		tribe_asset(
+		tec_asset(
 			$this,
 			'tribe-common',
 			'tribe-common.js',
@@ -274,7 +354,7 @@ class Tribe__Main {
 			]
 		);
 
-		tribe_asset(
+		tec_asset(
 			$this,
 			'tribe-admin-url-fragment-scroll',
 			'admin/url-fragment-scroll.js',
@@ -286,13 +366,36 @@ class Tribe__Main {
 			]
 		);
 
+		tec_asset(
+			$this,
+			'tec-admin-settings-image-field',
+			'admin-image-field.js',
+			[ 'jquery' ],
+			'in_admin_footer',
+			[
+				'conditionals' => [ tribe( Settings::class ), 'should_load_image_field_assets' ]
+			]
+		);
+
 		// Register the asset for Customizer controls.
-		tribe_asset(
+		tec_asset(
 			$this,
 			'tribe-customizer-controls',
 			'customizer-controls.css',
 			[ 'tec-variables-full' ],
 			'customize_controls_print_styles'
+		);
+
+		// Register the asset for color fields.
+		tec_asset(
+			$this,
+			'tec-settings-color-field',
+			'admin-color-field.js',
+			[ 'jquery', 'wp-color-picker' ],
+			'admin_footer',
+			[
+				'conditionals' => [ tribe( Settings::class ), 'should_load_color_field_assets' ]
+			]
 		);
 
 		tribe( Tribe__Admin__Help_Page::class )->register_assets();
@@ -320,7 +423,7 @@ class Tribe__Main {
 	public function hook_load_text_domain() {
 		$loaded = $this->load_text_domain(
 			'tribe-common',
-			basename( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '/common/lang/'
+				basename( dirname( __FILE__, 4 ) ) . '/common/lang/'
 		);
 
 		/**
@@ -342,7 +445,7 @@ class Tribe__Main {
 	/**
 	 * Load All localization data create by `asset.data`
 	 *
-	 * @since  4.7
+	 * @since 4.7
 	 *
 	 * @return void
 	 */
@@ -383,12 +486,12 @@ class Tribe__Main {
 				'monthNames'      => $datepicker_months,
 				'monthNamesShort' => $datepicker_months, // We deliberately use full month names here,
 				'monthNamesMin'   => array_values( Tribe__Date_Utils::get_localized_months_short() ),
- 				'nextText'        => esc_html__( 'Next', 'the-events-calendar' ),
-				'prevText'        => esc_html__( 'Prev', 'the-events-calendar' ),
-				'currentText'     => esc_html__( 'Today', 'the-events-calendar' ),
-				'closeText'       => esc_html__( 'Done', 'the-events-calendar' ),
-				'today'           => esc_html__( 'Today', 'the-events-calendar' ),
-				'clear'           => esc_html__( 'Clear', 'the-events-calendar' ),
+				'nextText'        => esc_html__( 'Next', 'tribe-common' ),
+				'prevText'        => esc_html__( 'Prev', 'tribe-common' ),
+				'currentText'     => esc_html__( 'Today', 'tribe-common' ),
+				'closeText'       => esc_html__( 'Done', 'tribe-common' ),
+				'today'           => esc_html__( 'Today', 'tribe-common' ),
+				'clear'           => esc_html__( 'Clear', 'tribe-common' ),
 			],
 		] );
 	}
@@ -403,12 +506,26 @@ class Tribe__Main {
 		// Register for the assets to be available everywhere
 		add_action( 'tribe_common_loaded', [ $this, 'load_assets' ], 1 );
 		add_action( 'init', [ $this, 'hook_load_text_domain' ] );
+		add_action( 'switch_locale', [ $this, 'hook_load_text_domain' ] );
+		add_action( 'restore_previous_locale', [ $this, 'hook_load_text_domain' ] );
 		add_action( 'init', [ $this, 'load_localize_data' ] );
 		add_action( 'plugins_loaded', [ 'Tribe__Admin__Notices', 'instance' ], 1 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'store_admin_notices' ] );
 
 		add_filter( 'body_class', [ $this, 'add_js_class' ] );
 		add_action( 'wp_footer', [ $this, 'toggle_js_class' ] );
+
+		add_action( 'init', [ $this, 'load_action_scheduler' ], - 99999 );
+	}
+
+	/**
+	 * Load the Action Scheduler library.
+	 *
+	 * @since TDB
+	 */
+	public function load_action_scheduler(): void {
+		// Load the Action Scheduler library.
+		require_once $this->plugin_path . 'vendor/woocommerce/action-scheduler/action-scheduler.php';
 	}
 
 	/**
@@ -478,44 +595,49 @@ class Tribe__Main {
 	}
 
 	/**
-	 * A Helper method to load text domain
-	 * First it tries to load the wp-content/languages translation then if falls to the try to load $dir language files.
+	 * A helper method to load text domain.
+	 * First, it tries to load language files from a custom folder when set. If it fails it falls back to load from $dir.
 	 *
-	 * @since  4.0.1 Introduced.
-	 * @since  4.2   Included $domain and $dir params.
+	 * @since 4.0.1 Introduced.
+	 * @since 4.2   Included $domain and $dir params.
+	 * @since 6.5.1 Refactored logic to better handle `load_plugin_textdomain` changes introduced by WordPress 6.7.
 	 *
 	 * @param string       $domain The text domain that will be loaded.
-	 * @param string|false $dir    What directory should be used to try to load if the default doesn't work.
+	 * @param string|false $dir    What directory should be used to try to register if the default doesn't work.
 	 *
-	 * @return bool  If it was able to load the text domain.
+	 * @return bool  If it was able to register the text domain.
 	 */
 	public function load_text_domain( $domain, $dir = false ) {
-		// Added safety just in case this runs twice...
+		// Added safety just in case this runs twice.
 		if ( is_textdomain_loaded( $domain ) && ! $GLOBALS['l10n'][ $domain ] instanceof NOOP_Translations ) {
 			return true;
 		}
 
-		$locale = get_locale();
-		$plugin_rel_path = WP_LANG_DIR . '/plugins/';
+		$locale          = get_locale();
+		$plugin_rel_path = $dir;
 
 		/**
-		 * Allows users to filter the file location for a given text domain..
-		 * Be careful when using this filter, it will apply across the whole plugin suite.
+		 * Allows users to filter the file location for a given text domain.
+		 * The path has to be relative to wp-content/plugins/.
+		 * Be careful when using this filter, it will apply across the whole plugin suite when not checking $domain.
 		 *
 		 * @param string      $plugin_rel_path The relative path for the language files.
-		 * @param string      $domain Which plugin domain we are trying to load.
-		 * @param string      $locale Which Language we will load.
-		 * @param string|bool $dir    If there was a custom directory passed on the method call.
+		 * @param string      $domain          The plugin domain we are trying to load.
+		 * @param string      $locale          The language we will load.
+		 * @param string|bool $dir             If there was a custom directory passed on the method call.
 		 */
 		$plugin_rel_path = apply_filters( 'tribe_load_text_domain', $plugin_rel_path, $domain, $locale, $dir );
 
-		$loaded = load_plugin_textdomain( $domain, false, $plugin_rel_path );
+		$filename = $domain . '-' . $locale . '.mo';
+		$file     = trailingslashit( WP_PLUGIN_DIR ) . trailingslashit( $plugin_rel_path ) . $filename;
 
-		if ( $dir !== false && ! $loaded ) {
-			return load_plugin_textdomain( $domain, false, $dir );
+		// Load textdomain from a custom folder or the plugin's language folder.
+		if ( file_exists( $file ) ) {
+			return load_plugin_textdomain( $domain, false, $plugin_rel_path );
 		}
 
-		return $loaded;
+		// If translation files are not found in the custom folder, then load textdomain from the plugin's language folder.
+		return $dir !== $plugin_rel_path && load_plugin_textdomain( $domain, false, $dir );
 	}
 
 	/**
@@ -539,9 +661,9 @@ class Tribe__Main {
 	/**
 	 * Insert an array after a specified key within another array.
 	 *
-	 * @param $key
-	 * @param $source_array
-	 * @param $insert_array
+	 * @param string $key The key to insert the array after.
+	 * @param array  $source_array The source array.
+	 * @param array  $insert_array The array to insert.
 	 *
 	 * @return array
 	 */
@@ -560,9 +682,9 @@ class Tribe__Main {
 	/**
 	 * Insert an array immediately before a specified key within another array.
 	 *
-	 * @param $key
-	 * @param $source_array
-	 * @param $insert_array
+	 * @param string $key The key to insert the array before.
+	 * @param array  $source_array The source array.
+	 * @param array  $insert_array The array to insert.
 	 *
 	 * @return array
 	 */
@@ -584,7 +706,7 @@ class Tribe__Main {
 	 * Helper function for getting Post ID. Accepts `null` or a Post ID. If attempting
 	 * to detect $post object and it is not found, returns `false` to avoid a PHP Notice.
 	 *
-	 * @param  null|int|WP_Post  $candidate  Post ID or object, `null` to get the ID of the global post object.
+	 * @param null|int|WP_Post $candidate Post ID or object, `null` to get the ID of the global post object.
 	 *
 	 * @return int|false The ID of the passed or global post, `false` if the passes object is not a post or the global
 	 *                   post is not set.
@@ -647,10 +769,12 @@ class Tribe__Main {
 	 * @return void Implementation of components loader doesn't return anything.
 	 */
 	public function bind_implementations() {
+		tribe_singleton( 'updater', 'TEC\Common\Updater' );
+		tribe_singleton( \TEC\Common\Storage\Timed_Option::class, \TEC\Common\Storage\Timed_Option::class );
 		tribe_singleton( 'settings.manager', 'Tribe__Settings_Manager' );
 		tribe_singleton( 'settings', 'Tribe__Settings', [ 'hook' ] );
 		tribe_singleton( 'ajax.dropdown', 'Tribe__Ajax__Dropdown', [ 'hook' ] );
-		tribe_singleton( 'assets', 'Tribe__Assets' );
+		tribe_singleton( 'assets', 'Tribe__Assets', [ 'hook' ] );
 		tribe_singleton( 'assets.pipeline', 'Tribe__Assets_Pipeline', [ 'hook' ] );
 		tribe_singleton( 'asset.data', 'Tribe__Asset__Data', [ 'hook' ] );
 		tribe_singleton( 'admin.helpers', 'Tribe__Admin__Helpers' );
@@ -667,7 +791,6 @@ class Tribe__Main {
 		tribe_singleton( 'post-transient', 'Tribe__Post_Transient' );
 		tribe_singleton( 'db', 'Tribe__Db' );
 		tribe_singleton( 'db-lock', DB_Lock::class );
-		tribe_singleton( 'freemius', 'Tribe__Freemius' );
 		tribe_singleton( 'customizer', 'Tribe__Customizer' );
 		tribe_singleton( Tribe__Dependency::class, Tribe__Dependency::class );
 		tribe_singleton( \Tribe\Admin\Troubleshooting::class, \Tribe\Admin\Troubleshooting::class, [ 'hook' ] );
@@ -676,10 +799,10 @@ class Tribe__Main {
 		tribe_singleton( Tribe__Admin__Help_Page::class, Tribe__Admin__Help_Page::class, [ 'hook' ] );
 		tribe_singleton( 'admin.pages', '\Tribe\Admin\Pages' );
 		tribe_singleton( 'admin.activation.page', 'Tribe__Admin__Activation_Page' );
+		tribe_singleton( Translations_Loader::class, Translations_Loader::class );
 
 		tribe_register_provider( Tribe__Editor__Provider::class );
 		tribe_register_provider( Tribe__Service_Providers__Debug_Bar::class );
-		tribe_register_provider( Tribe__Service_Providers__Promoter::class );
 		tribe_register_provider( Tribe\Service_Providers\Tooltip::class );
 		tribe_register_provider( Tribe\Service_Providers\Dialog::class );
 		tribe_register_provider( Tribe\Service_Providers\PUE::class );
@@ -687,10 +810,27 @@ class Tribe__Main {
 		tribe_register_provider( Tribe\Service_Providers\Body_Classes::class );
 		tribe_register_provider( Tribe\Log\Service_Provider::class );
 		tribe_register_provider( Tribe\Service_Providers\Crons::class );
+		tribe_register_provider( Tribe\Admin\Notice\Service_Provider::class );
+		tribe_register_provider( \TEC\Common\Admin\Conditional_Content\Controller::class );
+		tribe_register_provider( Tribe__Service_Providers__Promoter::class );
 		tribe_register_provider( Tribe\Service_Providers\Widgets::class );
 		tribe_register_provider( Tribe\Service_Providers\Onboarding::class );
-		tribe_register_provider( Tribe\Admin\Notice\Service_Provider::class );
-		tribe_register_provider( Tribe\Admin\Conditional_Content\Service_Provider::class );
+		tribe_register_provider( \TEC\Common\Notifications\Controller::class );
+		tribe_register_provider( \TEC\Common\QR\Controller::class );
+		tribe_singleton( ContainerInterface::class, tribe() );
+		tribe_register_provider( Libraries\Provider::class );
+
+		// Load the new third-party integration system.
+		tribe_register_provider( TEC\Common\Integrations\Provider::class );
+		// Load Site Health and Telemetry.
+		tribe_register_provider( TEC\Common\Site_Health\Provider::class );
+		tribe_register_provider( TEC\Common\Telemetry\Provider::class );
+
+		// Load Help Hub.
+		tribe_register_provider( TEC\Common\Admin\Help_Hub\Provider::class );
+
+		// Redirect all new registrations forward to this controller!
+		tribe_register_provider( Common_Controller::class );
 	}
 
 	/**
@@ -709,6 +849,37 @@ class Tribe__Main {
 			'determine_current_user',
 			tribe_callback( 'promoter.connector', 'authenticate_user_with_connector' )
 		);
+	}
+
+	/**
+	 * Get the common library's parent plugin file path.
+	 *
+	 * @since 5.1.0
+	 *
+	 * @return string The path to the parent plugin file.
+	 */
+	public function get_parent_plugin_file_path(): string {
+		/**
+		 * Allows plugins to hook in and declare themselves the parent of common.
+		 * Used by Telemetry to determine which plugin to associate with.
+		 *
+		 * @since 5.1.0
+		 *
+		 * @var string $parent_plugin_file The current path to the parent plugin file.
+		 *
+		 */
+		$paths = apply_filters( 'tec_common_parent_plugin_file', [] );
+
+		foreach( $paths as $path ) {
+			$path      = wp_normalize_path( $path );
+			$test_path = str_ireplace( '/common', '', $this->parent_plugin_dir );
+
+			if ( stripos( $path, $test_path ) ) {
+				return $path;
+			}
+		}
+
+		return '';
 	}
 
 

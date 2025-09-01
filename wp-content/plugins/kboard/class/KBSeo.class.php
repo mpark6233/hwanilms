@@ -12,7 +12,7 @@ class KBSeo {
 	public function __construct(){
 		global $post;
 		
-		$mod = isset($_REQUEST['mod'])?sanitize_key($_REQUEST['mod']):'';
+		$mod = kboard_mod();
 		if($mod == 'document'){
 			$this->content = new KBContent();
 			$this->content->initWithUID(kboard_uid());
@@ -60,6 +60,14 @@ class KBSeo {
 						if($board->isConfirm($this->content->password, $this->content->uid)){
 							$is_display = true;
 						}
+					}
+					
+					if($this->content->isTrash()){
+						$is_display = false;
+					}
+					
+					if($board->isPrivate()){
+						$is_display = false;
 					}
 					
 					if($is_display){
@@ -119,6 +127,13 @@ class KBSeo {
 			add_filter('wpseo_twitter_image', '__return_false');
 			add_filter('wpseo_twitter_image_size', '__return_false');
 			add_filter('wpseo_canonical', '__return_false');
+			add_filter('wpseo_json_ld_output', '__return_false');
+			add_filter('wpseo_frontend_presenter_classes', function($filter){ // article:modified_time 메타 태그 삭제
+				if(($key = array_search('Yoast\WP\SEO\Presenters\Open_Graph\Article_Modified_Time_Presenter', $filter)) !== false){
+					unset($filter[$key]);
+				}
+				return $filter;
+			});
 			
 			// All in One SEO Pack
 			add_filter('aioseop_title_page', '__return_false');
@@ -289,7 +304,7 @@ class KBSeo {
 	 */
 	public function getTitle($title=''){
 		if($this->content->title){
-			return esc_attr(sanitize_text_field($this->content->title));
+			return esc_attr(sanitize_text_field(wp_strip_all_tags($this->content->title)));
 		}
 		return esc_attr($title);
 	}
@@ -301,7 +316,7 @@ class KBSeo {
 	 */
 	public function getDescription($description=''){
 		if($this->content->content){
-			return esc_attr(sanitize_text_field($this->content->content));
+			return esc_attr(sanitize_text_field(wp_strip_all_tags($this->content->content)));
 		}
 		return esc_attr($description);
 	}
@@ -319,15 +334,11 @@ class KBSeo {
 	}
 	
 	/**
-	 * 글 작성자 이름을 반환한다.
-	 * @param string $username
+	 * 작성자 이름을 반환한다.
 	 * @return string
 	 */
-	public function getUsername($username=''){
-		if($this->content->member_display){
-			return esc_attr(sanitize_text_field($this->content->member_display));
-		}
-		return esc_attr($username);
+	public function getUsername(){
+		return esc_attr(sanitize_text_field(wp_strip_all_tags($this->content->getUserDisplay())));
 	}
 	
 	/**
@@ -338,6 +349,7 @@ class KBSeo {
 	public function getCanonical($canonical_url=''){
 		if($this->content->uid){
 			$url = new KBUrl();
+			$url->setBoard($this->content->getBoard());
 			return esc_url_raw($url->getDocumentRedirect($this->content->uid));
 		}
 		return esc_url_raw($canonical_url);

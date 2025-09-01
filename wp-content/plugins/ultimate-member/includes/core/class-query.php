@@ -89,13 +89,12 @@ if ( ! class_exists( 'um\core\Query' ) ) {
 				"SELECT *
 				FROM {$wpdb->posts}
 				WHERE post_type = 'page' AND
-				      post_status = 'publish'",
-				OBJECT
+					  post_status = 'publish'"
 			);
 
 			$array = array();
-			if( $wpdb->num_rows > 0 ){
-				foreach ($pages as $page_data) {
+			if ( $wpdb->num_rows > 0 ) {
+				foreach ( $pages as $page_data ) {
 					$array[ $page_data->ID ] = $page_data->post_title;
 				}
 			}
@@ -307,17 +306,24 @@ if ( ! class_exists( 'um\core\Query' ) ) {
 			return $users_count;
 		}
 
-
 		/**
 		 * Count all users
 		 *
-		 * @return mixed
+		 * @param bool $force Avoid transient. Default false.
+		 *
+		 * @return int
 		 */
-		function count_users() {
-			$result = count_users();
-			return $result['total_users'];
-		}
+		public function count_users( $force = false ) {
+			$users_count = get_transient( 'um_count_users_all' );
+			if ( $force || false === $users_count ) {
+				$result = count_users();
 
+				$users_count = $result['total_users'];
+				set_transient( 'um_count_users_all', $users_count, HOUR_IN_SECONDS );
+			}
+
+			return $users_count;
+		}
 
 		/**
 		 * Using wpdb instead of update_post_meta
@@ -412,42 +418,39 @@ if ( ! class_exists( 'um\core\Query' ) ) {
 			return false;
 		}
 
-
 		/**
 		 * Get post data
 		 *
-		 * @param $post_id
+		 * @param int $post_id
 		 *
-		 * @return mixed
+		 * @return array
 		 */
-		function post_data( $post_id ) {
+		public function post_data( $post_id ) {
 			$array['form_id'] = $post_id;
-			$mode = $this->get_attr('mode', $post_id);
-			$meta = get_post_custom( $post_id );
-			foreach ($meta as $k => $v){
-				if ( strstr($k, '_um_'.$mode.'_' ) ) {
-					$k = str_replace('_um_'.$mode.'_', '', $k);
-					$array[$k] = $v[0];
-				} elseif ($k == '_um_mode'){
-					$k = str_replace('_um_', '', $k);
-					$array[$k] = $v[0];
-				} elseif ( strstr($k, '_um_') ) {
-					$k = str_replace('_um_', '', $k);
-					$array[$k] = $v[0];
+			$mode             = $this->get_attr( 'mode', $post_id );
+			$meta             = get_post_custom( $post_id );
+			foreach ( $meta as $k => $v ) {
+				if ( strstr( $k, '_um_' . $mode . '_' ) ) {
+					$k           = str_replace( '_um_' . $mode . '_', '', $k );
+					$array[ $k ] = $v[0];
+				} elseif ( '_um_mode' === $k ) {
+					$k           = str_replace( '_um_', '', $k );
+					$array[ $k ] = $v[0];
+				} elseif ( strstr( $k, '_um_' ) ) {
+					$k           = str_replace( '_um_', '', $k );
+					$array[ $k ] = $v[0];
 				}
-
 			}
 
-			foreach( $array as $k => $v ) {
-				if ( strstr( $k, 'login_') || strstr( $k, 'register_' ) || strstr( $k, 'profile_' ) ){
-					if ( $mode != 'directory' ) {
-						unset($array[$k]);
+			foreach ( $array as $k => $v ) {
+				if ( strstr( $k, 'login_' ) || strstr( $k, 'register_' ) || strstr( $k, 'profile_' ) ) {
+					if ( 'directory' !== $mode ) {
+						unset( $array[ $k ] );
 					}
 				}
 			}
 			return $array;
 		}
-
 
 		/**
 		 * Capture selected value

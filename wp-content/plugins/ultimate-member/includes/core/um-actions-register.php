@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function um_post_registration_approved_hook( $user_id ) {
 	um_fetch_user( $user_id );
 
-	UM()->user()->approve();
+	UM()->common()->users()->approve( $user_id, true );
 }
 add_action( 'um_post_registration_approved_hook', 'um_post_registration_approved_hook' );
 
@@ -23,7 +23,7 @@ add_action( 'um_post_registration_approved_hook', 'um_post_registration_approved
 function um_post_registration_checkmail_hook( $user_id ) {
 	um_fetch_user( $user_id );
 
-	UM()->user()->email_pending();
+	UM()->common()->users()->send_activation( $user_id, true );
 }
 add_action( 'um_post_registration_checkmail_hook', 'um_post_registration_checkmail_hook' );
 
@@ -35,7 +35,7 @@ add_action( 'um_post_registration_checkmail_hook', 'um_post_registration_checkma
 function um_post_registration_pending_hook( $user_id ) {
 	um_fetch_user( $user_id );
 
-	UM()->user()->pending();
+	UM()->common()->users()->set_as_pending( $user_id, true );
 }
 add_action( 'um_post_registration_pending_hook', 'um_post_registration_pending_hook' );
 
@@ -57,14 +57,6 @@ function um_after_insert_user( $user_id, $args, $form_data = null ) {
 		// It's only frontend case.
 		UM()->user()->set_registration_details( $args['submitted'], $args, $form_data );
 	}
-
-	// Set user status.
-	$status = um_user( 'status' );
-	if ( empty( $status ) ) {
-		um_fetch_user( $user_id );
-		$status = um_user( 'status' );
-	}
-	UM()->user()->set_status( $status );
 
 	// Create user uploads directory.
 	UM()->uploader()->get_upload_user_base_dir( $user_id, true );
@@ -121,16 +113,34 @@ add_action( 'um_user_register', 'um_after_insert_user', 1, 3 );
  * @param $user_id
  */
 function um_send_registration_notification( $user_id ) {
+	if ( is_admin() ) {
+		// Don't send email notifications to administrators about new user registration, because the user was created from wp-admin.
+		return;
+	}
+
 	um_fetch_user( $user_id );
+	$registration_status = um_user( 'status' );
+	$email_template      = 'pending' !== $registration_status ? 'notification_new_user' : 'notification_review';
+	$sending_args        = array(
+		'admin'         => true,
+		'fetch_user_id' => $user_id,
+		'tags'          => array(
+			'{submitted_registration}',
+		),
+		'tags_replace'  => um_user_submitted_registration_formatted(),
+	);
 
 	$emails = um_multi_admin_email();
 	if ( ! empty( $emails ) ) {
 		foreach ( $emails as $email ) {
-			if ( 'pending' !== um_user( 'account_status' ) ) {
-				UM()->mail()->send( $email, 'notification_new_user', array( 'admin' => true ) );
-			} else {
-				UM()->mail()->send( $email, 'notification_review', array( 'admin' => true ) );
-			}
+			UM()->maybe_action_scheduler()->enqueue_async_action(
+				'um_dispatch_email',
+				array(
+					$email,
+					$email_template,
+					$sending_args,
+				)
+			);
 		}
 	}
 }
@@ -144,7 +154,12 @@ add_action( 'um_registration_complete', 'um_send_registration_notification' );
  * @param null|array $form_data
  */
 function um_check_user_status( $user_id, $args, $form_data = null ) {
-	$status = um_user( 'account_status' );
+	if ( ( is_null( $form_data ) || is_admin() ) && UM()->options()->get( 'admin_ignore_user_status' ) ) {
+		$registration_status = 'approved';
+	} else {
+		$registration_status = um_user( 'status' );
+	}
+
 	/**
 	 * Fires after complete UM user registration.
 	 * Where $status can be equal to 'approved', 'checkmail' or 'pending'.
@@ -174,11 +189,14 @@ function um_check_user_status( $user_id, $args, $form_data = null ) {
 	 * }
 	 * add_action( 'um_post_registration_pending_hook', 'my_um_post_registration', 10, 3 );
 	 */
-	do_action( "um_post_registration_{$status}_hook", $user_id, $args, $form_data );
+	do_action( "um_post_registration_{$registration_status}_hook", $user_id, $args, $form_data );
+
+	delete_user_meta( $user_id, '_um_registration_in_progress' ); // Status is set. We can delete this marker.
 
 	if ( is_null( $form_data ) || is_admin() ) {
 		return;
 	}
+	// Code below is running only for registration from the frontend forms.
 
 	/**
 	 * Fires after complete UM user registration. Only for the frontend action which is run before autologin and redirects.
@@ -209,9 +227,9 @@ function um_check_user_status( $user_id, $args, $form_data = null ) {
 	 * }
 	 * add_action( 'track_pending_user_registration', 'my_um_post_registration', 10, 3 );
 	 */
-	do_action( "track_{$status}_user_registration", $user_id, $args, $form_data );
+	do_action( "track_{$registration_status}_user_registration", $user_id, $args, $form_data );
 
-	if ( 'approved' === $status ) {
+	if ( 'approved' === $registration_status ) {
 		// Check if user is logged in because there can be the customized way when through 'um_registration_for_loggedin_users' hook the registration is enabled for the logged-in users (e.g. Administrator).
 		if ( ! is_user_logged_in() ) {
 			// Custom way if 'um_registration_for_loggedin_users' hook after custom callbacks returns true. Then don't make auto-login because user is already logged-in.
@@ -252,7 +270,9 @@ function um_check_user_status( $user_id, $args, $form_data = null ) {
 			exit;
 		}
 	} else {
-		if ( 'redirect_url' === um_user( $status . '_action' ) && '' !== um_user( $status . '_url' ) ) {
+		um_fetch_user( $user_id ); // required because there can be empty um_user.
+
+		if ( 'redirect_url' === um_user( $registration_status . '_action' ) && '' !== um_user( $registration_status . '_url' ) ) {
 			/**
 			 * Filters the redirect URL for pending user after registration.
 			 *
@@ -272,13 +292,13 @@ function um_check_user_status( $user_id, $args, $form_data = null ) {
 			 * }
 			 * add_filter( 'um_registration_pending_user_redirect', 'my_registration_pending_user_redirect', 10, 3 );
 			 */
-			$redirect_url = apply_filters( 'um_registration_pending_user_redirect', um_user( $status . '_url' ), $status, um_user( 'ID' ) );
+			$redirect_url = apply_filters( 'um_registration_pending_user_redirect', um_user( $registration_status . '_url' ), $registration_status, $user_id );
 			um_safe_redirect( $redirect_url );
 		}
 
-		if ( 'show_message' === um_user( $status . '_action' ) && '' !== um_user( $status . '_message' ) ) {
+		if ( 'show_message' === um_user( $registration_status . '_action' ) && '' !== um_user( $registration_status . '_message' ) ) {
 			$url = UM()->permalinks()->get_current_url();
-			$url = add_query_arg( 'message', esc_attr( $status ), $url );
+			$url = add_query_arg( 'message', esc_attr( $registration_status ), $url );
 			// Add only priority role to URL.
 			$url = add_query_arg( 'um_role', esc_attr( um_user( 'role' ) ), $url );
 			$url = add_query_arg( 'um_form_id', esc_attr( $form_data['form_id'] ), $url );
@@ -302,7 +322,7 @@ function um_check_user_status( $user_id, $args, $form_data = null ) {
 			 * }
 			 * add_filter( 'um_registration_show_message_redirect_url', 'my_um_registration_show_message_redirect_url', 10, 4 );
 			 */
-			$url = apply_filters( 'um_registration_show_message_redirect_url', $url, $status, um_user( 'ID' ), $form_data );
+			$url = apply_filters( 'um_registration_show_message_redirect_url', $url, $registration_status, $user_id, $form_data );
 			// Not `um_safe_redirect()` because UM()->permalinks()->get_current_url() is situated on the same host.
 			wp_safe_redirect( $url );
 			exit;
@@ -417,8 +437,10 @@ function um_submit_form_register( $args, $form_data ) {
 		$user_email = $args['user_email'];
 	}
 
+	$generate_password = false;
 	if ( ! isset( $args['user_password'] ) ) {
-		$user_password = UM()->validation()->generate( 8 );
+		$generate_password = true;
+		$user_password     = UM()->validation()->generate( 8 );
 	} else {
 		$user_password = $args['user_password'];
 	}
@@ -463,13 +485,7 @@ function um_submit_form_register( $args, $form_data ) {
 	}
 
 	$args['submitted'] = array_merge( $args['submitted'], $credentials );
-
-	// Set registration timestamp.
-	$timestamp                      = current_time( 'timestamp' ); // @todo Working on timestamps.
-	$args['submitted']['timestamp'] = $timestamp;
-	$args['timestamp']              = $timestamp;
-
-	$args = array_merge( $args, $credentials );
+	$args              = array_merge( $args, $credentials );
 
 	//get user role from global or form's settings
 	$user_role = UM()->form()->assigned_role( UM()->form()->form_id );
@@ -511,6 +527,11 @@ function um_submit_form_register( $args, $form_data ) {
 		'user_pass'  => $user_password,
 		'user_email' => $user_email,
 		'role'       => $user_role,
+		'meta_input' => array(
+			// It's used to ignore users who cannot finish the registration process in the scheduled tasks
+			// to set 'approved' status to the users without `account_status` meta.
+			'_um_registration_in_progress' => true,
+		),
 	);
 
 	$user_id = wp_insert_user( $userdata );
@@ -524,6 +545,10 @@ function um_submit_form_register( $args, $form_data ) {
 			UM()->form()->add_error( 'user_login', $user_id->get_error_message() );
 		}
 		return;
+	}
+
+	if ( true === $generate_password ) {
+		update_user_meta( $user_id, 'um_set_password_required', true );
 	}
 
 	/**
@@ -584,6 +609,28 @@ function um_add_submit_button_to_register( $args ) {
 		$primary_btn_word = UM()->options()->get( 'register_primary_btn_word' );
 	}
 
+	/**
+	 * Filters the classes applied to the primary button on the registration form.
+	 *
+	 * @hook um_register_form_primary_btn_classes
+	 * @since 2.10.5
+	 *
+	 * @param {array} $classes An array of CSS classes applied to the primary button.
+	 * @param {array} $args    An array of arguments or configurations used in the registration form.
+	 *
+	 * @return {array} Button CSS classes.
+	 *
+	 * @example <caption>Extend the classes applied to the primary button on the registration form.</caption>
+	 * function my_custom_classes( $classes, $args ) {
+	 *     // Add a new class to the button
+	 *     $classes[] = 'new-button-class';
+	 *
+	 *     return $classes;
+	 * }
+	 * add_filter( 'um_register_form_primary_btn_classes', 'my_custom_classes', 10, 2 );
+	 */
+	$primary_btn_classes = apply_filters( 'um_register_form_primary_btn_classes', array( 'um-button' ), $args );
+
 	$secondary_btn_word = $args['secondary_btn_word'];
 	/**
 	 * UM hook
@@ -643,7 +690,7 @@ function um_add_submit_button_to_register( $args ) {
 		<?php if ( ! empty( $args['secondary_btn'] ) ) { ?>
 
 			<div class="um-left um-half">
-				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ) ?>" class="um-button" id="um-submit-btn" />
+				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ) ?>" class="<?php echo esc_attr( implode( ' ', $primary_btn_classes ) ); ?>" id="um-submit-btn" />
 			</div>
 			<div class="um-right um-half">
 				<a href="<?php echo esc_url( $secondary_btn_url ); ?>" class="um-button um-alt">
@@ -654,7 +701,7 @@ function um_add_submit_button_to_register( $args ) {
 		<?php } else { ?>
 
 			<div class="um-center">
-				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ) ?>" class="um-button" id="um-submit-btn" />
+				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ) ?>" class="<?php echo esc_attr( implode( ' ', $primary_btn_classes ) ); ?>" id="um-submit-btn" />
 			</div>
 
 		<?php } ?>
@@ -766,7 +813,7 @@ add_action( 'um_registration_set_extra_data', 'um_registration_set_profile_full_
  * Redirect from default registration to UM registration page
  */
 function um_form_register_redirect() {
-	$page_id = UM()->options()->get( UM()->options()->get_core_page_id( 'register' ) );
+	$page_id = UM()->options()->get( UM()->options()->get_predefined_page_option_key( 'register' ) );
 	// Do not redirect if the registration page is not published.
 	if ( ! empty( $page_id ) && 'publish' === get_post_status( $page_id ) ) {
 		// Not `um_safe_redirect()` because predefined register page is situated on the same host.

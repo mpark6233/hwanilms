@@ -17,9 +17,9 @@
  */
 
 ?>
-<h3 class="tribe-events-calendar-month__calendar-event-title tribe-common-h8 tribe-common-h--alt">
+<div class="tribe-events-calendar-month__calendar-event-title tribe-common-h8 tribe-common-h--alt">
 	<a
-		href="<?php echo esc_url( $event->permalink ) ?>"
+		href="<?php echo esc_url( $event->permalink ); ?>"
 		title="<?php echo esc_attr( $event->title ); ?>"
 		rel="bookmark"
 		class="tribe-events-calendar-month__calendar-event-title-link tribe-common-anchor-thin"
@@ -32,4 +32,4 @@
 		echo $event->title;
 		?>
 	</a>
-</h3>
+</div>

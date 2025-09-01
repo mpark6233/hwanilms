@@ -1,7 +1,7 @@
 "use strict";
 
 // ---------------------------------------------------------------------------------------------------------------------
-//  A j a x    A d d    N e w    B o o k i n g
+// ==  A j a x    A d d    N e w    B o o k i n g  ==
 // ---------------------------------------------------------------------------------------------------------------------
 
 
@@ -25,38 +25,39 @@
  */
 function wpbc_ajx_booking__create( params ){
 
-console.groupCollapsed( 'WPBC_AJX_BOOKING__CREATE' );
-console.groupCollapsed( '== Before Ajax Send ==' );
-console.log( params );
-console.groupEnd();
+	console.groupCollapsed( 'WPBC_AJX_BOOKING__CREATE' );
+	console.groupCollapsed( '== Before Ajax Send ==' );
+	console.log( params );
+	console.groupEnd();
 
 	params = wpbc_captcha__simple__maybe_remove_in_ajx_params( params );
 
-	// Start Ajax
+	// Trigger hook  before sending request  to  create the booking.
+	jQuery( 'body' ).trigger( 'wpbc_before_booking_create', [ params['resource_id'], params ] );
+
+	// Start Ajax.
 	jQuery.post( wpbc_url_ajax,
-				{
-					action          : 'WPBC_AJX_BOOKING__CREATE',
-					wpbc_ajx_user_id: _wpbc.get_secure_param( 'user_id' ),
-					nonce           : _wpbc.get_secure_param( 'nonce' ),
-					wpbc_ajx_locale : _wpbc.get_secure_param( 'locale' ),
-
-					calendar_request_params : params
-
-					/**
-					 *  Usually  params = { 'resource_id'        : resource_id,
-					 *						'dates_ddmmyy_csv'   : document.getElementById( 'date_booking' + resource_id ).value,
-					 *						'formdata'           : formdata,
-					 *						'booking_hash'       : my_booking_hash,
-					 *						'custom_form'        : my_booking_form,
-					 *
-					 *						'captcha_chalange'   : captcha_chalange,
-					 *						'user_captcha'       : user_captcha,
-					 *
-					 *						'is_emails_send'     : is_send_emeils,
-					 *						'active_locale'      : wpdev_active_locale
-					 *				}
-					 */
-				},
+		{
+			action                 : 'WPBC_AJX_BOOKING__CREATE',
+			wpbc_ajx_user_id       : _wpbc.get_secure_param( 'user_id' ),
+			nonce                  : _wpbc.get_secure_param( 'nonce' ),
+			wpbc_ajx_locale        : _wpbc.get_secure_param( 'locale' ),
+			calendar_request_params: params,
+			/**
+			 *  Usually  params = { 'resource_id'        : resource_id,
+			 *						'dates_ddmmyy_csv'   : document.getElementById( 'date_booking' + resource_id ).value,
+			 *						'formdata'           : formdata,
+			 *						'booking_hash'       : my_booking_hash,
+			 *						'custom_form'        : my_booking_form,
+			 *
+			 *						'captcha_chalange'   : captcha_chalange,
+			 *						'user_captcha'       : user_captcha,
+			 *
+			 *						'is_emails_send'     : is_send_emeils,
+			 *						'active_locale'      : wpdev_active_locale
+			 *				}
+			 */
+		},
 
 				/**
 				 * S u c c e s s
@@ -320,7 +321,7 @@ console.groupEnd();
 		// Animate
 		jQuery( '#' + message_id + ', ' + '#captcha_input' + params[ 'resource_id' ] ).fadeOut( 350 ).fadeIn( 300 ).fadeOut( 350 ).fadeIn( 400 ).animate( {opacity: 1}, 4000 );
 		// Focus text  field
-		jQuery( '#captcha_input' + params[ 'resource_id' ] ).trigger( 'focus' );    									//FixIn: 8.7.11.12
+		jQuery( '#captcha_input' + params[ 'resource_id' ] ).trigger( 'focus' );    									// FixIn: 8.7.11.12.
 
 
 		// Enable Submit | Hide spin loader
@@ -453,36 +454,7 @@ console.groupEnd();
 		 */
 		function wpbc_booking_form__animated__hide( resource_id ){
 
-			// jQuery( '#booking_form' + resource_id ).slideUp(  1000
-			// 												, function (){
-			//
-			// 														// if ( document.getElementById( 'gateway_payment_forms' + response_data[ 'resource_id' ] ) != null ){
-			// 														// 	wpbc_do_scroll( '#submiting' + resource_id );
-			// 														// } else
-			// 														if ( jQuery( '#booking_form' + resource_id ).parent().find( '.submiting_content' ).length > 0 ){
-			// 															//wpbc_do_scroll( '#booking_form' + resource_id + ' + .submiting_content' );
-			//
-			// 															 var hideTimeout = setTimeout(function () {
-			// 																				  wpbc_do_scroll( jQuery( '#booking_form' + resource_id ).parent().find( '.submiting_content' ).get( 0 ) );
-			// 																				}, 100);
-			//
-			// 														}
-			// 												  }
-			// 										);
-
 			jQuery( '#booking_form' + resource_id ).hide();
-
-			// var hideTimeout = setTimeout( function (){
-			//
-			// 	if ( jQuery( '#booking_form' + resource_id ).parent().find( '.submiting_content' ).length > 0 ){
-			// 		var random_id = Math.floor( (Math.random() * 10000) + 1 );
-			// 		jQuery( '#booking_form' + resource_id ).parent().before( '<div id="scroll_to' + random_id + '"></div>' );
-			// 		console.log( jQuery( '#scroll_to' + random_id ) );
-			//
-			// 		wpbc_do_scroll( '#scroll_to' + random_id );
-			// 		//wpbc_do_scroll( jQuery( '#booking_form' + resource_id ).parent().get( 0 ) );
-			// 	}
-			// }, 500 );
 		}
 	// </editor-fold>
 
@@ -586,7 +558,7 @@ function wpbc_show_thank_you_message_after_booking( response_data ){
 		&& ('page' == response_data[ 'ajx_confirmation' ][ 'ty_is_redirect' ])
 		&& ('' != response_data[ 'ajx_confirmation' ][ 'ty_url' ])
 	){
-		jQuery( 'body' ).trigger( 'wpbc_booking_created', [ response_data[ 'resource_id' ] , response_data ] );			//FixIn: 10.0.0.30
+		jQuery( 'body' ).trigger( 'wpbc_booking_created', [ response_data[ 'resource_id' ] , response_data ] );			// FixIn: 10.0.0.30.
 		window.location.href = response_data[ 'ajx_confirmation' ][ 'ty_url' ];
 		return;
 	}

@@ -160,7 +160,7 @@ class SGPBMenu
 
 				if (!empty($menuItems)) {
 					foreach ($menuItems as $menuItem) {
-						$popupId = $menuItem->sgpbPopupId;
+						$popupId = isset( $menuItem->sgpbPopupId ) ? $menuItem->sgpbPopupId : 0 ;
 						if ($popupId > 0) {
 							self::$navMenuItems[] = $menuItem;
 						}
@@ -233,7 +233,7 @@ class SGPBMenu
 			check_admin_referer( 'update-nav_menu', 'update-nav-menu-nonce' );
 			delete_post_meta($item_id, '_menu_sgpb_popup_id');
 			if (isset($_POST['menu-item-pb'][$item_id]['popup'])) {
-				$popupId = (int)sanitize_text_field($_POST['menu-item-pb'][$item_id]['popup']);
+				$popupId = (int)sanitize_text_field( wp_unslash( $_POST['menu-item-pb'][$item_id]['popup'] ) );
 				update_post_meta($item_id, '_menu_sgpb_popup_id', $popupId);
 			}
 		}

@@ -40,11 +40,9 @@ class WPBC_AJX__Setup_Wizard__Templates {
 
 		if ( wpbc_is_setup_wizard_page() ){
 
-			wp_enqueue_script( 'wpbc_all', 			wpbc_plugin_url( '/_dist/all/_out/wpbc_all.js' ), 	array( 'jquery' ), 			 WP_BK_VERSION_NUM );
-			wp_enqueue_script( 'wpbc-main-client', 	wpbc_plugin_url( '/js/client.js' ), 				array( 'wpbc-datepick' ), 	 WP_BK_VERSION_NUM );
-			wp_enqueue_script( 'wpbc-times', 		wpbc_plugin_url( '/js/wpbc_times.js' ), 			array( 'wpbc-main-client' ), WP_BK_VERSION_NUM );
-
-			wp_enqueue_script( 'wpbc-general_ui_js_css',  wpbc_plugin_url( '/includes/_general_ui_js_css/_out/wpbc_main_ui_funcs.js' ), array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );
+			wp_enqueue_script( 'wpbc_all', 			wpbc_plugin_url( '/_dist/all/_out/wpbc_all.js' ), 	array( 'jquery' ), 			 WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );
+			wp_enqueue_script( 'wpbc-main-client', 	wpbc_plugin_url( '/js/client.js' ), 				array( 'wpbc-datepick' ), 	 WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );
+			wp_enqueue_script( 'wpbc-times', 		wpbc_plugin_url( '/js/wpbc_times.js' ), 			array( 'wpbc-main-client' ), WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );
 
 			wp_enqueue_script( 'wpbc-settings_obj',  	 trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/settings_obj.js',	array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );
 			wp_enqueue_script( 'wpbc-setup_wizard_obj',  trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/setup_obj.js', 		array( 'wpbc-settings_obj' ), WP_BK_VERSION_NUM, $in_footer );
@@ -77,14 +75,20 @@ class WPBC_AJX__Setup_Wizard__Templates {
 		public function hook__load_templates_at_footer( $page ){
 
 			// Hook  from ../includes/page-setup/setup__page.php
-			if ( 'wpbc-ajx_booking_setup_wizard'  === $page ) {
+			if ( 'wpbc-ajx_booking_setup_wizard' === $page ) {
 
 				$this->wpbc_template__stp_wiz__main_content();
 
-				wpbc_template__stp_wiz__welcome();
-				wpbc_template__stp_wiz__main_section__bookings_types();
-				wpbc_template__stp_wiz__main_section__general_info();
-				wpbc_template__stp_wiz__main_section__days_selection();
+				wpbc_stp_wiz__template__welcome();
+				wpbc_stp_wiz__template__general_info();
+				wpbc_stp_wiz__template__date_time_formats();
+				wpbc_stp_wiz__template__bookings_types();
+				wpbc_stp_wiz__template__form_structure();
+				wpbc_stp_wiz__template__cal_availability();
+				wpbc_stp_wiz__template__color_theme();
+				wpbc_stp_wiz__template__optional_other_settings();
+				wpbc_stp_wiz__template__wizard_publish();
+				wpbc_stp_wiz__template__get_started();
 
 				$this->wpbc_template__stp_wiz__left_navigation();
 				$this->wpbc_template__stp_wiz__left_navigation_item();
@@ -149,23 +153,49 @@ class WPBC_AJX__Setup_Wizard__Templates {
 								switch ( data.current_step ) {
 
 									case 'welcome':
-										template__main_section = wp.template( 'wpbc_template__stp_wiz__welcome' );
-										break;
-
-									case 'bookings_types':
-										template__main_section = wp.template( 'wpbc_template__stp_wiz__main_section__bookings_types' );
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__welcome' );
 										break;
 
 									case 'general_info':
-										template__main_section = wp.template( 'wpbc_template__stp_wiz__main_section__general_info' );
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__general_info' );
 										break;
 
-									case 'calendar_days_selection':
-										template__main_section = wp.template( 'wpbc_template__stp_wiz__main_section__days_selection' );
+									case 'date_time_formats':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__date_time_formats' );
 										break;
+
+									case 'bookings_types':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__bookings_types' );
+										break;
+
+									case 'form_structure':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__form_structure' );
+										break;
+
+									case 'cal_availability':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__cal_availability' );
+										break;
+
+									case 'color_theme':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__color_theme' );
+										break;
+
+									case 'optional_other_settings':
+
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__optional_other_settings' );
+										break;
+
+									case 'wizard_publish':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__wizard_publish' );
+										break;
+
+									case 'get_started':
+										template__main_section = wp.template( 'wpbc_stp_wiz__template__get_started' );
+										break;
+
 									default:
 									   // Default
-									   template__main_section = wp.template( 'wpbc_template__stp_wiz__main_section__general_info' );
+									   template__main_section = wp.template( 'wpbc_stp_wiz__template__general_info' );
 								}
 
 							<?php if(0){ ?></script><?php } echo '#>'; ?>
@@ -195,7 +225,7 @@ class WPBC_AJX__Setup_Wizard__Templates {
 
 
 		// -------------------------------------------------------------------------------------------------------------
-		// == Timeline Steps ==
+		// == Timeline Steps  -  Line with Checked Dots  ==
 		// -------------------------------------------------------------------------------------------------------------
 		private function wpbc_template__timeline_steps(){
 
@@ -219,8 +249,8 @@ class WPBC_AJX__Setup_Wizard__Templates {
 							if ( actual_step_number > i ) {
 								css_class_for_step = ' wpbc_steps_for_timeline_step_completed';
 								css_class_for_line = 'wpbc_steps_for_timeline_line_active';
-					        } else if ( actual_step_number == i ) {
-								css_class_for_step = ' wpbc_steps_for_timeline_step_active'
+							} else if ( actual_step_number == i ) {
+								css_class_for_step = ' wpbc_steps_for_timeline_step_active';
 								css_class_for_line = 'wpbc_steps_for_timeline_line_active';
 							} else {
 								css_class_for_step = '';
@@ -240,23 +270,22 @@ class WPBC_AJX__Setup_Wizard__Templates {
 			</script><?php
 		}
 
-				//TODO: update icons
-				private function wpbc_template__timeline_steps_icons(){
-					?><script type="text/html" id="tmpl-wpbc_template__timeline_steps_icons">
-							<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img"
-								 class="icon icon-success" data-icon="check" data-prefix="fas" focusable="false"
-								 aria-hidden="true" width="10" height="10">
-								<path xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-									  d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"></path>
-							</svg>
-							<svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" role="img"
-								 class="icon icon-failed" data-icon="times" data-prefix="fas" focusable="false"
-								 aria-hidden="true" width="8" height="11">
-								<path xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-									  d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path>
-							</svg>
-					</script><?php
-				}
+	/**
+	 * Show template for steps timeline icons
+	 *
+	 * @return void
+	 */
+	private function wpbc_template__timeline_steps_icons() {
+
+		?>
+		<script type="text/html" id="tmpl-wpbc_template__timeline_steps_icons">
+		<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wpbc_ui__steps_timeline__get_icons();
+		?>
+		</script>
+		<?php
+	}
 
 
 		// -------------------------------------------------------------------------------------------------------------
@@ -267,7 +296,7 @@ class WPBC_AJX__Setup_Wizard__Templates {
 			?><script type="text/html" id="tmpl-wpbc_template__stp_wiz__footer_buttons">
 				<div class="wpbc__form__div">
 					<hr>
-					<div class="wpbc__row">
+					<div class="wpbc__row wpbc__row__btn_prior_next">
 						<?php /* ?>
 						<div class="wpbc__field">
 							<input type="button" value="<?php esc_attr_e('Reset Wizard and Start from Beginning','booking'); ?>"
@@ -285,7 +314,7 @@ class WPBC_AJX__Setup_Wizard__Templates {
 								   																		'ui_clicked_element_id': 'btn__toolbar__buttons_prior'
 								   																	} );
 								   			wpbc_button_enable_loading_icon( this );
-											wpbc_admin_show_message_processing( '' );" ><i class="menu_icon icon-1x wpbc_icn_arrow_back_ios"></i><span>&nbsp;&nbsp;&nbsp;<?php _e('Go Back','booking'); ?></span></a>
+											wpbc_admin_show_message_processing( '' );" ><i class="menu_icon icon-1x wpbc_icn_arrow_back_ios"></i><span>&nbsp;&nbsp;&nbsp;{{data.steps[ data.current_step ].prior_title}}</span></a>
 
 							<# } else { #>
 								<span style="margin-left:auto;"></span>
@@ -298,24 +327,24 @@ class WPBC_AJX__Setup_Wizard__Templates {
 								   																		'ui_clicked_element_id': 'btn__toolbar__buttons_next'
 								   																	} );
 								   			wpbc_button_enable_loading_icon( this );
-											wpbc_admin_show_message_processing( '' );" ><span><?php _e('Save and Continue','booking'); ?>&nbsp;&nbsp;&nbsp;</span><i class="menu_icon icon-1x wpbc_icn_arrow_forward_ios"></i></a>
+											wpbc_admin_show_message_processing( '' );" ><span>{{data.steps[ data.current_step ].next_title}}&nbsp;&nbsp;&nbsp;</span><i class="menu_icon icon-1x wpbc_icn_arrow_forward_ios"></i></a>
 						</div>
 					</div>
-					<div class="wpbc__row">
+					<div class="wpbc__row wpbc__row__btn_skip_exist">
 						<div class="wpbc__field">
 							<p class="wpbc_exit_link_small">
 								<a href="javascript:void(0)" tabindex="-1"
 								   onclick=" wpbc_ajx__setup_wizard_page__send_request_with_params( { 'do_action': 'skip_wizard' } ); "
 								   title="<?php esc_attr_e('Exit and skip the setup wizard','booking'); ?>"
 								><?php
-									_e('Exit and skip the setup wizard','booking');
+									esc_html_e('Exit and skip the setup wizard','booking');
 								?></a>
 								<?php  ?>
 								<a href="javascript:void(0)" class="wpbc_button_danger" style="margin: 25px 0 0;  font-size: 12px;" tabindex="-1"
 								   onclick=" wpbc_ajx__setup_wizard_page__send_request_with_params( { 'do_action': 'make_reset' } ); "
 								   title="<?php esc_attr_e('Start Setup from Beginning','booking'); ?>"
 								><?php
-									_e('Reset Wizard','booking');
+									esc_html_e('Reset Wizard','booking');
 								?></a>
  								<?php /**/ ?>
 							</p>
@@ -324,7 +353,6 @@ class WPBC_AJX__Setup_Wizard__Templates {
 				</div>
 			</script><?php
 		}
-
 
 
 
@@ -421,197 +449,6 @@ class WPBC_AJX__Setup_Wizard__Templates {
 							<div class="wpbc_widget_content wpbc_ajx_toolbar" style="margin:0 0 20px;">
 								<div class="ui_container">
 									<div class="ui_group    ui_group__change_calendar_skin">
-										<div class="ui_element ui_nowrap0"><label for="ui_btn_cstm__set_calendar_skin"
-																				  class="wpbc_ui_control_label "
-																				  style=""><span class=""
-																								 style="font-weight:600">Select the skin of the booking calendar:</span></label>
-										</div>
-										<div class="ui_element ui_nowrap"><select id="ui_btn_cstm__set_calendar_skin"
-																				  name="set_calendar_skin"
-																				  class="wpbc_ui_control wpbc_ui_select wpbc_radio__set_days_customize_plugin"
-																				  style=""
-																				  onfocus="javascript:console.log( 'ON FOCUS:', jQuery( this ).val(), 'in element:' , jQuery( this ) );"
-																				  onchange="javascript:wpbc_ajx_customize_plugin.search_set_param('customize_plugin__booking_skin', jQuery(this).val().replace( 'http://beta/wp-content/plugins/booking', '') );"
-																				  autocomplete="off">
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__dark_1.css">
-													24_9__dark_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__dark_2.css">
-													24_9__dark_2
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__light.css">
-													24_9__light
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__light_2.css">
-													24_9__light_2
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__light_simple_1.css">
-													24_9__light_simple_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__light_square_1.css">
-													24_9__light_square_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/24_9__light_traditional_1.css">
-													24_9__light_traditional_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/black-2.css">
-													Black-2
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/black.css">
-													Black
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/green-01.css">
-													Green-01
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light-01.css">
-													Light-01
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8.css">
-													Light__24_8
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_blue_1.css">
-													Light__24_8_blue_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_blue_2.css">
-													Light__24_8_blue_2
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_blue_3.css">
-													Light__24_8_blue_3
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_blue_4.css">
-													Light__24_8_blue_4
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_green_1.css">
-													Light__24_8_green_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_green_2.css">
-													Light__24_8_green_2
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_red_1.css">
-													Light__24_8_red_1
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_red_2.css">
-													Light__24_8_red_2
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/light__24_8_red_3.css">
-													Light__24_8_red_3
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/multidays.css">
-													Multidays
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/premium-black.css">
-													Premium-black
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/premium-light-noborder.css">
-													Premium-light-noborder
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/premium-light.css">
-													Premium-light
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/premium-marine.css">
-													Premium-marine
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/premium-steel-noborder.css">
-													Premium-steel-noborder
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/premium-steel.css">
-													Premium-steel
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/standard.css">
-													Standard
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/traditional-light.css">
-													Traditional-light
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/traditional-times.css">
-													Traditional-times
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/css/skins/traditional.css">
-													Traditional
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/wpbc_skins/newspaper-skin.css">
-													Newspaper-skin
-												</option>
-												<option
-													value="http://beta/wp-content/plugins/booking/wpbc_skins/round-dates-01.css">
-													Round-dates-01
-												</option>
-											</select><a class="wpbc_ui_control wpbc_ui_button wpbc_ui_button" style=""
-														href="javascript:void(0)"
-														onclick="javascript: var is_selected = jQuery( '#ui_btn_cstm__set_calendar_skin option:selected' ).prop('selected', false).prev();  if ( is_selected.length == 0 ){     is_selected = jQuery( '#ui_btn_cstm__set_calendar_skin option' ).last();  }  if ( is_selected.length > 0 ){     is_selected.prop('selected', true).trigger('change');  } else {     jQuery( this ).addClass( 'disabled' );  } "><i
-													class="menu_icon icon-1x wpbc_icn_arrow_back_ios"></i><span
-													class="in-button-text"></span></a><a
-												class="wpbc_ui_control wpbc_ui_button wpbc_ui_button" style=""
-												href="javascript:void(0)"
-												onclick="javascript: var is_selected = jQuery( '#ui_btn_cstm__set_calendar_skin option:selected' ).prop('selected', false).next();  if ( is_selected.length == 0 ){     is_selected = jQuery( '#ui_btn_cstm__set_calendar_skin option' ).first();  }  if ( is_selected.length > 0 ){     is_selected.prop('selected', true).trigger('change');  } else {     jQuery( this ).addClass( 'disabled' );  } "><span
-													class="in-button-text">&nbsp;</span><i
-													class="menu_icon icon-1x wpbc_icn_arrow_forward_ios"></i></a></div>
-										<div class="ui_element ui_nowrap0"><label
-												for="ui_btn_cstm__set_calendar_visible_months"
-												class="wpbc_ui_control_label " style=""><span class=""
-																							  style="font-weight:600">Number of visible months:</span></label>
-										</div>
-										<div class="ui_element ui_nowrap"><select
-												id="ui_btn_cstm__set_calendar_visible_months"
-												name="set_calendar_visible_months"
-												class="wpbc_ui_control wpbc_ui_select " style=""
-												onchange="javascript:wpbc_ajx_customize_plugin.search_set_param( 'calendar__view__visible_months', jQuery(this).val() );									var t_visible_months = parseInt( wpbc_ajx_customize_plugin.search_get_param( 'calendar__view__visible_months' ) );									/* var t_months_in_row = (  3 > t_visible_months ) ? '' : 2 ; 								   		wpbc_ajx_customize_plugin.search_set_param( 'calendar__view__months_in_row', t_months_in_row );							   		*/							   											wpbc_ajx_customize_plugin__send_request_with_params( {} );									wpbc_admin_show_message_processing( '' );																		"
-												autocomplete="off">
-												<option value="1">1</option>
-												<option value="2">2</option>
-												<option value="3">3</option>
-												<option value="4">4</option>
-												<option value="5">5</option>
-												<option value="6">6</option>
-												<option value="7">7</option>
-												<option value="8">8</option>
-												<option value="9">9</option>
-												<option value="10">10</option>
-												<option value="11">11</option>
-												<option value="12">12</option>
-											</select><a class="wpbc_ui_control wpbc_ui_button wpbc_ui_button" style=""
-														href="javascript:void(0)"
-														onclick="javascript: var is_selected = jQuery( '#ui_btn_cstm__set_calendar_visible_months option:selected' ).prop('selected', false).prev();  if ( is_selected.length == 0 ){     is_selected = jQuery( '#ui_btn_cstm__set_calendar_visible_months option' ).last();  }  if ( is_selected.length > 0 ){     is_selected.prop('selected', true).trigger('change'); 		wpbc_button_enable_loading_icon( this );  } else {     jQuery( this ).addClass( 'disabled' );  } "><i
-													class="menu_icon icon-1x wpbc_icn_arrow_back_ios"></i><span
-													class="in-button-text"></span></a><a
-												class="wpbc_ui_control wpbc_ui_button wpbc_ui_button" style=""
-												href="javascript:void(0)"
-												onclick="javascript: var is_selected = jQuery( '#ui_btn_cstm__set_calendar_visible_months option:selected' ).prop('selected', false).next();  if ( is_selected.length == 0 ){     is_selected = jQuery( '#ui_btn_cstm__set_calendar_visible_months option' ).first();  }  if ( is_selected.length > 0 ){     is_selected.prop('selected', true).trigger('change'); 		wpbc_button_enable_loading_icon( this );  } else {     jQuery( this ).addClass( 'disabled' );  } "><span
-													class="in-button-text">&nbsp;</span><i
-													class="menu_icon icon-1x wpbc_icn_arrow_forward_ios"></i></a></div>
 									</div>
 								</div>
 							</div>

@@ -1,4 +1,4 @@
-//FixIn: 8.7.11.10
+// FixIn: 8.7.11.10.
 (function ( $ ){
 
 	$.fn.extend( {
@@ -48,6 +48,15 @@
 					el.trigger( 'change' );
 				});
 
+				// Execute a function when the user presses a key (13 - Enter) on the keyboard. (FixIn: EAA)
+				el.next( '.wpbc_times_selector' ).find( 'div' ).not( '.wpbc_time_picker_disabled' ).on( "keypress", function (event) {
+					if ( 13 === event.which ) {
+						event.preventDefault();
+						console.log( jQuery( this ) );
+						jQuery( this ).trigger( 'click' );
+					}
+				} );
+
 				el.hide();
 
 				times_options = [];
@@ -77,11 +86,12 @@
 				select_div += '<div '
 									+ ' data-value="' + el_item.value + '" '
 									+ ' class="' + css_class + '" '
+									+ ' tabindex="0" '
 					         + '>'
 									+ el_item.title
 							 + '</div>'
 			} else {
-				// Uncomment row bellow to Show booked time slots as unavailable RED slots		//FixIn: 9.9.0.2
+				// Uncomment row bellow to Show booked time slots as unavailable RED slots		// FixIn: 9.9.0.2.
 				// select_div += '<div class="wpbc_time_picker_disabled">' + el_item.title + '</div>';
 			}
 
@@ -99,25 +109,32 @@
 })( jQuery );
 
 
+/**
+ *  Init  time selector
+ */
+function wpbc_hook__init_timeselector(){
+
+	if ( true !== _wpbc.get_other_param( 'is_enabled_booking_timeslot_picker' ) ) {
+		return false;
+	}
+
+	// Load after page loaded
+	jQuery( 'select[name^="rangetime"]' ).wpbc_timeselector();
+	jQuery( 'select[name^="starttime"]' ).wpbc_timeselector();
+	jQuery( 'select[name^="endtime"]' ).wpbc_timeselector();
+	jQuery( 'select[name^="durationtime"]' ).wpbc_timeselector();
+
+	// This hook loading after each day selection																// FixIn: 8.7.11.9.
+	jQuery( ".booking_form_div" ).on( 'wpbc_hook_timeslots_disabled', function ( event, bk_type, all_dates ){
+		jQuery( '#booking_form_div' + bk_type + ' select[name^="rangetime"]' ).wpbc_timeselector();
+		jQuery( '#booking_form_div' + bk_type + ' select[name^="starttime"]' ).wpbc_timeselector();
+		jQuery( '#booking_form_div' + bk_type + ' select[name^="endtime"]' ).wpbc_timeselector();
+		jQuery( '#booking_form_div' + bk_type + ' select[name^="durationtime"]' ).wpbc_timeselector();
+	} );
+}
 
 jQuery(document).ready(function(){
-
 //	 setTimeout( function ( ) {					// Need to  have some delay  for loading of all  times in Garbage
-
-			// Load after page loaded
-			jQuery( 'select[name^="rangetime"]' ).wpbc_timeselector();
-			jQuery( 'select[name^="starttime"]' ).wpbc_timeselector();
-			jQuery( 'select[name^="endtime"]' ).wpbc_timeselector();
-			jQuery( 'select[name^="durationtime"]' ).wpbc_timeselector();
-
-			// This hook loading after each day selection																//FixIn: 8.7.11.9
-			jQuery( ".booking_form_div" ).on( 'wpbc_hook_timeslots_disabled', function ( event, bk_type, all_dates ){
-				jQuery( '#booking_form_div' + bk_type + ' select[name^="rangetime"]' ).wpbc_timeselector();
-				jQuery( '#booking_form_div' + bk_type + ' select[name^="starttime"]' ).wpbc_timeselector();
-				jQuery( '#booking_form_div' + bk_type + ' select[name^="endtime"]' ).wpbc_timeselector();
-				jQuery( '#booking_form_div' + bk_type + ' select[name^="durationtime"]' ).wpbc_timeselector();
-			} );
-
+	wpbc_hook__init_timeselector();
 //	}, 1000 );
-
 });

@@ -19,11 +19,10 @@ class WPBC_Print {
 	 * Define HOOKs for loading CSS and  JavaScript files
 	 */
 	public function init_load_css_js_tpl() {
-		// JS & CSS
+		// JS & CSS.
 
-		// Load only  at  AJX_Bookings Settings Page
-		if ( 'vm_booking_listing' == wpbc_ajx_booking_listing__get_default_view_mode() ) {
-		//if  ( strpos( $_SERVER['REQUEST_URI'], 'view_mode=vm_booking_listing' ) !== false ) {
+		// Load only  at  AJX_Bookings Settings Page.
+		if ( 'vm_booking_listing' === wpbc_get_default_saved_view_mode_for_wpbc_page() ) {
 
 			add_action( 'wpbc_enqueue_js_files', array( $this, 'js_load_files' ), 50 );
 			add_action( 'wpbc_enqueue_css_files', array( $this, 'enqueue_css_files' ), 50 );
@@ -41,11 +40,11 @@ class WPBC_Print {
 
 		if ( ( is_admin() ) && ( in_array( $where_to_load, array( 'admin', 'both' ) ) ) ) {
 
-			wp_enqueue_script( 'wpbc-booking_ajx_print', trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/bookings_print.js'         /* wpbc_plugin_url( '/_out/js/codemirror.js' ) */
+			wp_enqueue_script( 'wpbc-booking_ajx_print', trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/bookings_print.js'         /* wpbc_plugin_url( '/_out/js/code_mirror.js' ) */
 												   , array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );
 			/**
 			wp_enqueue_script( 'wpbc-booking_ajx_actions'
-				, trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/bookings__actions.js'         // wpbc_plugin_url( '/_out/js/codemirror.js' )
+				, trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/bookings__actions.js'         // wpbc_plugin_url( '/_out/js/code_mirror.js' )
 				, array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );
 			/**
 			wp_localize_script( 'wpbc_all', 'wpbc_live_request_obj'
@@ -80,7 +79,7 @@ class WPBC_Print {
 	 */
 	public function hook__page_footer_tmpl( $page ){
 
-		// page=wpbc&view_mode=vm_booking_listing
+		// page=wpbc&tab=vm_booking_listing
 		if ( 'wpbc-ajx_booking'  === $page ) {		// it's from >>	do_action( 'wpbc_hook_settings_page_footer', 'wpbc-ajx_booking' );
 			$this->wpbc_write_content_for_modal_print();
 		}
@@ -95,12 +94,12 @@ class WPBC_Print {
 			  <div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h4 class="modal-title"><?php _e('Print bookings' ,'booking'); ?>
+						<h4 class="modal-title"><?php esc_html_e('Print bookings' ,'booking'); ?>
 						<div style="float:right;">
 							<a  href="javascript:void(0);"
 								onclick="javascript: wpbc_print_dialog__do_printing();"
-								class="button button-primary" ><?php _e('Print' ,'booking'); ?></a>
-							<a  href="javascript:void(0)" class="button" data-dismiss="modal"><?php _e('Close' ,'booking'); ?></a>
+								class="button button-primary" ><?php esc_html_e('Print' ,'booking'); ?></a>
+							<a  href="javascript:void(0)" class="button" data-dismiss="modal"><?php esc_html_e('Close' ,'booking'); ?></a>
 							<?php /* <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> */ ?>
 
 						</div></h4>

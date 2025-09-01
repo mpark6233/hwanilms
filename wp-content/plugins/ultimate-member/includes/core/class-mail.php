@@ -47,25 +47,8 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 		 * Mail constructor.
 		 */
 		public function __construct() {
-			//mandrill compatibility
+			add_action( 'init', array( &$this, 'init_paths' ), 0 ); // init class variables on zero-priority.
 			add_filter( 'mandrill_nl2br', array( &$this, 'mandrill_nl2br' ) );
-			add_action( 'plugins_loaded', array( &$this, 'init_paths' ), 99 );
-		}
-
-		/**
-		 * Mandrill compatibility
-		 *
-		 * @param $nl2br
-		 * @param string $message
-		 * @return bool
-		 */
-		public function mandrill_nl2br( $nl2br, $message = '' ) {
-			// text emails
-			if ( ! UM()->options()->get( 'email_html' ) ) {
-				$nl2br = true;
-			}
-
-			return $nl2br;
 		}
 
 		/**
@@ -85,12 +68,26 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 			 * @example <caption>Extends email templates path.</caption>
 			 * function my_email_templates_path_by_slug( $paths ) {
 			 *     // your code here
-			 *     $paths['{template_name}'] = '{template_path}';
+			 *     $paths['template_name'] = 'template_path';
 			 *     return $paths;
 			 * }
 			 * add_filter( 'um_email_templates_path_by_slug', 'my_email_templates_path_by_slug' );
 			 */
 			$this->path_by_slug = apply_filters( 'um_email_templates_path_by_slug', $this->path_by_slug );
+		}
+
+		/**
+		 * Mandrill compatibility
+		 *
+		 * @param $nl2br
+		 * @return bool
+		 */
+		public function mandrill_nl2br( $nl2br ) {
+			if ( ! UM()->options()->get( 'email_html' ) ) {
+				$nl2br = true; // nl2br for text emails
+			}
+
+			return $nl2br;
 		}
 
 		/**
@@ -305,7 +302,7 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 				 * }
 				 * add_filter( 'um_email_template_body_attrs', 'my_email_template_body_attrs', 10, 3 );
 				 */
-				$body_attrs = apply_filters( 'um_email_template_body_attrs', 'style="background: #f2f2f2;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;"', $slug, $args );
+				$body_attrs = apply_filters( 'um_email_template_body_attrs', 'style="background: #fff;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;"', $slug, $args );
 				?>
 
 				<body <?php echo $body_attrs; ?>>
@@ -350,9 +347,6 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 			 * add_filter( 'um_email_send_message_content', 'my_email_send_message_content', 10, 3 );
 			 */
 			$message = apply_filters( 'um_email_send_message_content', $message, $slug, $args );
-
-			add_filter( 'um_template_tags_patterns_hook', array( &$this, 'add_placeholder' ) );
-			add_filter( 'um_template_tags_replaces_hook', array( &$this, 'add_replace_placeholder' ) );
 
 			// Convert tags in email template.
 			return um_convert_tags( $message, $args );
@@ -421,8 +415,8 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 			$mail_from_addr    = UM()->options()->get( 'mail_from_addr' ) ? UM()->options()->get( 'mail_from_addr' ) : get_bloginfo( 'admin_email' );
 			$this->headers     = 'From: ' . stripslashes( $mail_from ) . ' <' . $mail_from_addr . '>' . "\r\n";
 
-			add_filter( 'um_template_tags_patterns_hook', array( UM()->mail(), 'add_placeholder' ) );
-			add_filter( 'um_template_tags_replaces_hook', array( UM()->mail(), 'add_replace_placeholder' ) );
+			add_filter( 'um_template_tags_patterns_hook', array( $this, 'add_placeholder' ) );
+			add_filter( 'um_template_tags_replaces_hook', array( $this, 'add_replace_placeholder' ) );
 
 			/**
 			 * Filters email notification subject.
@@ -619,10 +613,8 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 			$placeholders[] = '{user_profile_link}';
 			$placeholders[] = '{site_url}';
 			$placeholders[] = '{admin_email}';
-			$placeholders[] = '{submitted_registration}';
 			$placeholders[] = '{login_url}';
 			$placeholders[] = '{password}';
-			$placeholders[] = '{account_activation_link}';
 			return $placeholders;
 		}
 
@@ -637,10 +629,8 @@ if ( ! class_exists( 'um\core\Mail' ) ) {
 			$replace_placeholders[] = um_user_profile_url();
 			$replace_placeholders[] = get_bloginfo( 'url' );
 			$replace_placeholders[] = um_admin_email();
-			$replace_placeholders[] = um_user_submitted_registration_formatted();
 			$replace_placeholders[] = um_get_core_page( 'login' );
 			$replace_placeholders[] = esc_html__( 'Your set password', 'ultimate-member' );
-			$replace_placeholders[] = um_user( 'account_activation_link' );
 			return $replace_placeholders;
 		}
 	}

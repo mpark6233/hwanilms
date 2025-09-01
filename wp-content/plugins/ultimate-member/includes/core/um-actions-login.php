@@ -11,15 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 function um_submit_form_errors_hook_login( $submitted_data ) {
 	$user_password = $submitted_data['user_password'];
 
-	if ( isset( $submitted_data['username'] ) && $submitted_data['username'] == '' ) {
+	if ( isset( $submitted_data['username'] ) && '' === $submitted_data['username'] ) {
 		UM()->form()->add_error( 'username', __( 'Please enter your username or email', 'ultimate-member' ) );
 	}
 
-	if ( isset( $submitted_data['user_login'] ) && $submitted_data['user_login'] == '' ) {
+	if ( isset( $submitted_data['user_login'] ) && '' === $submitted_data['user_login'] ) {
 		UM()->form()->add_error( 'user_login', __( 'Please enter your username', 'ultimate-member' ) );
 	}
 
-	if ( isset( $submitted_data['user_email'] ) && $submitted_data['user_email'] == '' ) {
+	if ( isset( $submitted_data['user_email'] ) && ( '' === $submitted_data['user_email'] || ! is_email( $submitted_data['user_email'] ) ) ) {
 		UM()->form()->add_error( 'user_email', __( 'Please enter your email', 'ultimate-member' ) );
 	}
 
@@ -28,7 +28,7 @@ function um_submit_form_errors_hook_login( $submitted_data ) {
 		$field = 'username';
 		if ( is_email( $submitted_data['username'] ) ) {
 			$data = get_user_by('email', $submitted_data['username'] );
-			$user_name = isset( $data->user_login ) ? $data->user_login : null;
+			$user_name = isset( $data->user_login ) ? $data->user_login : '';
 		} else {
 			$user_name  = $submitted_data['username'];
 		}
@@ -36,7 +36,7 @@ function um_submit_form_errors_hook_login( $submitted_data ) {
 		$authenticate = $submitted_data['user_email'];
 		$field = 'user_email';
 		$data = get_user_by('email', $submitted_data['user_email'] );
-		$user_name = isset( $data->user_login ) ? $data->user_login : null;
+		$user_name = isset( $data->user_login ) ? $data->user_login : '';
 	} else {
 		$field = 'user_login';
 		$user_name = $submitted_data['user_login'];
@@ -129,17 +129,15 @@ function um_submit_form_errors_hook_logincheck( $submitted_data, $form_data ) {
 		wp_logout();
 	}
 
-	$user_id = ( isset( UM()->login()->auth_id ) ) ? UM()->login()->auth_id : '';
-	um_fetch_user( $user_id );
+	$user_id = isset( UM()->login()->auth_id ) ? UM()->login()->auth_id : '';
 
-	$status = um_user( 'account_status' ); // account status
+	$status = UM()->common()->users()->get_status( $user_id ); // account status
 	switch ( $status ) {
 		// If user can't log in to site...
 		case 'inactive':
 		case 'awaiting_admin_review':
 		case 'awaiting_email_confirmation':
 		case 'rejected':
-			um_reset_user();
 			// Not `um_safe_redirect()` because UM()->permalinks()->get_current_url() is situated on the same host.
 			wp_safe_redirect( add_query_arg( 'err', esc_attr( $status ), UM()->permalinks()->get_current_url() ) );
 			exit;
@@ -150,7 +148,6 @@ function um_submit_form_errors_hook_logincheck( $submitted_data, $form_data ) {
 		wp_safe_redirect( um_get_core_page( 'login' ) );
 		exit;
 	}
-
 }
 add_action( 'um_submit_form_errors_hook_logincheck', 'um_submit_form_errors_hook_logincheck', 9999, 2 );
 
@@ -160,11 +157,9 @@ add_action( 'um_submit_form_errors_hook_logincheck', 'um_submit_form_errors_hook
  * @param $user_id
  */
 function um_store_lastlogin_timestamp( $user_id ) {
-	update_user_meta( $user_id, '_um_last_login', current_time( 'timestamp' ) );
-	// Flush user cache after updating last_login timestamp.
-	UM()->user()->remove_cache( $user_id );
+	UM()->common()->users()->set_last_login( $user_id );
 }
-add_action( 'um_on_login_before_redirect', 'um_store_lastlogin_timestamp', 10, 1 );
+add_action( 'um_on_login_before_redirect', 'um_store_lastlogin_timestamp' );
 
 
 /**
@@ -174,7 +169,7 @@ function um_store_lastlogin_timestamp_( $login ) {
 	$user = get_user_by( 'login', $login );
 
 	if ( false !== $user ) {
-		um_store_lastlogin_timestamp( $user->ID );
+		UM()->common()->users()->set_last_login( $user->ID );
 
 		$attempts = (int) get_user_meta( $user->ID, 'password_rst_attempts', true );
 		if ( $attempts ) {
@@ -193,6 +188,16 @@ add_action( 'wp_login', 'um_store_lastlogin_timestamp_' );
 function um_user_login( $submitted_data ) {
 	// phpcs:disable WordPress.Security.NonceVerification -- already verified here
 	$rememberme = ( isset( $_REQUEST['rememberme'], $submitted_data['rememberme'] ) && 1 === (int) $submitted_data['rememberme'] ) ? 1 : 0;
+
+	$user_id = isset( UM()->login()->auth_id ) ? UM()->login()->auth_id : '';
+	if ( empty( $user_id ) ) {
+		// refresh page if the user_id is empty
+		// Not `um_safe_redirect()` because UM()->permalinks()->get_current_url() is situated on the same host.
+		wp_safe_redirect( UM()->permalinks()->get_current_url() );
+		exit;
+	}
+
+	um_fetch_user( $user_id );
 
 	// @todo check using the 'deny_admin_frontend_login' option
 	if ( false !== strrpos( um_user( 'wp_roles' ), 'administrator' ) && ( ! isset( $_GET['provider'] ) && UM()->options()->get( 'deny_admin_frontend_login' ) ) ) {
@@ -355,6 +360,27 @@ function um_add_submit_button_to_login( $args ) {
 	if ( ! isset( $primary_btn_word ) || $primary_btn_word == '' ){
 		$primary_btn_word = UM()->options()->get( 'login_primary_btn_word' );
 	}
+	/**
+	 * Filters the classes applied to the primary button on the login form.
+	 *
+	 * @hook um_login_form_primary_btn_classes
+	 * @since 2.10.5
+	 *
+	 * @param {array} $classes An array of CSS classes applied to the primary button.
+	 * @param {array} $args    An array of arguments or configurations used in the login form.
+	 *
+	 * @return {array} Button CSS classes.
+	 *
+	 * @example <caption>Extend the classes applied to the primary button on the login form.</caption>
+	 * function my_custom_classes( $classes, $args ) {
+	 *     // Add a new class to the button
+	 *     $classes[] = 'new-button-class';
+	 *
+	 *     return $classes;
+	 * }
+	 * add_filter( 'um_login_form_primary_btn_classes', 'my_custom_classes', 10, 2 );
+	 */
+	$primary_btn_classes = apply_filters( 'um_login_form_primary_btn_classes', array( 'um-button' ), $args );
 
 	/**
 	 * UM hook
@@ -419,7 +445,7 @@ function um_add_submit_button_to_login( $args ) {
 		if ( ! empty( $args['secondary_btn'] ) ) { ?>
 
 			<div class="um-left um-half">
-				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ); ?>" class="um-button" id="um-submit-btn" />
+				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ); ?>" class="<?php echo esc_attr( implode( ' ', $primary_btn_classes ) ); ?>" id="um-submit-btn" />
 			</div>
 			<div class="um-right um-half">
 				<a href="<?php echo esc_url( $secondary_btn_url ); ?>" class="um-button um-alt">
@@ -430,7 +456,7 @@ function um_add_submit_button_to_login( $args ) {
 		<?php } else { ?>
 
 			<div class="um-center">
-				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ); ?>" class="um-button" id="um-submit-btn" />
+				<input type="submit" value="<?php esc_attr_e( wp_unslash( $primary_btn_word ), 'ultimate-member' ); ?>" class="<?php echo esc_attr( implode( ' ', $primary_btn_classes ) ); ?>" id="um-submit-btn" />
 			</div>
 
 		<?php } ?>

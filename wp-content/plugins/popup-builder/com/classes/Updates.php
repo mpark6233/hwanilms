@@ -89,7 +89,7 @@ class Updates
 	private function sgpbVerifyNonceLicense()
 	{
 		/* Validate nonce */			
-		$nonce = isset( $_POST['sgpb_nonce'] ) ? sanitize_text_field( $_POST['sgpb_nonce'] ) : '';			
+		$nonce = isset( $_POST['sgpb_nonce'] ) ? sanitize_text_field(  wp_unslash( $_POST['sgpb_nonce'] ) ) : '';			
 		
 		if ( empty( $nonce ) || !wp_verify_nonce( $nonce, 'sgpb_nonce' ) ) {
 			$message = __('You do not have permission to access this page!', 'popup-builder');
@@ -130,7 +130,7 @@ class Updates
 					}	
 					$this->sgpbVerifyNonceLicense();
 					// retrieve the license from the database
-					$license = trim(get_option('sgpb-license-key-'.$key));
+					$license = trim( (string)get_option('sgpb-license-key-'.$key) );
 					$data = $this->activateLicense($license, $itemId);
 					if (!is_wp_error($data) && $data['response']['code'] == 200) {
 						$dataBody = json_decode($data['body']);
@@ -166,7 +166,7 @@ class Updates
 						wp_die(esc_html__('You do not have permission to access this page!', 'popup-builder'));
 					}	
 					$this->sgpbVerifyNonceLicense();
-					$license = trim(get_option('sgpb-license-key-'.$key));
+					$license = trim((string)get_option('sgpb-license-key-'.$key));
 					// data to send in our API request
 					$response = $this->deactivateLicense($license, $itemId);
 					if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
@@ -195,9 +195,9 @@ class Updates
 	public function sgpbAdminNotices()
 	{
 		if (isset($_GET['sl_activation']) && !empty($_GET['message'])) {
-			switch (sanitize_text_field($_GET['sl_activation'])) {
+			switch (sanitize_text_field( wp_unslash( $_GET['sl_activation'] ) ) ) {
 				case 'false':
-					$message = urldecode(sanitize_text_field($_GET['message']));
+					$message = urldecode(sanitize_text_field( wp_unslash( $_GET['message'] ) ) );
 					?>
 					<div class="error">
 						<h3><?php echo esc_html($message); ?></h3>

@@ -102,6 +102,10 @@
 .bellows .bellows-nav .bellows-active > .bellows-submenu {
   display: block;
 }
+.bellows.bellows-expand-current:not(:has(.bellows-current-menu-item.bellows-current-item-priority)) .bellows-current-menu-item > .bellows-submenu,
+.bellows.bellows-expand-current:not(:has(.bellows-current-menu-item.bellows-current-item-priority)) .bellows-current-menu-ancestor > .bellows-submenu {
+  display: block;
+}
 .bellows .bellows-nav .bellows-subtoggle {
   height: 100%;
   width: var(--bellows-toggle-width);

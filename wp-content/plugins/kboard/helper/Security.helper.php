@@ -35,7 +35,7 @@ function kboard_xssfilter($data){
 			$HTMLPurifier_Config->set('HTML.SafeEmbed', true);
 			$HTMLPurifier_Config->set('HTML.TidyLevel', 'light');
 			$HTMLPurifier_Config->set('HTML.FlashAllowFullScreen', true);
-			$HTMLPurifier_Config->set('HTML.AllowedElements','img,div,a,strong,font,span,em,del,ins,br,p,u,i,b,sup,sub,small,table,thead,tbody,tfoot,tr,td,th,caption,pre,code,ul,ol,li,big,code,blockquote,center,hr,h1,h2,h3,h4,h5,h6,iframe,dl,dt,dd');
+			$HTMLPurifier_Config->set('HTML.AllowedElements','img,div,a,strong,font,span,em,del,ins,br,p,u,i,b,sup,sub,small,table,thead,tbody,tfoot,tr,td,th,caption,pre,code,ul,ol,li,big,code,blockquote,center,hr,h1,h2,h3,h4,h5,h6,iframe,dl,dt,dd,strike');
 			$HTMLPurifier_Config->set('HTML.AllowedAttributes', 'a.rel,a.href,a.target,img.src,iframe.src,iframe.frameborder,font.color,*.id,*.alt,*.style,*.class,*.title,*.width,*.height,*.border,*.colspan,*.rowspan');
 			$HTMLPurifier_Config->set('HTML.TargetNoreferrer', false);
 			$HTMLPurifier_Config->set('Attr.AllowedFrameTargets', array('_blank'));
@@ -199,4 +199,36 @@ function kboard_hash($text, $salt, $length=0){
 		case 7 : $salt = NONCE_SALT . md5($salt); break;
 	}
 	return '$kboard$v1$' . hash_pbkdf2('sha256', $text, $salt, 100000, $length);
+}
+
+/**
+ * Sanitizes a string for safe usage in a CSV file.
+ *
+ * This function specifically addresses CSV injection vulnerabilities by:
+ * 1. Prefixing cells starting with =, +, -, @, and Tab characters with a single quote (').
+ *    This prevents the CSV parser from interpreting them as formulas.
+ * 2. Enclosing the string in double quotes if it contains commas or newlines.
+ *    This ensures proper cell separation and formatting.
+ *
+ * @param string $str The string to sanitize.
+ * @return string The sanitized string.
+ */
+function kboard_sanitize_csv_field($str){
+	// Escape characters that could be interpreted as formulas (=, +, -, @, Tab, Carriage Return)
+	if (preg_match('/^[\=\+\-\@\t\r]/', $str)){
+		$str = "'" . $str;
+	}
+	
+	// Escape double quotes by doubling them
+	//$str = str_replace('"', '""', $str);
+	
+	// Escape newlines to preserve data integrity
+	//$str = str_replace(array("\r\n", "\r", "\n"), " ", $str);
+	
+	// Enclose in double quotes if it contains commas or newlines (already handled above)
+	// if (strpos($str, ',') !== false || strpos($str, "\n") !== false || strpos($str, '"') !== false) {
+	//     $str = '"' . $str . '"';
+	// }
+	
+	return $str;
 }

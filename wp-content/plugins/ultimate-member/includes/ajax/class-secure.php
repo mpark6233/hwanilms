@@ -39,7 +39,7 @@ class Secure {
 		if ( empty( $last_scanned_capability ) ) {
 			delete_option( 'um_secure_scanned_details' );
 			update_option( 'um_secure_scan_status', 'started' );
-			update_option( 'um_secure_last_time_scanned', current_time( 'mysql' ) );
+			update_option( 'um_secure_last_time_scanned', current_time( 'mysql', true ) );
 		}
 
 		$scan_details = get_option( 'um_secure_scanned_details', array() );
@@ -206,6 +206,7 @@ class Secure {
 					$sessions_manager = WP_Session_Tokens::get_instance( $user->ID );
 					// Remove all the session data for all users.
 					$sessions_manager->destroy_all();
+
 				}
 			}
 
@@ -219,8 +220,8 @@ class Secure {
 					'number'     => -1,
 					'exclude'    => $arr_suspected_accounts,
 					'date_query' => array(
-						'after'  => gmdate( 'F d, Y', strtotime( '-1 day', $oldest_date ) ),
-						'before' => gmdate( 'F d, Y', strtotime( '+1 day', $newest_date ) ),
+						'after'  => gmdate( get_option( 'date_format', 'F j, Y' ), strtotime( '-1 day', $oldest_date ) ),
+						'before' => gmdate( get_option( 'date_format', 'F j, Y' ), strtotime( '+1 day', $newest_date ) ),
 					),
 				)
 			);
@@ -281,12 +282,12 @@ class Secure {
 
 		$content .= $br . '<div style="padding:10px; border:1px solid #ccc;">' . wp_kses( __( '<strong style="color:red">WARNING:</strong> Ensure that you\'ve created a full backup of your site as your restoration point before changing anything on your site with our recommendations.', 'ultimate-member' ), UM()->get_allowed_html( 'admin_notice' ) ) . '</div>';
 		if ( $suspicious_accounts_count > 0 ) {
-			$lock_register_forms_url = admin_url( 'admin.php?page=um_options&tab=secure&um_secure_lock_register_forms=1&_wpnonce=' . wp_create_nonce( 'um_secure_lock_register_forms' ) );
+			$lock_register_forms_url = admin_url( 'admin.php?page=um_options&tab=advanced&section=secure&um_secure_lock_register_forms=1&_wpnonce=' . wp_create_nonce( 'um_secure_lock_register_forms' ) );
 			$content                .= $br . esc_html__( '1. Please temporarily lock all your active Register forms.', 'ultimate-member' );
-			$content                .= ' <a href="' . esc_attr( $lock_register_forms_url ) . '" target="_blank">' . esc_html__( 'Click here to lock them now.', 'ultimate-member' ) . '</a>';
-			$content                .= ' ' . esc_html__( 'You can unblock the Register forms later. Just go to Ultimate Member > Settings > Secure > uncheck the option "Lock All Register Forms".', 'ultimate-member' );
+			$content                .= ' <a href="' . esc_url( $lock_register_forms_url ) . '" target="_blank">' . esc_html__( 'Click here to lock them now.', 'ultimate-member' ) . '</a>';
+			$content                .= ' ' . esc_html__( 'You can unblock the Register forms later. Just go to Ultimate Member > Settings > Advanced > Security and uncheck the option "Lock All Register Forms".', 'ultimate-member' );
 			$content                .= $br . $br;
-			$suspicious_accounts_url = admin_url( 'users.php?um_status=inactive' );
+			$suspicious_accounts_url = admin_url( 'users.php?um_user_status=inactive' );
 
 			if ( $might_affected_users->get_total() > 0 ) {
 				$od = gmdate( 'F d, Y', $oldest_date );
@@ -299,24 +300,24 @@ class Secure {
 			}
 
 			$content .= esc_html__( '2. Review all suspicious accounts and delete them completely.', 'ultimate-member' );
-			$content .= ' <a href="' . esc_attr( $suspicious_accounts_url ) . '" target="_blank">' . esc_html__( 'Click here to review accounts.', 'ultimate-member' ) . '</a>';
+			$content .= ' <a href="' . esc_url( $suspicious_accounts_url ) . '" target="_blank">' . esc_html__( 'Click here to review accounts.', 'ultimate-member' ) . '</a>';
 			$content .= $br . $br;
 
 			$nonce                    = wp_create_nonce( 'um-secure-expire-session-nonce' );
 			$destroy_all_sessions_url = admin_url( '?um_secure_expire_all_sessions=1&_wpnonce=' . esc_attr( $nonce ) . '&except_me=1' );
 			$content                 .= esc_html__( '3. If accounts are suspicious to you, please destroy all user sessions to logout active users on your site.', 'ultimate-member' );
-			$content                 .= ' <a href="' . esc_attr( $destroy_all_sessions_url ) . '" target="_blank">' . esc_html__( 'Click here to Destroy Sessions now', 'ultimate-member' ) . '</a>';
+			$content                 .= ' <a href="' . esc_url( $destroy_all_sessions_url ) . '" target="_blank">' . esc_html__( 'Click here to Destroy Sessions now', 'ultimate-member' ) . '</a>';
 
 			$content .= $br . $br;
 			$content .= esc_html__( '4. Run a complete scan on your site using third-party Security plugins such as', 'ultimate-member' );
-			$content .= ' <a target="_blank" href="' . esc_attr( admin_url( 'plugin-install.php?s=Jetpack%2520Protect%2520WP%2520Scan&tab=search&type=term' ) ) . '">' . esc_html__( 'WPScan/Jetpack Protect or WordFence Security', 'ultimate-member' ) . '</a>.';
+			$content .= ' <a target="_blank" href="' . esc_url( admin_url( 'plugin-install.php?s=Jetpack%2520Protect%2520WP%2520Scan&tab=search&type=term' ) ) . '">' . esc_html__( 'WPScan/Jetpack Protect or WordFence Security', 'ultimate-member' ) . '</a>.';
 
 			$content                .= $br . $br;
 			$nonce                   = wp_create_nonce( 'um-secure-enable-reset-pass-nonce' );
 			$reset_pass_sessions_url = admin_url( '?um_secure_enable_reset_password=1&_wpnonce=' . esc_attr( $nonce ) . '&except_me=1' );
 
 			$content .= esc_html__( '5. Force users to Reset their Passwords.', 'ultimate-member' );
-			$content .= ' <a target="_blank" href="' . esc_attr( $reset_pass_sessions_url ) . '">' . esc_html__( 'Click here to enable this option', 'ultimate-member' ) . '</a>.';
+			$content .= ' <a target="_blank" href="' . esc_url( $reset_pass_sessions_url ) . '">' . esc_html__( 'Click here to enable this option', 'ultimate-member' ) . '</a>.';
 			$content .= ' ' . esc_html__( 'When this option is enabled, users will be asked to reset their passwords(one-time) on the next login in the UM Login form.', 'ultimate-member' );
 			$content .= $br . $br;
 

@@ -13,8 +13,6 @@
 if ( ! defined( 'ABSPATH' ) ) exit;                                             // Exit if accessed directly
 
 require_once( WPBC_PLUGIN_DIR . '/includes/page-form-simple/form_simple__toolbar_free.php' );
-require_once( WPBC_PLUGIN_DIR . '/includes/page-form-simple/form_simple__default.php' );
-require_once( WPBC_PLUGIN_DIR . '/includes/page-form-simple/form_simple__get_data.php' );
 require_once( WPBC_PLUGIN_DIR . '/includes/page-form-simple/form_simple__submit.php' );
 require_once( WPBC_PLUGIN_DIR . '/includes/page-form-simple/form_simple__timeslots.php' );         						// Timeslots Generator
 require_once( WPBC_PLUGIN_DIR . '/includes/page-form-simple/form_simple__preview.php' );         						// Preview
@@ -48,41 +46,83 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
     }
 
     public function in_page() {
+
+		if ( class_exists( 'wpdev_bk_personal' ) ) {
+			$is_use_simgple_form = get_bk_option( 'booking_is_use_simple_booking_form' );											// FixIn: 8.1.1.12.
+			if ( 'On' !== $is_use_simgple_form ) {
+				return 'test' . (string) wp_rand( 100000, 1000000 );
+			}
+		}
         return 'wpbc-settings';
     }
 
     public function tabs() {
-        
-        $tabs = array();
-                
+
+
+		// Init vars.
+		$separator_i    = 0;
+		$tabs           = array();
+		$subtabs        = array();
+		$subtab_default = array(
+			'type'            => 'subtab',                        // Required| Possible values:  'subtab' | 'separator' | 'button' | 'goto-link' | 'html'.
+			'title'           => '',                              // Example: __( 'Dashboard'                                                                   // Title of TAB.
+			'page_title'      => '',                              // __( 'Search Availability'                                                                  // Title of Page.
+			'hint'            => '',                              // __( 'Configure the layout and functionality of both the search form and search results.'   // Hint.
+			'link'            => '',                              // wpbc_get_settings_url() . '&scroll_to_section=wpbc_general_settings_dashboard_tab',        // Link.
+			'css_classes'     => '',                              // cls CSS .
+			'font_icon'       => 'wpbc_icn_dashboard',
+			'font_icon_right' => 'wpbc-bi-question-circle',                              // 'wpbc-bi-question-circle' .
+			'default'         => false,                           // Is this sub tab activated by default or not: true || false.
+		);
+
         $tabs[ 'form' ] = array(
+			'is_show_top_path'                   => false,                                // true | false.  By default value is: false.
+			'left_navigation__default_view_mode' => 'compact',                           // '' | 'min' | 'compact' | 'max' | 'none'.  By default value is: ''.
+			'page_title'                         => __( 'Booking Form', 'booking'),                               // Header - Title.  If false, than hidden.
+			'page_description'                   => __('Add, remove, or customize fields in your booking form.','booking'),                               // Header - Title Description.  If false, than hidden.
                               'title'     => __( 'Booking Form', 'booking')             // Title of TAB
-                            , 'page_title'=> __( 'Fields Settings', 'booking')      // Title of Page    
-                            , 'hint'      => __( 'Customize fields in booking form', 'booking')               // Hint
-                            //, 'link'      => ''                                 // Can be skiped,  then generated link based on Page and Tab tags. Or can  be extenral link
-                            //, 'position'  => ''                                 // 'left'  ||  'right'  ||  ''
+                            , 'page_title'=> __( 'Booking Form', 'booking')      // Title of Page
+                            , 'hint'      => __( 'Add, remove, or customize fields in your booking form.', 'booking')               // Hint
                             //, 'css_classes'=> ''                                // CSS class(es)
-                            //, 'icon'      => ''                                 // Icon - link to the real PNG img
                             , 'font_icon' => 'wpbc_icn_dashboard _customize dashboard rtt draw'         // CSS definition  of forn Icon
-                            //, 'default'   => false                               // Is this tab activated by default or not: true || false. 
-                            //, 'disabled'  => false                              // Is this tab disbaled: true || false. 
-                            //, 'hided'     => false                              // Is this tab hided: true || false. 
-                            , 'subtabs'   => array()   
+                            , 'default'   => false                               // Is this tab activated by default or not: true || false.
+                            , 'subtabs'   => array()
+							, 'folder_style'     => 'order:15;',
                     );
 
-        if ( ! class_exists( 'wpdev_bk_personal' ) )																	//FixIn: 8.1.1.12
-        	$tabs[ 'upgrade-link' ] = array(
-                              'title' => __('Free vs Pro','booking')                // Title of TAB
-                            , 'hint'  => __('Upgrade to higher versions', 'booking')              // Hint    
-                            //, 'page_title' => __('Upgrade', 'booking')        // Title of Page    
-                            , 'link' => 'https://wpbookingcalendar.com/features/'                    // Can be skiped,  then generated link based on Page and Tab tags. Or can  be extenral link
-                            , 'position' => 'right'                             // 'left'  ||  'right'  ||  ''
-                            //, 'css_classes' => ''                             // CSS class(es)
-                            //, 'icon' => ''                                    // Icon - link to the real PNG img
-                            , 'font_icon' => 'wpbc_icn_redeem'// CSS definition  of forn Icon
-                            //, 'default' => false                              // Is this tab activated by default or not: true || false. 
-                            //, 'subtabs' => array()            
-        );
+		$section_id              = 'wpbc_general_settings_booking_form_fields_metabox';
+		$subtabs['booking_form_fields'] = array_merge(
+			$subtab_default,
+			array(
+				'title'           => __( 'Booking Form Fields', 'booking' ),
+				'page_title'      => __( 'Booking Form Fields', 'booking' ),
+				'hint'            => __( 'Add, remove, or customize fields in your booking form.', 'booking' ),
+				'font_icon'       => 'wpbc-bi-ui-radios',
+				'font_icon_right' => 'wpbc-bi-question-circle',
+				'css_classes'     => 'do_expand__' . $section_id . '_link', // sub_bold', .
+				//'onclick'         => "wpbc_admin_ui__do__open_url__expand_section( '" . wpbc_get_settings_url() . "', '" . $section_id . "' );",
+				'link'            => wpbc_get_settings_url() . '&tab=form',
+				'default'         => true,
+			)
+		);
+		$tabs[ 'form' ]['subtabs'] = $subtabs;
+
+
+//        if ( ! class_exists( 'wpdev_bk_personal' ) )																	// FixIn: 8.1.1.12.
+//			// FixIn: 10.12.4.7.  $tabs[ 'settings-upgrade' . ( ++$separator_i ) ] = array_merge( $subtab_default, array( 'type' => 'separator' ,'folder_style' => 'order:1000;' ) );
+//        	$tabs[ 'upgrade-link' ] = array(
+//                              'title' => __('Get Pro','booking')                // Title of TAB
+//                            , 'hint'  => __('Upgrade to higher versions', 'booking')              // Hint
+//                            //, 'page_title' => __('Upgrade', 'booking')        // Title of Page
+//                            , 'link' => 'https://wpbookingcalendar.com/features/'                    // Can be skiped,  then generated link based on Page and Tab tags. Or can  be extenral link
+//                            , 'position' => 'right'                             // 'left'  ||  'right'  ||  ''
+//                            //, 'css_classes' => ''                             // CSS class(es)
+//                            //, 'icon' => ''                                    // Icon - link to the real PNG img
+//                            , 'font_icon' => 'wpbc_icn_redeem'// CSS definition  of forn Icon
+//                            //, 'default' => false                              // Is this tab activated by default or not: true || false.
+//                            //, 'subtabs' => array()
+//							, 'folder_style' => 'order:9999;'
+//        );
         
         return $tabs;
     }
@@ -102,6 +142,7 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 	    //  Submit
 	    // -------------------------------------------------------------------------------------------------------------
 	    $submit_form_name = 'wpbc_form_field_free';                             // Define form name
+	    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 	    if ( isset( $_POST[ 'is_form_sbmitted_' . $submit_form_name ] ) ) {
 		    // Nonce checking    {Return false if invalid, 1 if generated between, 0-12 hours ago, 2 if generated between 12-24 hours ago. }
 		    $nonce_gen_time = check_admin_referer( 'wpbc_settings_page_' . $submit_form_name );  // Its stop show anything on submitting, if it's not refear to the original page
@@ -132,15 +173,15 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 				?></div><?php
 
 
-				?><form  name="<?php echo $submit_form_name; ?>" id="<?php echo $submit_form_name; ?>" action="" method="post" style="width:100%;"><?php
+				?><form  name="<?php echo esc_attr( $submit_form_name ); ?>" id="<?php echo esc_attr( $submit_form_name ); ?>" action="" method="post" style="width:100%;"><?php
 					?><span class="metabox-holder"><?php
 					   // N o n c e   field, and key for checking   S u b m i t
 					   wp_nonce_field( 'wpbc_settings_page_' . $submit_form_name );
 
-						?><input type="hidden" name="is_form_sbmitted_<?php echo $submit_form_name; ?>" id="is_form_sbmitted_<?php echo $submit_form_name; ?>" value="1" /><?php
+						?><input type="hidden" name="is_form_sbmitted_<?php echo esc_attr( $submit_form_name ); ?>" id="is_form_sbmitted_<?php echo esc_attr( $submit_form_name ); ?>" value="1" /><?php
 						?><input type="hidden" name="form_visible_section" id="form_visible_section" value="" /><?php
 						?><input type="hidden" name="reset_to_default_form" id="reset_to_default_form" value="" /><?php
-						?><input type="hidden" name="booking_form_structure_type" id="booking_form_structure_type" value="<?php echo get_bk_option( 'booking_form_structure_type' ); ?>" /><?php
+						?><input type="hidden" name="booking_form_structure_type" id="booking_form_structure_type" value="<?php echo esc_attr( get_bk_option( 'booking_form_structure_type' ) ); ?>" /><?php
 
 						?><div id="wpbc_settings__form_fields_metabox" class="wpbc_container_hide__on_left_nav_click"><?php
 
@@ -184,7 +225,7 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 					// Save button
 					// -----------------------------------------------------------------------------------------------------
 					?><div class="clear" style="height:5px;"></div>
-					<input type="submit" value="<?php _e('Save Changes','booking'); ?>" class="button button-primary wpbc_submit_button wpbc_submit_button_trigger" />
+					<input type="submit" value="<?php esc_attr_e('Save Changes','booking'); ?>" class="button button-primary wpbc_submit_button wpbc_submit_button_trigger" />
 				</form>
 				<?php
 					//wpbc_show_preview__form();
@@ -209,13 +250,13 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 				<div class="wpbc_settings_navigation_column">
 					<div id="wpbc_settings__form_fields_tab" class="wpbc_settings_navigation_item  wpbc_settings_navigation_item_active">
 						<a onclick="javascript:wpbc_navigation_click_show_section(this,'#wpbc_settings__form_fields_metabox,#wpbc_settings__custom_booking_forms_fields__toolbar', '.wpbc_container_hide__on_left_nav_click' );" href="javascript:void(0);">
-							<span><?php _e( 'Form Fields', 'booking' ) ?></span>
+							<span><?php esc_html_e( 'Form Fields', 'booking' ); ?></span>
 							<i class="tooltip_right wpbc_set_nav__right_icon menu_icon icon-1x wpbc_icn_format_align_left" data-original-title="<?php echo esc_attr( __( 'Form Fields', 'booking' ) ); ?>"></i>
 						</a>
 					</div>
 					<div id="wpbc_settings__form_layout_tab" class="wpbc_settings_navigation_item">
 						<a onclick="javascript:wpbc_navigation_click_show_section(this,'#wpbc_settings__form_layout_metabox', '.wpbc_container_hide__on_left_nav_click' );" href="javascript:void(0);">
-							<span><?php _e( 'Form Layout', 'booking' ) ?></span>
+							<span><?php esc_html_e( 'Form Layout', 'booking' ); ?></span>
 							<i class="tooltip_right wpbc_set_nav__right_icon menu_icon icon-1x wpbc_icn_dashboard" data-original-title="<?php echo esc_attr( __( 'Form Layout', 'booking' ) ); ?>"></i>
 						</a>
 					</div><?php
@@ -225,13 +266,13 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 
 					?><div id="wpbc_settings__form_theme_tab" class="wpbc_settings_navigation_item">
 						<a onclick="javascript:wpbc_navigation_click_show_section(this,'#wpbc_settings__form_theme_metabox', '.wpbc_container_hide__on_left_nav_click' );" href="javascript:void(0);">
-							<span><?php _e( 'Color Theme', 'booking' ) ?></span>
+							<span><?php esc_html_e( 'Color Theme', 'booking' ); ?></span>
 							<i class="tooltip_right wpbc_set_nav__right_icon menu_icon icon-1x wpbc_icn_format_color_text 00wpbc-bi-pencil" data-original-title="<?php echo esc_attr( __( 'Color Theme', 'booking' ) ); ?>"></i>
 						</a>
 					</div>
 					<div id="wpbc_settings__form_options_tab" class="wpbc_settings_navigation_item">
 						<a onclick="javascript:wpbc_navigation_click_show_section(this,'#wpbc_settings__form_options_metabox', '.wpbc_container_hide__on_left_nav_click' );" href="javascript:void(0);">
-							<span><?php _e( 'Options', 'booking' ) ?></span>
+							<span><?php esc_html_e( 'Options', 'booking' ); ?></span>
 							<i class="tooltip_right wpbc_set_nav__right_icon menu_icon icon-1x wpbc_icn_tune" data-original-title="<?php echo esc_attr( __( 'Options', 'booking' ) ); ?>"></i>
 						</a>
 					</div><?php
@@ -239,7 +280,7 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 					}
 					?><div id="wpbc_settings__form_options_tab" class="wpbc_settings_navigation_item wpbc_navigation_top_border0">
 						<a onclick="javascript:wpbc_navigation_click_show_section(this,'#wpbc_settings__form_preview_metabox', '.wpbc_container_hide__on_left_nav_click000' );" href="javascript:void(0);">
-							<span><?php _e( 'Preview', 'booking' ) ?></span>
+							<span><?php esc_html_e( 'Preview', 'booking' ); ?></span>
 							<i class="tooltip_right wpbc_set_nav__right_icon menu_icon icon-1x wpbc-bi-eye" data-original-title="<?php echo esc_attr( __( 'Preview', 'booking' ) ); ?>"></i>
 						</a>
 					</div>
@@ -254,9 +295,9 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 									jQuery( this ).blur();
 									"
 						   href="javascript:void(0);" style="font-weight: 400;font-size:0.94em;">
-							<span><?php _e( 'Collapse menu' ); ?></span>
+							<span><?php esc_html_e( 'Collapse menu', 'booking' ); ?></span>
 							<i class="wpbc_set_nav__right_icon menu_icon icon-1x wpbc_icn_chevron_left tooltip_right wpbc_icon_for_collapse"
-							   data-original-title="<?php echo esc_attr( __( 'Collapse menu' ) ); ?>"
+							   data-original-title="<?php echo esc_attr( __( 'Collapse menu', 'booking' ) ); ?>"
 							   style="margin-top:0;"></i>
 						</a>
 					</div>
@@ -316,6 +357,27 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
                                                                         'optgroup' => true
                                                                         , 'close'  => false
                                                                         , 'title'  => '&nbsp;' . __('Standard Forms' ,'booking')
+                                                                    )
+														// FixIn: 10.7.1.7.
+                                                        , 'wizard_2columns' => array(
+                                                                          'title' => __('Wizard (several steps)', 'booking')
+                                                                        , 'id' => ''
+                                                                        , 'name' => ''
+                                                                        , 'style' => ''
+                                                                        , 'class' => ''
+                                                                        , 'disabled' => false
+                                                                        , 'selected' => false
+                                                                        , 'attr' => array()
+                                                                    )
+                                                        , 'wizard_services_a' => array(
+                                                                          'title' => __( 'Wizard (Steps Timline)', 'booking' )
+                                                                        , 'id' => ''
+                                                                        , 'name' => ''
+                                                                        , 'style' => ''
+                                                                        , 'class' => ''
+                                                                        , 'disabled' => false
+                                                                        , 'selected' => false
+                                                                        , 'attr' => array()
                                                                     )
                                                         , 'vertical' => array(
                                                                         'title' => __('Form under calendar', 'booking')
@@ -389,14 +451,47 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 
 											, 'value'             => $field_value_or_default
 											, 'options'           => $field_options
+											, 'attr' => array( 'onchange' => "javascript: if( 'wizard_2columns' === jQuery( this ).val() ) { jQuery( '#booking_form_layout_width' ).val( '100' ); jQuery( '#booking_form_layout_width_px_pr' ).val( '%' ); jQuery( '#booking_form_layout_max_cols' ).val( '2' ); } "
+																			 		  . " if( 'wizard_services_a' === jQuery( this ).val() ) { jQuery( '#booking_form_layout_width' ).val( '100' ); jQuery( '#booking_form_layout_width_px_pr' ).val( '%' ); jQuery( '#booking_form_layout_max_cols' ).val( '2' ); } "
+																			 		  . " if( 'vertical' === jQuery( this ).val() ) { jQuery( '#booking_form_layout_max_cols' ).val( '2' ); jQuery( '#booking_form_layout_width' ).val( '100' ); jQuery( '#booking_form_layout_width_px_pr' ).val( '%' ); } "
+																			 		  . " if( 'form_right' === jQuery( this ).val() ) { jQuery( '#booking_form_layout_max_cols' ).val( '1' ); jQuery( '#booking_form_layout_width' ).val( '440' ); jQuery( '#booking_form_layout_width_px_pr' ).val( 'px' ); } "
+																			 		  . " if( 'form_center' === jQuery( this ).val() ) { jQuery( '#booking_form_layout_max_cols' ).val( '1' ); jQuery( '#booking_form_layout_width' ).val( '440' ); jQuery( '#booking_form_layout_width_px_pr' ).val( 'px' ); } "
+															  )
+										)
+							);
+
+
+			$field_value_or_default = ( empty( get_bk_option( 'booking_form_layout_max_cols' ) ) ? $default_options_values['booking_form_layout_max_cols'] : get_bk_option( 'booking_form_layout_max_cols' ) );
+			WPBC_Settings_API::field_select_row_static( 'booking_form_layout_max_cols'
+									, array(
+											  'type'              => 'select'
+											, 'title'             => __( 'Columns', 'booking' )
+											, 'label'             => ''
+											, 'disabled'          => false
+											, 'disabled_options'  => array()
+											, 'multiple'          => false
+
+											, 'description'       => __('Set number of columns in booking form','booking')
+											, 'description_tag'   => 'span'
+
+											, 'group'             => 'form_layout'
+											, 'tr_class'          => ''
+											, 'class'             => ''
+											, 'css'               => 'width:auto;max-width:100%;'
+											, 'only_field'        => false
+											, 'attr'              => array()
+
+											, 'value'             => $field_value_or_default
+											, 'options'           => array( 1 => 1, 2 => 2, 3 => 3 )
+											//, 'attr' => array( 'onchange' => "javascript: if( 'wizard_2columns' === jQuery( this ).val() ) { jQuery( '#booking_form_layout_width' ).val( '100' ); jQuery( '#booking_form_layout_width_px_pr' ).find( 'option' ).prop( 'selected', false );	jQuery( '#booking_form_layout_width_px_pr' ).val( '%' ); } " )
 										)
 							);
 
 
 				$id = 'booking_form_layout';
-				?><tr class="wpbc_tr_<?php echo $id; ?>_size__select">
+				?><tr class="wpbc_tr_<?php echo esc_attr( $id ); ?>_size__select">
 					<th scope="row" style="vertical-align: middle;">
-						<label for="wpbc_booking_width" class="wpbc-form-text"><?php  _e('Form Width:', 'booking'); ?></label>
+						<label for="wpbc_booking_width" class="wpbc-form-text"><?php esc_html_e('Form Width:', 'booking'); ?></label>
 					</th>
 					<td class=""><fieldset style="display: flex;flex-flow: row wrap;justify-content: flex-start;align-items: center;"><?php
 
@@ -425,7 +520,7 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 																			, 'value' => ( empty( get_bk_option( $field_name ) ) ? $default_options_values[ $field_name ] : get_bk_option( $field_name ) )
 																		)
 										);
-						?><span class="description"> <?php _e('Set width of calendar' ,'booking'); ?></span></fieldset></td>
+						?><span class="description"> <?php esc_html_e('Set width of calendar' ,'booking'); ?></span></fieldset></td>
 				</tr><?php
 
 
@@ -472,18 +567,18 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 					var wpbc_cal_dark_skin_path;
 					if ( 'wpbc_theme_dark_1' == jQuery( _this ).val() ){
 						jQuery( '.wpbc_center_preview,.wpbc_container.wpbc_container_booking_form' ).addClass( 'wpbc_theme_dark_1' );
-						wpbc_cal_dark_skin_path = '<?php echo WPBC_PLUGIN_URL; ?>/css/skins/24_9__dark_1.css';
+						wpbc_cal_dark_skin_path = '<?php echo esc_url( WPBC_PLUGIN_URL ); ?>/css/skins/24_9__dark_1.css';
 						jQuery( '#ui_btn_cstm__set_calendar_skin' ).find( 'option' ).prop( 'selected', false );
 						jQuery( '#ui_btn_cstm__set_calendar_skin' ).find( 'option[value="' + wpbc_cal_dark_skin_path + '"]' ).prop( 'selected', true ).trigger( 'change' );
-						wpbc_cal_dark_skin_path = '<?php echo WPBC_PLUGIN_URL; ?>/css/time_picker_skins/black.css';
+						wpbc_cal_dark_skin_path = '<?php echo esc_url( WPBC_PLUGIN_URL ); ?>/css/time_picker_skins/black.css';
 						jQuery( '#ui_btn_cstm__set_time_picker_skin' ).find( 'option' ).prop( 'selected', false );
 						jQuery( '#ui_btn_cstm__set_time_picker_skin' ).find( 'option[value="' + wpbc_cal_dark_skin_path + '"]' ).prop( 'selected', true ).trigger( 'change' );
 					} else {
 						jQuery( '.wpbc_center_preview,.wpbc_container.wpbc_container_booking_form' ).removeClass( 'wpbc_theme_dark_1' );
-						wpbc_cal_dark_skin_path = '<?php echo WPBC_PLUGIN_URL; ?>/css/skins/24_9__light_square_1.css';
+						wpbc_cal_dark_skin_path = '<?php echo esc_url( WPBC_PLUGIN_URL ); ?>/css/skins/25_5__square_1.css';
 						jQuery( '#ui_btn_cstm__set_calendar_skin' ).find( 'option' ).prop( 'selected', false );
 						jQuery( '#ui_btn_cstm__set_calendar_skin' ).find( 'option[value="' + wpbc_cal_dark_skin_path + '"]' ).prop( 'selected', true ).trigger( 'change' );
-						wpbc_cal_dark_skin_path = '<?php echo WPBC_PLUGIN_URL; ?>/css/time_picker_skins/light__24_8.css';
+						wpbc_cal_dark_skin_path = '<?php echo esc_url( WPBC_PLUGIN_URL ); ?>/css/time_picker_skins/light__24_8.css';
 						jQuery( '#ui_btn_cstm__set_time_picker_skin' ).find( 'option' ).prop( 'selected', false );
 						jQuery( '#ui_btn_cstm__set_time_picker_skin' ).find( 'option[value="' + wpbc_cal_dark_skin_path + '"]' ).prop( 'selected', true ).trigger( 'change' );
 					}
@@ -566,18 +661,85 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
  			?></table><?php
 
 			?><div style="display: flex;flex-flow: row wrap;justify-content: flex-end;align-items: center;font-size: 10px;">
-				<div style="margin-right: 1em;font-weight: 600;"><?php _e('Global Settings','booking'); ?>: </div>
+				<div style="margin-right: 1em;font-weight: 600;"><?php esc_html_e('Global Settings','booking'); ?>: </div>
 				<i style="margin-right: 5px;<?php echo ( get_bk_option( 'booking_is_use_captcha' ) === 'On' ) ? 'color: #036aab' : ''; ?>"
 				   class="wpbc_set_nav__right_icon menu_icon icon-1x <?php echo ( get_bk_option( 'booking_is_use_captcha' ) === 'On' ) ? 'wpbc-bi-toggle2-on wpbc_set_nav__icon_on' : 'wpbc-bi-toggle2-off'; ?>"
-				></i><a href="<?php echo wpbc_get_settings_url() . '&scroll_to_section=wpbc_general_settings_form_tab'; ?>">
+				></i><a href="<?php echo esc_url( wpbc_get_settings_url() ) . '&tab=form&subtab=form_options#do_expand__wpbc_general_settings_form_metabox#do_other_actions__blink_captcha'; ?>">
 					<span ><?php
-						_e( 'CAPTCHA', 'booking' );
-						echo ' ' . get_bk_option( 'booking_is_use_captcha' );
+						esc_html_e( 'CAPTCHA', 'booking' );
+						echo ' ';
+						echo esc_html( get_bk_option( 'booking_is_use_captcha' ) );
 					?></span>
 				</a>
 			</div><?php
 		}
 
+
+	private function help_notice__show_time_fields_once() {
+
+		?>
+		<div class="wpbc-settings-notice notice-error notice-helpful-info0" style="margin: 0 0 30px;">
+		<?php
+		echo '<strong>';
+		esc_html_e( 'Error', 'booking' );
+		echo '!</strong>&nbsp;&nbsp;';
+
+			/* translators: 1: ... */
+		echo wp_kses_post( __( 'You can either use the time slots field or the start time and duration time fields, but not both. If you choose to use the start time and duration time fields, make sure to use them together.', 'booking' ) );
+		?>
+		</div>
+		<?php
+	}
+
+	private function help_notice__show_missed_time_fields() {
+
+		?>
+		<div class="wpbc-settings-notice notice-error notice-helpful-info0" style="margin: 0 0 30px;">
+		<?php
+		echo '<strong>';
+		esc_html_e( 'Error', 'booking' );
+		echo '!</strong>&nbsp;&nbsp;';
+
+			/* translators: 1: ... */
+		echo wp_kses_post( __( 'You must use both the start time field and the duration time field together.', 'booking' ) );
+		?>
+		</div>
+		<?php
+	}
+
+	private function is_exist_duplicated_time_fields( $visual_form_structure ) {
+
+		$time_fields_arr = array();
+		foreach ( $visual_form_structure as $field_arr ) {
+			if (
+				( isset( $field_arr['active'] ) ) &&
+				( isset( $field_arr['name'] ) ) &&
+				( 'on' === strtolower( $field_arr['active'] ) ) &&
+				( in_array( $field_arr['name'], array(
+					'rangetime',
+					'durationtime',
+					'starttime',
+					'endtime',
+				), true ) ) ) {
+				$time_fields_arr[] = $field_arr['name'];
+			}
+		}
+
+		if ( in_array( 'rangetime', $time_fields_arr, true ) ) {
+
+			if ( count( $time_fields_arr ) > 1 ) {
+				return 'duplicated_time_fields';
+			}
+
+		} else {
+
+			if ( count( $time_fields_arr ) === 1 ) {
+				return 'missed_time_fields';
+			}
+		}
+
+		return 'ok';
+	}
 
     /**
 	 * Show Fields Table */
@@ -591,6 +753,14 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 	    if ( ! wpbc_is_mu_user_can_be_here( 'only_super_admin' ) ) {
 		    $obligatory_field_types[] = 'captcha';
 	    }
+
+
+		if ( 'duplicated_time_fields' === $this->is_exist_duplicated_time_fields( $booking_form_structure ) ) {
+			$this->help_notice__show_time_fields_once();
+		}
+		if ( 'missed_time_fields' === $this->is_exist_duplicated_time_fields( $booking_form_structure ) ) {
+			$this->help_notice__show_missed_time_fields();
+		}
 
         ?><table class="widefat wpbc_input_table sortable wpdevelop wpbc_table_form_free" cellspacing="0" cellpadding="0"> <?php //FixIn: 10.1.2.2 style="flex:0 1 49.9%;"> ?>
             <thead>
@@ -633,7 +803,7 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 	                if ( 1 ) {
 						ob_start();
 						$is_checked = ( $form_field['active'] === 'On' );
-						$field_id    = 'wpbc_on_off_' . 'active_' . intval( microtime( true ) ) . '_' . rand( 1, 1000 );
+						$field_id    = 'wpbc_on_off_' . 'active_' . intval( microtime( true ) ) . '_' . wp_rand( 1, 1000 );
 						$field_name  = 'form_field_active[' . $i . ']';
 						$field_value = esc_attr( $form_field['active'] );
 						$params_checkbox = array(
@@ -672,20 +842,23 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
                                         autocomplete="off"
                                     /> ';
 	                if (
-						   ( in_array( $form_field['name'], array( 'calendar', 'submit', 'captcha', 'rangetime' ) ) )
+						   ( in_array( $form_field['name'], array( 'calendar', 'submit', 'captcha', 'rangetime', 'durationtime', 'starttime', 'endtime' ), true ) )
 						|| ( in_array( $form_field['type'], array( 'calendar' ) ) )
 	                ){
 						$css_label = 'wpbc_label_approved';
 						$css_label = (( $form_field['name'] == 'calendar' ) || ( $form_field['type'] == 'calendar' ))  ? 'wpbc_label_deleted_resource' : $css_label;
 						$css_label = ( $form_field['name'] == 'submit' )    ? 'wpbc_label_resource' : $css_label;
 						$css_label = ( $form_field['name'] == 'captcha' )   ? 'wpbc_label_pending' : $css_label;
-						$css_label = ( $form_field['name'] == 'rangetime' ) ? 'wpbc_label_approved' : $css_label;
+						$css_label = ( in_array( $form_field['name'], array( 'rangetime', 'durationtime', 'starttime', 'endtime' ), true ) ) ? 'wpbc_label_approved' : $css_label;
 
 						$row .= 		'<div class="field_type_name_description"><div class="field_type_name_value wpbc_label '.$css_label.'" style="text-transform: uppercase;padding: 0 1em;">';
 
 		                if ( ( $form_field['name'] == 'calendar' ) ||
 							 ( $form_field['type'] == 'calendar' ) ) {			$row .= __( 'Calendar', 'booking' );
 		                } else if ( $form_field['name'] == 'rangetime' ) {		$row .= __( 'Time Slots', 'booking' );
+		                } else if ( $form_field['name'] == 'durationtime' ) {	$row .= __( 'Duration Time', 'booking' ) . ' / ' . __( 'Service Duration', 'booking' );
+		                } else if ( $form_field['name'] == 'starttime' ) {		$row .= __( 'Start Time', 'booking' );
+		                } else if ( $form_field['name'] == 'endtime' ) {		$row .= __( 'End Time', 'booking' );
 		                } else if ( $form_field['name'] == 'submit' ) {			$row .= $form_field['name'] . ' ' . __( 'Button', 'booking' );
 		                } else {												$row .= $form_field['name'];
 		                }
@@ -715,7 +888,7 @@ class WPBC_Page_SettingsFormFieldsFree extends WPBC_Page_Structure {
 	                if ( 1 ) {
 						ob_start();
 						$is_checked = ( $form_field['required'] === 'On' );
-						$field_id    = 'wpbc_on_off_' . 'required_' . intval( microtime( true ) ) . '_' . rand( 1, 1000 );
+						$field_id    = 'wpbc_on_off_' . 'required_' . intval( microtime( true ) ) . '_' . wp_rand( 1, 1000 );
 						$field_name  = 'form_field_required[' . $i . ']';
 						$field_value = esc_attr( $form_field['required'] );
 						$params_checkbox = array(
@@ -766,11 +939,11 @@ $elemnt = ob_get_clean();
 $row .= $elemnt;
 */
                     }
-                    $row .= '</td>';   
-                    
-                    $row .= '</tr>'; 
-                            
-                    echo $row;        
+                    $row .= '</td>';
+
+					$row .= '</tr>';
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo $row;
                 }
             }            
 
@@ -780,7 +953,7 @@ $row .= $elemnt;
             <tfoot>
                 <tr>
                     <th colspan="6">
-                        <a href="#" class="remove_rows button"><?php _e( 'Remove selected field' ,'booking'); ?></a>
+                        <a href="#" class="remove_rows button"><?php esc_html_e( 'Remove selected field' ,'booking'); ?></a>
                     </th>
                 </tr>
             </tfoot>
@@ -840,16 +1013,18 @@ $row .= $elemnt;
         <?php 
             
             echo
-                '<p><strong>' . __('Shortcodes' ,'booking') . '.</strong> ' 
-                           . sprintf(__('You can generate the form fields for your form (at the left side) by selection specific field in the above selectbox.' ,'booking'),'<code><strong>[email* email]</strong></code>')
-                .'<br/>'   . sprintf(__('Please read more about the booking form fields configuration %shere%s.' ,'booking'),'<a href="https://wpbookingcalendar.com/faq/booking-form-fields/" target="_blank">', '</a>' ) 
+                '<p><strong>' . esc_html__('Shortcodes' ,'booking') . '.</strong> '
+                           . wp_kses_post( sprintf(__('You can generate the form fields for your form (at the left side) by selection specific field in the above selectbox.' ,'booking'),'<code><strong>[email* email]</strong></code>'))
+                /* translators: 1: ... */
+                .'<br/>'   . wp_kses_post( sprintf( __( 'Please read more about the booking form fields configuration %1$shere%2$s.', 'booking' ),'<a href="https://wpbookingcalendar.com/faq/booking-form-fields/" target="_blank">', '</a>') )
 
-                . '</p><p><strong>' . __('Default Form Templates' ,'booking') . '.</strong> ' . 
-                             sprintf(__('You can reset your active form template by selecting default %sform template%s at the top toolbar. Please select the form template and click on %sReset%s button for resetting only active form (Booking Form or Content of Booking Fields form). Click  on %sBoth%s button if you want to reset both forms: Booking Form and Content of Booking Fields form.' ,'booking')
+                . '</p><p><strong>' . esc_html__('Default Form Templates' ,'booking') . '.</strong> ' .
+                             /* translators: 1: ... */
+                             wp_kses_post( sprintf( __( 'You can reset your active form template by selecting default %1$sform template%2$s at the top toolbar. Please select the form template and click on %3$sReset%4$s button for resetting only active form (Booking Form or Content of Booking Fields form). Click  on %5$sBoth%6$s button if you want to reset both forms: Booking Form and Content of Booking Fields form.', 'booking' )
                                         ,'<strong>','</strong>'
                                         ,'<strong>','</strong>'
                                         ,'<strong>','</strong>'
-                                     )
+                                     ) )
                 .'</p>';
         ?>
         </div>
@@ -946,23 +1121,165 @@ $row .= $elemnt;
 																	, 'attr' => array(
 																						'placeholder' => "10:00 AM - 12:00 PM@@10:00 - 12:00\n12:00 PM - 02:00 PM@@12:00 - 14:00\n13:00 - 14:00\n11:00 - 15:00\n14:00 - 16:00\n16:00 - 18:00\n18:00 - 20:00"
 																					)
-																	, 'rows' => 5
+																	, 'rows' => 8
 																	, 'cols' => 37
 																)
                                     )
                                 );
         ?>
         </div>
-        <div class="wpbc_field_generator wpbc_field_generator_info_advanced">
-			<div class="clear" style="margin-top:20px;"></div>
-			<a onclick="javascript:wpbc_hide_fields_generators();" href="javascript:void(0)" style="margin: 0 15px;"
-		   		class="button button"><i class="menu_icon icon-1x wpbc_icn_visibility_off"></i>&nbsp;&nbsp;<?php _e( 'Close' ,'booking'); ?></a>
-        </div>        
-        <?php
-    }
+		<?php
 
-		/** General Fields Generator */
-		private function generate_field( $field_name = 'some_field_name', $field_options = array()  ) {
+		// FixIn: 10.10.1.4.
+		?>
+		<div class="wpbc_field_generator wpbc_field_generator_durationtime">
+			<?php
+			// __( 'Start Time', 'booking' ) . ' / ' . __( 'Duration Time', 'booking' ), .
+			$this->generate_field(
+				'durationtime_field_generator',
+				array(
+					'active'        => true,
+					'required'      => true,
+					'label'         => true,
+					'name'          => true,
+					'value'         => true,
+					'type'          => 'selectbox',
+					'required_attr' => array(
+						'disabled' => true,
+						'value'    => 'On',
+					),
+					'label_attr'    => array(
+						'placeholder' => __( 'Duration Time', 'booking' ),
+						'value'       => __( 'Duration Time', 'booking' ),
+					),
+					'name_attr'     => array(
+						'disabled'    => true,
+						'placeholder' => 'durationtime',
+						'value'       => 'durationtime',
+					),
+					'value_attr'    => array(
+						'value' => "Service A (15 min)@@00:15\nService B (20 min)@@00:20\nService C (30 min)@@00:30\nService D (1 hour)@@01:00\nService E (2 hours)@@02:00",
+						'attr'  => array(
+							'placeholder' => "Service A (15 min)@@00:15\nService B (20 min)@@00:20\nService C (30 min)@@00:30\nService D (1 hour)@@01:00\nService E (2 hours)@@02:00",
+						),
+						'rows'  => 8,
+						'cols'  => 37,
+					),
+				)
+			);
+			?>
+		</div>
+		<?php
+
+
+		// FixIn: 10.10.1.5.
+		?>
+		<div class="wpbc_field_generator wpbc_field_generator_starttime">
+			<?php
+			// __( 'Start Time', 'booking' ) . ' / ' . __( 'Duration Time', 'booking' ), .
+			$this->generate_field(
+				'starttime_field_generator',
+				array(
+					'active'        => true,
+					'required'      => true,
+					'label'         => true,
+					'name'          => true,
+					'value'         => true,
+					'type'          => 'selectbox',
+					'required_attr' => array(
+						'disabled' => true,
+						'value'    => 'On',
+					),
+					'label_attr'    => array(
+						'placeholder' => __( 'Start Time', 'booking' ),
+						'value'       => __( 'Start Time', 'booking' ),
+					),
+					'name_attr'     => array(
+						'disabled'    => true,
+						'placeholder' => 'starttime',
+						'value'       => 'starttime',
+					),
+					'value_attr'    => array(
+						'value' => "10:00 AM@@10:00\n10:30 AM@@10:30\n11:00 AM@@11:00\n11:30 AM@@11:30\n12:00 PM@@12:00\n12:30 PM@@12:30\n1:00 PM@@13:00\n1:30 PM@@13:30\n2:00 PM@@14:00\n2:30 PM@@14:30\n3:00 PM@@15:00\n3:30 PM@@15:30\n4:00 PM@@16:00\n4:30 PM@@16:30\n5:00 PM@@17:00\n5:30 PM@@17:30\n6:00 PM@@18:00",
+						'attr'  => array(
+							'placeholder' => "10:00 AM@@10:00\n10:30 AM@@10:30\n11:00 AM@@11:00\n11:30 AM@@11:30\n12:00 PM@@12:00\n12:30 PM@@12:30\n1:00 PM@@13:00\n1:30 PM@@13:30\n2:00 PM@@14:00\n2:30 PM@@14:30\n3:00 PM@@15:00\n3:30 PM@@15:30\n4:00 PM@@16:00\n4:30 PM@@16:30\n5:00 PM@@17:00\n5:30 PM@@17:30\n6:00 PM@@18:00",
+						),
+						'rows'  => 8,
+						'cols'  => 37,
+					),
+				)
+			);
+			?>
+		</div>
+		<?php
+
+
+		// FixIn: 10.10.1.5.
+		?>
+		<div class="wpbc_field_generator wpbc_field_generator_endtime">
+			<?php
+			// __( 'Start Time', 'booking' ) . ' / ' . __( 'Duration Time', 'booking' ), .
+			$this->generate_field(
+				'endtime_field_generator',
+				array(
+					'active'        => true,
+					'required'      => true,
+					'label'         => true,
+					'name'          => true,
+					'value'         => true,
+					'type'          => 'selectbox',
+					'required_attr' => array(
+						'disabled' => true,
+						'value'    => 'On',
+					),
+					'label_attr'    => array(
+						'placeholder' => __( 'End Time', 'booking' ),
+						'value'       => __( 'End Time', 'booking' ),
+					),
+					'name_attr'     => array(
+						'disabled'    => true,
+						'placeholder' => 'endtime',
+						'value'       => 'endtime',
+					),
+					'value_attr'    => array(
+						'value' => "10:00 AM@@10:00\n10:30 AM@@10:30\n11:00 AM@@11:00\n11:30 AM@@11:30\n12:00 PM@@12:00\n12:30 PM@@12:30\n1:00 PM@@13:00\n1:30 PM@@13:30\n2:00 PM@@14:00\n2:30 PM@@14:30\n3:00 PM@@15:00\n3:30 PM@@15:30\n4:00 PM@@16:00\n4:30 PM@@16:30\n5:00 PM@@17:00\n5:30 PM@@17:30\n6:00 PM@@18:00",
+						'attr'  => array(
+							'placeholder' => "10:00 AM@@10:00\n10:30 AM@@10:30\n11:00 AM@@11:00\n11:30 AM@@11:30\n12:00 PM@@12:00\n12:30 PM@@12:30\n1:00 PM@@13:00\n1:30 PM@@13:30\n2:00 PM@@14:00\n2:30 PM@@14:30\n3:00 PM@@15:00\n3:30 PM@@15:30\n4:00 PM@@16:00\n4:30 PM@@16:30\n5:00 PM@@17:00\n5:30 PM@@17:30\n6:00 PM@@18:00",
+						),
+						'rows'  => 8,
+						'cols'  => 37,
+					),
+				)
+			);
+			?>
+		</div>
+		<?php
+
+
+		// Close button.
+		?>
+		<div class="wpbc_field_generator wpbc_field_generator_info_advanced">
+			<div class="clear" style="margin-top:20px;"></div>
+			<a onclick="javascript:wpbc_hide_fields_generators();" href="javascript:void(0)" style="margin: 0 15px;" class="button button"><i class="menu_icon icon-1x wpbc_icn_visibility_off"></i>&nbsp;
+			<?php
+				esc_html_e( 'Close', 'booking' );
+			?>
+			</a>
+		</div>
+		<?php
+	}
+
+
+
+	/**
+	 * General Fields Generator
+	 *
+	 * @param $field_name
+	 * @param $field_options
+	 *
+	 * @return void
+	 */
+	private function generate_field( $field_name = 'some_field_name', $field_options = array()  ) {
 
 			$defaults = array(
 						'active'   => true
@@ -983,7 +1300,7 @@ $row .= $elemnt;
 											)
 					  , 'value_attr' 	=> array( 	  'value' => ''
 													, 'attr' => array( 'placeholder' => "1\n2\n3\n4" )
-													, 'rows' => 2
+													, 'rows' => 8
 													, 'cols' => 37
 											)
 					  );
@@ -1066,7 +1383,8 @@ $row .= $elemnt;
 																	, 'class'             => ''
 																	, 'css'               => ''
 																	, 'placeholder'       => $field_options[ 'name_attr' ][ 'placeholder' ]				//'first_name'
-																	, 'description'       => sprintf( __('Type only %sunique field name%s, that is not using in form', 'booking'), '<strong>', '</strong>' )
+																	/* translators: 1: ... */
+																	, 'description'       => sprintf( __( 'Type only %1$sunique field name%2$s, that is not using in form', 'booking' ), '<strong>', '</strong>' )
 																	, 'group'             => 'general'
 																	, 'tr_class'          => ''
 																	, 'only_field'        => false
@@ -1092,7 +1410,9 @@ $row .= $elemnt;
 																	, 'class'             => ''
 																	, 'css'               => ''
 																	, 'placeholder'       => ''
-																	, 'description'       => sprintf( __('Enter dropdown options. One option per line.', 'booking'), '<strong>', '</strong>' )
+																	, 'description'       => __('Enter dropdown options. One option per line.', 'booking') //. '<br>'
+																			 //. (( 'durationtime_field_generator' !== $field_options['name'] ) ? '' : __( 'The option format is "Title@@Time Duration," where "Title" is usually the service name and "Time Duration" is defined in the format HH:MM (HH = hours from 00 to 23, MM = minutes from 00 to 59).', 'booking' ))
+																			 //. (( 'starttime_field_generator' !== $field_options['name'] ) ? '' : __( 'The option format is "Title@@Time," where "Title" is any text (typically the time in AM/PM format) and "Time" is defined in the 24-hour format (HH:MM), where HH = hours (00 to 23) and MM = minutes (00 to 59).', 'booking' ))
 																	, 'group'             => 'general'
 																	, 'tr_class'          => ''
 																	, 'only_field'        => false
@@ -1111,7 +1431,6 @@ $row .= $elemnt;
 															)
 															, true
 														);
-
 				do_action( 'wpbc_settings_form_page_after_values', $field_name, $field_options );                            //FixIn: TimeFreeGenerator
 
 				?>
@@ -1119,29 +1438,29 @@ $row .= $elemnt;
 
 				<tr class="wpbc_add_field_row">
 					<th colspan="2" class="wpdevelop">
-						<a onclick="javascript:wpbc_add_field ( '<?php echo $field_name; ?>', '<?php echo $field_options['type']; ?>' );"
+						<a onclick="javascript:wpbc_add_field ( '<?php echo esc_attr( $field_name ); ?>', '<?php echo esc_attr( $field_options['type'] ); ?>' );"
 						   href="javascript:void(0)"
 						   style=""
-						   class="button button-primary"><i class="menu_icon icon-1x wpbc_icn_add _circle_outline"></i>&nbsp;&nbsp;<?php _e( 'Add New Field' ,'booking'); ?></a>
+						   class="button button-primary"><i class="menu_icon icon-1x wpbc_icn_add _circle_outline"></i>&nbsp;&nbsp;<?php esc_html_e( 'Add New Field' ,'booking'); ?></a>
 						&nbsp;&nbsp;
 						<a onclick="javascript:wpbc_hide_fields_generators();"
 						   href="javascript:void(0)"
 						   style=""
-						   class="button button"><i class="menu_icon icon-1x wpbc_icn_close"></i>&nbsp;&nbsp;<?php _e( 'Cancel' ,'booking'); ?></a>
+						   class="button button"><i class="menu_icon icon-1x wpbc_icn_close"></i>&nbsp;&nbsp;<?php esc_html_e( 'Cancel' ,'booking'); ?></a>
 					</th>
 				</tr>
 
 				<tr class="wpbc_edit_field_row">
 					<th colspan="2" class="wpdevelop">
-						<a onclick="javascript:wpbc_finish_edit_form_field ( '<?php echo $field_name; ?>', '<?php echo $field_options['type']; ?>' );"
+						<a onclick="javascript:wpbc_finish_edit_form_field ( '<?php echo esc_attr( $field_name ); ?>', '<?php echo esc_attr( $field_options['type'] ); ?>' );"
 						   href="javascript:void(0)"
 						   style=""
-						   class="button button-primary"><i class="menu_icon icon-1x wpbc_icn_draw"></i>&nbsp;&nbsp;<?php _e( 'Save Changes' ,'booking'); ?></a>
+						   class="button button-primary"><i class="menu_icon icon-1x wpbc_icn_draw"></i>&nbsp;&nbsp;<?php esc_html_e( 'Save Changes' ,'booking'); ?></a>
 						&nbsp;&nbsp;
 						<a onclick="javascript:wpbc_hide_fields_generators();"
 						   href="javascript:void(0)"
 						   style=""
-						   class="button button"><i class="menu_icon icon-1x wpbc_icn_close"></i>&nbsp;&nbsp;<?php _e( 'Cancel' ,'booking'); ?></a>
+						   class="button button"><i class="menu_icon icon-1x wpbc_icn_close"></i>&nbsp;&nbsp;<?php esc_html_e( 'Cancel' ,'booking'); ?></a>
 					</th>
 				</tr>
 
@@ -1179,22 +1498,20 @@ add_action('wpbc_menu_created', array( new WPBC_Page_SettingsFormFieldsFree() , 
 /**
  * Load JS files.
  *
- * @param $hook		'post.php' | 'wp-booking-calendar3_page_wpbc-resources'
+ * @param $hook        'post.php' | 'wp-booking-calendar3_page_wpbc-resources'
  *
  * @return void
  */
 function wpbc_register_js__page_form_simple( $hook ) {
 
 	if (
-		   ( isset( $_REQUEST['page'] ) ) && ( $_REQUEST['page'] == 'wpbc-settings' )
-		&& ( isset( $_REQUEST['tab'] ) )  && ( $_REQUEST['tab']  == 'form' )
+		( isset( $_REQUEST['page'] ) ) && ( 'wpbc-settings' === $_REQUEST['page'] )  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
+		&& ( isset( $_REQUEST['tab'] ) ) && ( 'form' === $_REQUEST['tab'] )          // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 	) {
-
-		//wpbc_load_js__required_for_modals();
-		//wpbc_load_js__required_for_media_upload();
-
-		wp_enqueue_script( 'wpbc_simple_form', wpbc_plugin_url( '/includes/page-form-simple/_src/wpbc_simple_form.js' ), 	array( 'wpbc_all' ), WP_BK_VERSION_NUM );
-		//wp_enqueue_script( 'wpbc-admin-support', 			wpbc_plugin_url( '/core/any/js/admin-support.js' ), 							array( 'jquery' ), WP_BK_VERSION_NUM );		// Required for sending dismiss requests
+		// wpbc_load_js__required_for_modals();
+		// wpbc_load_js__required_for_media_upload();
+		wp_enqueue_script( 'wpbc_simple_form', wpbc_plugin_url( '/includes/page-form-simple/_src/wpbc_simple_form.js' ), array( 'wpbc_all' ), WP_BK_VERSION_NUM, array( 'in_footer' => WPBC_JS_IN_FOOTER ) );
 	}
 }
-add_action( 'admin_enqueue_scripts', 'wpbc_register_js__page_form_simple'  );
+
+add_action( 'admin_enqueue_scripts', 'wpbc_register_js__page_form_simple' );

@@ -77,7 +77,7 @@ $premium['social-login'] = array(
 	'url'  => 'https://ultimatemember.com/extensions/social-login/',
 	'img'  => 'social-login.svg',
 	'name' => 'Social Login',
-	'desc' => 'Let users register & login to your site via Facebook, Twitter, G+, LinkedIn, and more',
+	'desc' => 'Let users register & login to your site via Facebook, X (formerly Twitter), G+, LinkedIn, and more',
 );
 
 $premium['user-tags'] = array(
@@ -166,12 +166,19 @@ $premium['profile-tabs'] = array(
 	'desc' => 'Add custom tabs to profiles',
 );
 
-//$premium['stripe'] = array(
-//	'url' => 'https://ultimatemember.com/extensions/stripe/',
-//	'img'  => 'stripe.png',
-//	'name' => 'Stripe',
-//	'desc' => 'Sell paid memberships to access your website via Stripe subscriptions',
-//);
+$premium['stripe'] = array(
+	'url'  => 'https://ultimatemember.com/extensions/stripe/',
+	'img'  => 'stripe.png',
+	'name' => 'Stripe',
+	'desc' => 'Sell paid memberships to access your website via Stripe subscriptions',
+);
+
+$premium['zapier'] = array(
+	'url'  => 'https://ultimatemember.com/extensions/zapier/',
+	'img'  => 'zapier.png',
+	'name' => 'Zapier',
+	'desc' => 'Allow to integrate the Zapier popular apps with Ultimate Member',
+);
 
 $free['jobboardwp'] = array(
 	'url'  => 'https://wordpress.org/plugins/um-jobboardwp',
@@ -278,4 +285,4 @@ if ( ! isset( $_REQUEST['filter'] ) || 'premium' === sanitize_key( $_REQUEST['fi
 		</div>
 	</div>
 </div>
-<div class="um-admin-clear"></div>
+<div class="clear"></div>

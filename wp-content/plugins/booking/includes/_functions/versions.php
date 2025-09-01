@@ -25,17 +25,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
  */
 function wpbc_is_this_demo() {
 
-//return false;
+	 // return false;  //.
 
 	if ( ! class_exists( 'wpdev_bk_personal' ) ) {
-		return false;		// If this is Booking Calendar Free version,  then it's not the demo.
+		return false;        // If this is Booking Calendar Free version,  then it's not the demo.
 	}
 
-	//FixIn: 7.2.1.17
-	if (
-		   ( ( isset( $_SERVER['SCRIPT_FILENAME'] ) ) && ( strpos( $_SERVER['SCRIPT_FILENAME'], 'wpbookingcalendar.com' ) !== false ) )
-		|| ( ( isset( $_SERVER['HTTP_HOST'] ) ) && ( strpos( $_SERVER['HTTP_HOST'], 'wpbookingcalendar.com' ) !== false ) )
-	) {
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	if ( ( ( isset( $_SERVER['SCRIPT_FILENAME'] ) ) && ( strpos( $_SERVER['SCRIPT_FILENAME'], 'wpbookingcalendar.com' ) !== false ) ) || ( ( isset( $_SERVER['HTTP_HOST'] ) ) && ( strpos( $_SERVER['HTTP_HOST'], 'wpbookingcalendar.com' ) !== false ) ) ) {
 		return true;
 	} else {
 		return false;
@@ -50,7 +47,7 @@ function wpbc_is_this_demo() {
  */
 function wpbc_is_this_beta() {
 
-	$is_beta = ( $_SERVER['HTTP_HOST'] === 'beta' );
+	$is_beta = ( ( isset( $_SERVER['HTTP_HOST'] ) ) && ( 'beta' === $_SERVER['HTTP_HOST'] ) );
 
 	return $is_beta;
 }
@@ -85,6 +82,38 @@ function wpbc_get_plugin_version_type(){
 
 
 /**
+ * Get Title of the version type.
+ *
+ * @return string
+ */
+function wpbc_get_plugin_version_title() {
+	$title        = 'Free';
+	$version_type = wpbc_get_version_type__and_mu();
+	switch ( $version_type ) {
+		case 'personal':
+			$title = 'Personal';
+			break;
+		case 'biz_s':
+			$title = 'Business Small';
+			break;
+		case 'biz_m':
+			$title = 'Business Medium';
+			break;
+		case 'biz_l':
+			$title = 'Business Large';
+			break;
+		case 'multiuser':
+			$title = 'MultiUser';
+			break;
+		default:
+			$title = 'Free';
+	}
+
+	return $title;
+}
+
+
+/**
  * Check if user accidentially update Booking Calendar Paid version to Free
  *
  * @return bool
@@ -99,28 +128,53 @@ function wpbc_is_updated_paid_to_free() {
 
 
 function wpbc_get_ver_sufix() {
-	if( strpos( strtolower(WPDEV_BK_VERSION) , 'multisite') !== false  ) {
+	if ( strpos( strtolower( WPDEV_BK_VERSION ), 'multisite' ) !== false ) {
 		$v_type = '-multi';
-	} else if( strpos( strtolower(WPDEV_BK_VERSION) , 'develop') !== false  ) {
+	} else if ( strpos( strtolower( WPDEV_BK_VERSION ), 'develop' ) !== false ) {
 		$v_type = '-dev';
 	} else {
 		$v_type = '';
 	}
 	$v = '';
-	if (class_exists('wpdev_bk_personal'))  $v = 'ps'. $v_type;
-	if (class_exists('wpdev_bk_biz_s'))     $v = 'bs'. $v_type;
-	if (class_exists('wpdev_bk_biz_m'))     $v = 'bm'. $v_type;
-	if (class_exists('wpdev_bk_biz_l'))     $v = 'bl'. $v_type;
-	if (class_exists('wpdev_bk_multiuser')) $v = '';
-	return $v ;
+	if ( class_exists( 'wpdev_bk_personal' ) ) {
+		$v = 'ps' . $v_type;
+	}
+	if ( class_exists( 'wpdev_bk_biz_s' ) ) {
+		$v = 'bs' . $v_type;
+	}
+	if ( class_exists( 'wpdev_bk_biz_m' ) ) {
+		$v = 'bm' . $v_type;
+	}
+	if ( class_exists( 'wpdev_bk_biz_l' ) ) {
+		$v = 'bl' . $v_type;
+	}
+	if ( class_exists( 'wpdev_bk_multiuser' ) ) {
+		$v = '';
+	}
+
+	return $v;
 }
 
-
+/**
+ * Get Up link.
+ *
+ * @return string
+ */
 function wpbc_up_link() {
-	if ( ! wpbc_is_this_demo() )
-		 $v = wpbc_get_ver_sufix();
-	else $v = '';
-	return 'https://wpbookingcalendar.com/' . ( ( empty($v) ) ? '' : 'upgrade-' . $v  . '/' ) ;
+
+	if ( ! wpbc_is_this_demo() ) {
+		$v = wpbc_get_ver_sufix();
+	} else {
+		$v = '';
+	}
+
+	if ( empty( $v ) ) {
+		$v = 'features/';
+	} else {
+		$v = 'upgrade-' . $v . '/';
+	}
+
+	return 'https://wpbookingcalendar.com/' . $v;
 }
 
 
@@ -152,11 +206,11 @@ function wpbc_get_wpbm_version() {
  *          $plugin_data = wpbc_file__read_header_info(  WPBC_FILE , array( 'Name' => 'Plugin Name', 'PluginURI' => 'Plugin URI', 'Version' => 'Version', 'Description' => 'Description', 'Author' => 'Author', 'AuthorURI' => 'Author URI', 'TextDomain' => 'Text Domain', 'DomainPath' => 'Domain Path' ) , 'plugin' );
  */
 function wpbc_file__read_header_info( $file, $default_headers, $context = '' ) {
-
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 	$fp = fopen( $file, 'r' );		// We don't need to write to the file, so just open for reading.
-
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
 	$file_data = fread( $fp, 8192 );		// Pull only the first 8kiB of the file in.
-
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 	fclose( $fp );					// PHP will close file handle, but we are good citizens.
 
 	if ( $context != '' ) {
@@ -184,6 +238,43 @@ function wpbc_file__read_header_info( $file, $default_headers, $context = '' ) {
 	return $file_data;
 }
 
+
+function get_json_property_from_meta( $property_key ) {
+
+	if ( ! defined( 'WPBC_PRO_FILE' ) ) {
+		return null;
+	}
+
+	$meta_file_path = plugin_dir_path( WPBC_PRO_FILE ) . 'meta.json';
+
+	if ( ! file_exists( $meta_file_path ) ) {
+		return null;
+	}
+
+	global $wp_filesystem;
+
+	if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
+
+	if ( empty( $wp_filesystem ) ) {
+		WP_Filesystem();
+	}
+
+	$json_contents = $wp_filesystem->get_contents( $meta_file_path );
+
+	if ( empty( $json_contents ) ) {
+		return null;
+	}
+
+	$data = json_decode( $json_contents, true );
+
+	if ( json_last_error() !== JSON_ERROR_NONE ) {
+		return null;
+	}
+
+	return isset( $data[ $property_key ] ) ? $data[ $property_key ] : null;
+}
 
 /**
  * Check  if we need BLUR this section -- add CSS Class for specific versions
@@ -284,15 +375,16 @@ function wpbc_get__upgrade_notice__html_content( $id, $params ){
 				<div class="wpbc_upgrade_note wpbc_upgrade_theme_green">
 					<div>
 					<?php
-						printf( 'This %s is available in the %s. %s'
+						echo wp_kses_post( sprintf( 'This %s is available in the %s. %s'
 							, '<a target="_blank" href="https://wpbookingcalendar.com/' . $params['feature_link']['relative_url'] . '">' . $params['feature_link']['title'] . '</a>'
 							, '<strong>' . $params['versions'] . '</strong>'
 							, '<a target="_blank" href="https://wpbookingcalendar.com/' . $params['upgrade_link']['relative_url'] . '">' . $params['upgrade_link']['title'] . '</a>'
-						);
+						) );
 					?>
 					</div>
 					<?php
 					// Dismiss button
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo $params['html_dismiss_btn'];
 					?>
 				</div>
@@ -415,4 +507,49 @@ function wpbc_get_upgrade_widget( $params ) {
 
 	return $upgrade_content_arr;
 
+}
+
+
+/**
+ * How old ago was installed plugin,  based on first booking
+ *
+ * @return int			if -1,  then  no bookings!
+ */
+function wpbc_how_old_in_days() {
+
+	$how_old = wpbc_get_info__about_how_old();
+
+	if ( ! empty( $how_old ) ) {
+		return intval( $how_old['days'] );
+	} else {
+		// Unknown. Maybe no bookings
+		return -1;
+	}
+}
+
+/**
+ * Get date info about first booking.
+ * @return array|false
+ */
+function wpbc_get_info__about_how_old() {
+	global $wpdb;
+
+	$sql = "SELECT modification_date FROM  {$wpdb->prefix}booking as bk ORDER by booking_id  LIMIT 0,1";
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+	$res = $wpdb->get_results( $sql );
+
+	if ( ! empty( $res ) ) {
+
+		$first_booking_date = wpbc_datetime_localized( gmdate( 'Y-m-d H:i:s', strtotime( $res[0]->modification_date ) ), 'Y-m-d H:i:s' );
+
+		$dif_days = wpbc_get_difference_in_days( gmdate( 'Y-m-d 00:00:00', strtotime( 'now' ) ), gmdate( 'Y-m-d 00:00:00', strtotime( $res[0]->modification_date ) ) );
+
+		return array(
+			'date_ymd_his' => $res[0]->modification_date,
+			'date_echo'    => $first_booking_date,
+			'days'         => $dif_days
+		);
+	}
+
+	return false;
 }

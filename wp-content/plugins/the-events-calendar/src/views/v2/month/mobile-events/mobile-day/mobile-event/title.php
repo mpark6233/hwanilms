@@ -19,10 +19,10 @@
 $classes = [ 'tribe-events-calendar-month-mobile-events__mobile-event-title', 'tribe-common-h7' ];
 
 ?>
-<h3 <?php tribe_classes( $classes ); ?>>
+<h3 <?php tec_classes( $classes ); ?>>
 	<a
-		href="<?php echo esc_url( $event->permalink ) ?>"
-		title="<?php echo esc_attr( $event->title ) ?>"
+		href="<?php echo esc_url( $event->permalink ); ?>"
+		title="<?php echo esc_attr( $event->title ); ?>"
 		rel="bookmark"
 		class="tribe-events-calendar-month-mobile-events__mobile-event-title-link tribe-common-anchor"
 	>

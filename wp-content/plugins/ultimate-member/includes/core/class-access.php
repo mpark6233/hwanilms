@@ -1,18 +1,22 @@
 <?php
 namespace um\core;
 
-// Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) exit;
+use WP_Comment_Query;
+use WP_Post;
+use WP_Query;
+use WP_Term_Query;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! class_exists( 'um\core\Access' ) ) {
-
 
 	/**
 	 * Class Access
 	 * @package um\core
 	 */
 	class Access {
-
 
 		/**
 		 * If true then we use individual restrict content options
@@ -22,30 +26,26 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 */
 		private $singular_page;
 
-
 		/**
 		 * @var bool
 		 */
 		private $redirect_handler;
-
 
 		/**
 		 * @var bool
 		 */
 		private $allow_access;
 
-
 		private $ignore_exclude = false;
-
 
 		/**
 		 * Access constructor.
 		 */
-		function __construct() {
+		public function __construct() {
 			$this->singular_page = false;
 
 			$this->redirect_handler = false;
-			$this->allow_access = false;
+			$this->allow_access     = false;
 
 			// NEW HOOKS
 			// Navigation line below the post content, change query to exclude restricted
@@ -55,12 +55,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			// change the title of the post
 			add_filter( 'the_title', array( &$this, 'filter_restricted_post_title' ), 10, 2 );
 			// change the content of the restricted post
-			add_filter( 'the_content', array( &$this, 'filter_restricted_post_content' ), 999999, 1 );
+			add_filter( 'the_content', array( &$this, 'filter_restricted_post_content' ), 999999 );
 			// change the excerpt of the restricted post
 			add_filter( 'get_the_excerpt', array( &$this, 'filter_restricted_post_excerpt' ), 999999, 2 );
 
 			// comments queries
-			add_action( 'pre_get_comments', array( &$this, 'exclude_posts_comments' ), 99, 1 );
+			add_action( 'pre_get_comments', array( &$this, 'exclude_posts_comments' ), 99 );
 			add_filter( 'wp_count_comments', array( &$this, 'custom_comments_count_handler' ), 99, 2 );
 			// comments RSS
 			add_filter( 'comment_feed_where', array( &$this, 'exclude_posts_comments_feed' ), 99, 2 );
@@ -76,10 +76,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 
 			// check the site's accessible more priority have Individual Post/Term Restriction settings
 			add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1000 );
+			add_action( 'template_redirect', array( &$this, 'send_frame_options_header' ), 1010 );
 			add_action( 'um_access_check_blog_page_settings', array( &$this, 'um_access_check_blog_page_settings' ) );
 			add_action( 'um_access_check_individual_term_settings', array( &$this, 'um_access_check_individual_term_settings' ) );
 			add_action( 'um_access_check_global_settings', array( &$this, 'um_access_check_global_settings' ) );
 
+			// Don't change hook and priority, because hooks for filtering queries are run before `init`.
 			add_action( 'plugins_loaded', array( &$this, 'initialize_hooks' ), 1 );
 		}
 
@@ -95,19 +97,19 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			add_filter( 'has_post_thumbnail', array( &$this, 'filter_post_thumbnail' ), 99, 3 );
 
 			// Change recent posts widget query.
-			add_filter( 'widget_posts_args', array( &$this, 'exclude_restricted_posts_widget' ), 99, 1 );
+			add_filter( 'widget_posts_args', array( &$this, 'exclude_restricted_posts_widget' ), 99 );
 			// Exclude pages displayed by wp_list_pages function.
-			add_filter( 'wp_list_pages_excludes', array( &$this, 'exclude_restricted_pages' ), 10, 1 );
+			add_filter( 'wp_list_pages_excludes', array( &$this, 'exclude_restricted_pages' ) );
 			// Archives list change where based on restricted posts.
 			add_filter( 'getarchives_where', array( &$this, 'exclude_restricted_posts_archives_widget' ), 99, 2 );
 
 			// Callbacks for changing posts query.
-			add_action( 'pre_get_posts', array( &$this, 'exclude_posts' ), 99, 1 );
+			add_action( 'pre_get_posts', array( &$this, 'exclude_posts' ), 99 );
 			add_filter( 'posts_where', array( &$this, 'exclude_posts_where' ), 10, 2 );
 			add_filter( 'wp_count_posts', array( &$this, 'custom_count_posts_handler' ), 99, 3 );
 
 			// Callbacks for changing terms query.
-			add_action( 'pre_get_terms', array( &$this, 'exclude_hidden_terms_query' ), 99, 1 );
+			add_action( 'pre_get_terms', array( &$this, 'exclude_hidden_terms_query' ), 99 );
 
 			// there is posts (Posts/Page/CPT) filtration if site is accessible
 			// there also will be redirects if they need
@@ -122,12 +124,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 
 			remove_action( 'pre_get_terms', array( &$this, 'exclude_hidden_terms_query' ), 99 );
 			remove_filter( 'widget_posts_args', array( &$this, 'exclude_restricted_posts_widget' ), 99 );
-			remove_filter( 'wp_list_pages_excludes', array( &$this, 'exclude_restricted_pages' ), 10 );
+			remove_filter( 'wp_list_pages_excludes', array( &$this, 'exclude_restricted_pages' ) );
 			remove_filter( 'getarchives_where', array( &$this, 'exclude_restricted_posts_archives_widget' ), 99 );
 			remove_filter( 'get_next_post_where', array( &$this, 'exclude_navigation_posts' ), 99 );
 			remove_filter( 'get_previous_post_where', array( &$this, 'exclude_navigation_posts' ), 99 );
 			remove_action( 'pre_get_posts', array( &$this, 'exclude_posts' ), 99 );
-			remove_filter( 'posts_where', array( &$this, 'exclude_posts_where' ), 10 );
+			remove_filter( 'posts_where', array( &$this, 'exclude_posts_where' ) );
 			remove_filter( 'wp_count_posts', array( &$this, 'custom_count_posts_handler' ), 99 );
 		}
 
@@ -139,7 +141,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return array
 		 */
-		function exclude_posts_array( $force = false, $post_types = false ) {
+		public function exclude_posts_array( $force = false, $post_types = false ) {
 			if ( $this->ignore_exclude ) {
 				return array();
 			}
@@ -334,16 +336,14 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $exclude_posts;
 		}
 
-
-
 		/**
 		 * Get array with restricted terms
 		 *
-		 * @param \WP_Term_Query $query
+		 * @param WP_Term_Query $query
 		 *
 		 * @return array
 		 */
-		function exclude_terms_array( $query ) {
+		public function exclude_terms_array( $query ) {
 			$exclude = array();
 
 			$restricted_taxonomies = UM()->options()->get( 'restricted_access_taxonomy_metabox' );
@@ -414,11 +414,10 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $exclude;
 		}
 
-
 		/**
-		 * @param \WP_Term_Query $query
+		 * @param WP_Term_Query $query
 		 */
-		function exclude_hidden_terms_query( $query ) {
+		public function exclude_hidden_terms_query( $query ) {
 			if ( current_user_can( 'administrator' ) || ! empty( $query->query_vars['um_ignore_exclude'] ) ) {
 				return;
 			}
@@ -429,11 +428,10 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			}
 		}
 
-
 		/**
-		 * @param \WP_Query $query
+		 * @param WP_Query $query
 		 */
-		function exclude_posts( $query ) {
+		public function exclude_posts( $query ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return;
 			}
@@ -471,16 +469,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			}
 		}
 
-
 		/**
-		 * Exclude restricted post from query if there is a single query that exclude post_not_in by default in \WP_Query
+		 * Exclude restricted post from query if there is a single query that exclude post_not_in by default in WP_Query
 		 *
-		 * @param string $where
-		 * @param \WP_Query $query
+		 * @param string   $where
+		 * @param WP_Query $query
 		 *
 		 * @return mixed
 		 */
-		function exclude_posts_where( $where, $query ) {
+		public function exclude_posts_where( $where, $query ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $where;
 			}
@@ -501,18 +498,17 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $where;
 		}
 
-
 		/**
 		 * Change the posts count based on restriction settings
 		 *
 		 * @param object $counts Post counts
-		 * @param string $type Post type
-		 * @param string $perm The permission to determine if the posts are 'readable'
-		 *                     by the current user.
+		 * @param string $type   Post type
+		 * @param string $perm   The permission to determine if the posts are 'readable'
+		 *                       by the current user.
 		 *
 		 * @return object
 		 */
-		function custom_count_posts_handler( $counts, $type = 'post', $perm = '' ) {
+		public function custom_count_posts_handler( $counts, $type = 'post', $perm = '' ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $counts;
 			}
@@ -564,7 +560,6 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $counts;
 		}
 
-
 		/**
 		 * Exclude restricted posts in Recent Posts widget
 		 *
@@ -572,7 +567,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return array
 		 */
-		function exclude_restricted_posts_widget( $array ) {
+		public function exclude_restricted_posts_widget( $array ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $array;
 			}
@@ -586,7 +581,6 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $array;
 		}
 
-
 		/**
 		 * Exclude restricted posts in Recent Posts widget
 		 *
@@ -594,7 +588,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return array
 		 */
-		function exclude_restricted_pages( $array ) {
+		public function exclude_restricted_pages( $array ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $array;
 			}
@@ -607,16 +601,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $array;
 		}
 
-
 		/**
 		 * Exclude restricted posts in widgets
 		 *
 		 * @param string $sql_where
-		 * @param array $parsed_args
+		 * @param array  $parsed_args
 		 *
 		 * @return string
 		 */
-		function exclude_restricted_posts_archives_widget( $sql_where, $parsed_args = array() ) {
+		public function exclude_restricted_posts_archives_widget( $sql_where, $parsed_args = array() ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $sql_where;
 			}
@@ -632,7 +625,6 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $sql_where;
 		}
 
-
 		/**
 		 * Exclude posts from next, previous navigation
 		 *
@@ -640,11 +632,11 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 * @param bool $in_same_term
 		 * @param string|array $excluded_terms
 		 * @param string $taxonomy
-		 * @param null|\WP_Post $post
+		 * @param null|WP_Post $post
 		 *
 		 * @return string
 		 */
-		function exclude_navigation_posts( $where, $in_same_term = false, $excluded_terms = '', $taxonomy = 'category', $post = null ) {
+		public function exclude_navigation_posts( $where, $in_same_term = false, $excluded_terms = '', $taxonomy = 'category', $post = null ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $where;
 			}
@@ -662,16 +654,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $where;
 		}
 
-
 		/**
-		 * Replace titles of restricted posts
+		 * Replace titles of restricted posts.
 		 *
-		 * @param string $title
-		 * @param int|null $id
+		 * @param string   $title Post title.
+		 * @param int|null $id    Post ID.
 		 *
 		 * @return string
 		 */
-		function filter_restricted_post_title( $title, $id = null ) {
+		public function filter_restricted_post_title( $title, $id = null ) {
 			if ( ! UM()->options()->get( 'restricted_post_title_replace' ) ) {
 				return $title;
 			}
@@ -688,6 +679,29 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				$id = absint( $id );
 			}
 
+			/**
+			 * Filters a marker for ignoring restricted post title changes.
+			 *
+			 * @param {bool} $ignore  Marker for ignoring restricted post title changes. Default `false`. Set to `true` if you want to ignore and show real title.
+			 * @param {int}  $post_id Post ID.
+			 *
+			 * @return {bool} Marker for ignoring restricted post title changes.
+			 *
+			 * @since 2.2.3
+			 * @hook um_ignore_restricted_title
+			 *
+			 * @example <caption>Leave real post titles even they are restricted. By post ID (for ID = 400).</caption>
+			 * function change_restricted_title( $ignore, $id ) {
+			 *     // your code here
+			 *     if ( 400 === $id ) {
+			 *         $ignore = true;
+			 *     }
+			 *     return $ignore;
+			 * }
+			 * add_filter( 'um_ignore_restricted_title', 'change_restricted_title', 10, 2 );
+			 * @example <caption>Leave real post titles even they are restricted. For all posts: site-wide logic.</caption>
+			 * add_filter( 'um_ignore_restricted_title', '__return_true' );
+			 */
 			$ignore = apply_filters( 'um_ignore_restricted_title', false, $id );
 			if ( $ignore ) {
 				return $title;
@@ -695,21 +709,20 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 
 			if ( $this->is_restricted( $id ) ) {
 				$restricted_global_title = UM()->options()->get( 'restricted_access_post_title' );
-				$title = stripslashes( $restricted_global_title );
+				$title                   = stripslashes( $restricted_global_title );
 			}
 
 			return $title;
 		}
 
-
 		/**
-		 * Replace content of restricted posts
+		 * Replace content of restricted posts.
 		 *
-		 * @param string $content
+		 * @param string $content Post Content.
 		 *
 		 * @return string
 		 */
-		function filter_restricted_post_content( $content ) {
+		public function filter_restricted_post_content( $content ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $content;
 			}
@@ -719,10 +732,37 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				return $content;
 			}
 
+			/**
+			 * Filters a marker for ignoring restricted post content changes.
+			 *
+			 * Note: Use with caution! You can make your posts not restricted by using this filter hook.
+			 *
+			 * @param {bool} $ignore  Marker for ignoring restricted post content changes. Default `false`. Set to `true` if you want to ignore and show real content.
+			 * @param {int}  $post_id Post ID.
+			 *
+			 * @return {bool} Marker for ignoring restricted post content changes.
+			 *
+			 * @since 2.2.3
+			 * @hook um_ignore_restricted_content
+			 *
+			 * @example <caption>Leave real post content even they are restricted. By post ID (for ID = 400).</caption>
+			 * function change_restricted_content( $ignore, $id ) {
+			 *     // your code here
+			 *     if ( 400 === $id ) {
+			 *         $ignore = true;
+			 *     }
+			 *     return $ignore;
+			 * }
+			 * add_filter( 'um_ignore_restricted_content', 'change_restricted_content', 10, 2 );
+			 * @example <caption>Leave real post content even they are restricted. For all posts: site-wide logic.</caption>
+			 * add_filter( 'um_ignore_restricted_content', '__return_true' );
+			 */
 			$ignore = apply_filters( 'um_ignore_restricted_content', false, $id );
 			if ( $ignore ) {
 				return $content;
 			}
+
+			$original_post_content = $content;
 
 			if ( $this->is_restricted( $id ) ) {
 				$restriction = $this->get_post_privacy_settings( $id );
@@ -733,23 +773,45 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 					$content = ! empty( $restriction['_um_restrict_custom_message'] ) ? stripslashes( $restriction['_um_restrict_custom_message'] ) : '';
 				}
 
-				// translators: %s: Restricted post message.
-				$content = sprintf( __( '%s', 'ultimate-member' ), $content );
+				// Because we have a late the_content callback priority here we have to apply shortcodes if faced in restricted message.
+				$content = apply_shortcodes( $content );
+				/**
+				 * Filters the restricted post content.
+				 * Can be used for translations when site is multilingual.
+				 *
+				 * @param {string} $content               Post content prepared from restricted message.
+				 * @param {int}    $post_id               Post ID
+				 * @param {string} $original_post_content Original post content.
+				 *
+				 * @return {string} Maybe changed post content prepared from restricted message.
+				 *
+				 * @since 2.8.7
+				 * @hook um_restricted_post_content
+				 *
+				 * @example <caption>Trim restriction message if post_id = 111.</caption>
+				 * function my_restricted_post_content( $content, $post_id, $original_post_content ) {
+				 *     if ( 111 === $post_id ) {
+				 *         $content = trim( $content );
+				 *     }
+				 *     return $content;
+				 * }
+				 * add_filter( 'um_restricted_post_content', 'my_restricted_post_content', 10, 3 );
+				 */
+				$content = apply_filters( 'um_restricted_post_content', $content, $id, $original_post_content );
 			}
 
 			return $content;
 		}
 
-
 		/**
-		 * Replace excerpt of restricted posts
+		 * Replace excerpt of restricted posts.
 		 *
-		 * @param string $post_excerpt
-		 * @param \WP_Post $post
+		 * @param string  $post_excerpt Post Excerpt.
+		 * @param WP_Post $post         WP_Post instance.
 		 *
 		 * @return string
 		 */
-		function filter_restricted_post_excerpt( $post_excerpt = '', $post = null ) {
+		public function filter_restricted_post_excerpt( $post_excerpt = '', $post = null ) {
 			if ( empty( $post ) ) {
 				return $post_excerpt;
 			}
@@ -758,6 +820,31 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				return $post_excerpt;
 			}
 
+			/**
+			 * Filters a marker for ignoring restricted post excerpt changes.
+			 *
+			 * Note: Use with caution! You can make your posts not restricted by using this filter hook.
+			 *
+			 * @param {bool} $ignore  Marker for ignoring restricted post excerpt changes. Default `false`. Set to `true` if you want to ignore and show real content.
+			 * @param {int}  $post_id Post ID.
+			 *
+			 * @return {bool} Marker for ignoring restricted post excerpt changes.
+			 *
+			 * @since 2.2.3
+			 * @hook um_ignore_restricted_excerpt
+			 *
+			 * @example <caption>Leave real post excerpt even they are restricted. By post ID (for ID = 400).</caption>
+			 * function change_restricted_excerpt( $ignore, $id ) {
+			 *     // your code here
+			 *     if ( 400 === $id ) {
+			 *         $ignore = true;
+			 *     }
+			 *     return $ignore;
+			 * }
+			 * add_filter( 'um_ignore_restricted_excerpt', 'change_restricted_excerpt', 10, 2 );
+			 * @example <caption>Leave real post excerpt even they are restricted. For all posts: site-wide logic.</caption>
+			 * add_filter( 'um_ignore_restricted_excerpt', '__return_true' );
+			 */
 			$ignore = apply_filters( 'um_ignore_restricted_excerpt', false, $post->ID );
 			if ( $ignore ) {
 				return $post_excerpt;
@@ -770,23 +857,21 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $post_excerpt;
 		}
 
-
 		/**
 		 * Hide attachment if the post is restricted
 		 *
 		 * @param string $url
-		 * @param int $attachment_id
+		 * @param int    $attachment_id
 		 *
 		 * @return boolean|string
 		 */
-		function filter_attachment( $url, $attachment_id ) {
+		public function filter_attachment( $url, $attachment_id ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $url;
 			}
 
 			return ( $attachment_id && $this->is_restricted( $attachment_id ) ) ? false : $url;
 		}
-
 
 		/**
 		 * Hide attachment if the post is restricted
@@ -797,7 +882,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return bool
 		 */
-		function filter_post_thumbnail( $has_thumbnail, $post = null, $thumbnail_id = false ) {
+		public function filter_post_thumbnail( $has_thumbnail, $post = null, $thumbnail_id = false ) {
 			if ( empty( $thumbnail_id ) ) {
 				return $has_thumbnail;
 			}
@@ -824,14 +909,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $has_thumbnail;
 		}
 
-
-
 		/**
 		 * Exclude comments from restricted posts in widgets
 		 *
-		 * @param \WP_Comment_Query $query
+		 * @param WP_Comment_Query $query
 		 */
-		function exclude_posts_comments( $query ) {
+		public function exclude_posts_comments( $query ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return;
 			}
@@ -861,11 +944,10 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			}
 		}
 
-
 		/**
 		 * @return array
 		 */
-		function get_available_comments_post_types() {
+		public function get_available_comments_post_types() {
 			global $wp_taxonomies, $wpdb;
 
 			$restricted_posts = UM()->options()->get( 'restricted_access_post_metabox' );
@@ -887,13 +969,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			$restricted_posts = array_unique( $restricted_posts );
 			foreach ( $restricted_posts as $k => $post_type ) {
 				if ( 'closed' === get_default_comment_status( $post_type ) ) {
-					$open_comments = $wpdb->get_var( $wpdb->prepare(
-						"SELECT ID
-						FROM {$wpdb->posts}
-						WHERE post_type = %s AND
-							  comment_status != 'closed'",
-						$post_type
-					) );
+					$open_comments = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT ID
+							FROM {$wpdb->posts}
+							WHERE post_type = %s AND
+								  comment_status != 'closed'",
+							$post_type
+						)
+					);
 
 					if ( empty( $open_comments ) ) {
 						unset( $restricted_posts[ $k ] );
@@ -906,16 +990,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $restricted_posts;
 		}
 
-
 		/**
 		 * Exclude comments from comments feed
 		 *
-		 * @param string $where
-		 * @param \WP_Query $query
+		 * @param string   $where
+		 * @param WP_Query $query
 		 *
 		 * @return string
 		 */
-		function exclude_posts_comments_feed( $where, $query ) {
+		public function exclude_posts_comments_feed( $where, $query ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $where;
 			}
@@ -923,12 +1006,11 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			$exclude_posts = $this->exclude_posts_array( true, $this->get_available_comments_post_types() );
 			if ( ! empty( $exclude_posts ) ) {
 				$exclude_string = implode( ',', $exclude_posts );
-				$where .= ' AND comment_post_ID NOT IN ( ' . $exclude_string . ' )';
+				$where         .= ' AND comment_post_ID NOT IN ( ' . $exclude_string . ' )';
 			}
 
 			return $where;
 		}
-
 
 		/**
 		 * @param array|object $stats
@@ -936,7 +1018,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return object
 		 */
-		function custom_comments_count_handler( $stats = array(), $post_id = 0 ) {
+		public function custom_comments_count_handler( $stats = array(), $post_id = 0 ) {
 			if ( ! empty( $stats ) || current_user_can( 'administrator' ) ) {
 				return $stats;
 			}
@@ -962,14 +1044,13 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $stats_object;
 		}
 
-
 		/**
 		 * @param int $post_id
 		 * @param array $exclude_posts
 		 *
 		 * @return array
 		 */
-		function get_comment_count( $post_id = 0, $exclude_posts = array() ) {
+		public function get_comment_count( $post_id = 0, $exclude_posts = array() ) {
 			static $cache = array();
 
 			if ( isset( $cache[ $post_id ] ) ) {
@@ -991,12 +1072,11 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			}
 
 			$totals = (array) $wpdb->get_results(
-				"
-		SELECT comment_approved, COUNT( * ) AS total
-		FROM {$wpdb->comments}
-		{$where}
-		GROUP BY comment_approved
-	",
+				"SELECT comment_approved,
+				COUNT(*) AS total
+				FROM {$wpdb->comments}
+					{$where}
+				GROUP BY comment_approved",
 				ARRAY_A
 			);
 
@@ -1043,15 +1123,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $comment_count;
 		}
 
-
 		/**
 		 * Disable comments if user has not permission to access this post
 		 *
 		 * @param mixed $open
 		 * @param int $post_id
-		 * @return boolean
+		 *
+		 * @return bool
 		 */
-		function disable_comments_open( $open, $post_id ) {
+		public function disable_comments_open( $open, $post_id ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $open;
 			}
@@ -1073,15 +1153,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $open;
 		}
 
-
 		/**
 		 * Disable comments if user has not permission to access this post
 		 *
 		 * @param int $count
 		 * @param int $post_id
-		 * @return boolean
+		 *
+		 * @return bool
 		 */
-		function disable_comments_open_number( $count, $post_id = 0 ) {
+		public function disable_comments_open_number( $count, $post_id = 0 ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $count;
 			}
@@ -1103,15 +1183,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $count;
 		}
 
-
 		/**
 		 * Protect Post Types in menu query
 		 * Restrict content new logic
 		 * @param array $menu_items
 		 * @param array $args
+		 *
 		 * @return array
 		 */
-		function filter_menu( $menu_items, $args = array() ) {
+		public function filter_menu( $menu_items, $args = array() ) {
 			//if empty
 			if ( empty( $menu_items ) ) {
 				return $menu_items;
@@ -1158,14 +1238,13 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $filtered_items;
 		}
 
-
 		/**
 		 * @param $block_content
 		 * @param $block
 		 *
 		 * @return string
 		 */
-		function restrict_blocks( $block_content, $block ) {
+		public function restrict_blocks( $block_content, $block ) {
 			if ( is_admin() ) {
 				return $block_content;
 			}
@@ -1187,7 +1266,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				return $block_content;
 			}
 
-			$default_message = UM()->options()->get( 'restricted_block_message' );
+			$default_message = wp_kses_post( UM()->options()->get( 'restricted_block_message' ) );
 			switch ( $block['attrs']['um_who_access'] ) {
 				case '1': {
 					if ( ! is_user_logged_in() ) {
@@ -1196,7 +1275,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 							if ( $block['attrs']['um_message_type'] == '1' ) {
 								$block_content = $default_message;
 							} elseif ( $block['attrs']['um_message_type'] == '2' ) {
-								$block_content = isset( $block['attrs']['um_message_content'] ) ? esc_textarea( $block['attrs']['um_message_content'] ) : '';
+								$block_content = isset( $block['attrs']['um_message_content'] ) ? wp_kses_post( $block['attrs']['um_message_content'] ) : '';
 							}
 						}
 					} else {
@@ -1220,7 +1299,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 								if ( $block['attrs']['um_message_type'] == '1' ) {
 									$block_content = $default_message;
 								} elseif ( $block['attrs']['um_message_type'] == '2' ) {
-									$block_content = isset( $block['attrs']['um_message_content'] ) ? esc_textarea( $block['attrs']['um_message_content'] ) : '';
+									$block_content = isset( $block['attrs']['um_message_content'] ) ? wp_kses_post( $block['attrs']['um_message_content'] ) : '';
 								}
 							}
 						}
@@ -1234,7 +1313,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 							if ( $block['attrs']['um_message_type'] == '1' ) {
 								$block_content = $default_message;
 							} elseif ( $block['attrs']['um_message_type'] == '2' ) {
-								$block_content = isset( $block['attrs']['um_message_content'] ) ? esc_textarea( $block['attrs']['um_message_content'] ) : '';
+								$block_content = isset( $block['attrs']['um_message_content'] ) ? wp_kses_post( $block['attrs']['um_message_content'] ) : '';
 							}
 						}
 					}
@@ -1245,13 +1324,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $block_content;
 		}
 
-
 		/**
-		 * @param \WP_Post $post
+		 * @param WP_Post $post
 		 *
-		 * @return \WP_Post
+		 * @return WP_Post
 		 */
-		function maybe_replace_title( $post ) {
+		public function maybe_replace_title( $post ) {
 			if ( ! UM()->options()->get( 'restricted_post_title_replace' ) ) {
 				return $post;
 			}
@@ -1260,28 +1338,28 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				return $post;
 			}
 
-			if ( ! is_a( $post, '\WP_Post' ) ) {
+			if ( ! is_a( $post, WP_Post::class ) ) {
 				return $post;
 			}
 
+			/** This filter is documented in includes/core/class-access.php */
 			$ignore = apply_filters( 'um_ignore_restricted_title', false, $post->ID );
 			if ( $ignore ) {
 				return $post;
 			}
 
 			$restricted_global_title = UM()->options()->get( 'restricted_access_post_title' );
-			$post->post_title = stripslashes( $restricted_global_title );
+			$post->post_title        = stripslashes( $restricted_global_title );
 
 			return $post;
 		}
 
-
 		/**
-		 * @param \WP_Post $nav_item
+		 * @param WP_Post $nav_item
 		 *
-		 * @return \WP_Post
+		 * @return WP_Post
 		 */
-		function maybe_replace_nav_menu_title( $nav_item ) {
+		public function maybe_replace_nav_menu_title( $nav_item ) {
 			if ( ! UM()->options()->get( 'restricted_post_title_replace' ) ) {
 				return $nav_item;
 			}
@@ -1290,7 +1368,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				return $nav_item;
 			}
 
-			if ( ! is_a( $nav_item, '\WP_Post' ) ) {
+			if ( ! is_a( $nav_item, WP_Post::class ) ) {
 				return $nav_item;
 			}
 
@@ -1305,21 +1383,21 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $nav_item;
 		}
 
-
 		/**
 		 * Protect Post Types in query
 		 * Restrict content new logic
 		 *
-		 * @param array $posts
-		 * @param array|\WP_Query $query
+		 * @param array          $posts Posts query result.
+		 * @param array|WP_Query $query WP_Query instance.
+		 *
 		 * @return array
 		 */
-		function filter_protected_posts( $posts, $query ) {
+		public function filter_protected_posts( $posts, $query ) {
 			if ( current_user_can( 'administrator' ) ) {
 				return $posts;
 			}
 
-			//Woocommerce AJAX fixes....remove filtration on wc-ajax which goes to Front Page
+			// Woocommerce AJAX fixes....remove filtration on wc-ajax which goes to Front Page.
 			if ( ! empty( $_GET['wc-ajax'] ) && defined( 'WC_DOING_AJAX' ) && WC_DOING_AJAX ) {
 				return $posts;
 			}
@@ -1335,8 +1413,8 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				$is_singular = ! empty( $query->is_singular ) ? true : false;
 			}
 
-			if ( is_object( $query ) && is_a( $query, '\WP_Query' ) &&
-				 ( $query->is_main_query() || ! empty( $query->query_vars['um_main_query'] ) ) ) {
+			if ( is_object( $query ) && is_a( $query, WP_Query::class ) &&
+			     ( $query->is_main_query() || ! empty( $query->query_vars['um_main_query'] ) ) ) {
 				if ( $is_singular ) {
 					if ( ! UM()->options()->get( 'disable_restriction_pre_queries' ) && $this->is_restricted( $posts[0]->ID ) ) {
 						$content_restriction = $this->get_post_privacy_settings( $posts[0]->ID );
@@ -1393,7 +1471,30 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 								 */
 								do_action( 'um_access_fix_external_post_content' );
 
-								$filtered_posts[] = $this->maybe_replace_title( $post );
+								$filtered_post = $this->maybe_replace_title( $post );
+								/**
+								 * Filters restricted via Ultimate Member settings post instance.
+								 *
+								 * @param {object} $filtered_post Restricted `WP_Post` instance.
+								 * @param {object} $post          Base `WP_Post` instance before restriction settings apply.
+								 * @param {object} $query         `WP_Query` for getting posts.
+								 *
+								 * @return {object} Restricted `WP_Post` instance.
+								 *
+								 * @since 2.8.2
+								 * @hook um_access_restricted_post_instance
+								 *
+								 * @example <caption>Change restricted post title to custom one.</caption>
+								 * function restricted_post_instance( $filtered_post, $original_post, $query ) {
+								 *     // your code here
+								 *     $filtered_post->post_title = 'This post is restricted';
+								 *     return $filtered_post;
+								 * }
+								 * add_filter( 'um_access_restricted_post_instance', 'restricted_post_instance', 10, 3 );
+								 */
+								$filtered_post = apply_filters( 'um_access_restricted_post_instance', $filtered_post, $post, $query );
+
+								$filtered_posts[] = $filtered_post;
 								continue;
 							}
 						} elseif ( '1' == $restriction['_um_noaccess_action'] ) {
@@ -1416,7 +1517,11 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 						}
 					} else {
 						if ( empty( $restriction['_um_access_hide_from_queries'] ) || UM()->options()->get( 'disable_restriction_pre_queries' ) ) {
-							$filtered_posts[] = $this->maybe_replace_title( $post );
+							$filtered_post = $this->maybe_replace_title( $post );
+							/** This filter is documented in includes/core/class-access.php */
+							$filtered_post = apply_filters( 'um_access_restricted_post_instance', $filtered_post, $post, $query );
+
+							$filtered_posts[] = $filtered_post;
 							continue;
 						}
 					}
@@ -1426,13 +1531,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $filtered_posts;
 		}
 
-
 		/**
 		 * Set custom access actions and redirection
 		 *
 		 * Old global restrict content logic
 		 */
-		function template_redirect() {
+		public function template_redirect() {
 			global $post, $wp_query;
 
 			//if we logged by administrator it can access to all content
@@ -1531,11 +1635,10 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			$this->check_access();
 		}
 
-
 		/**
 		 * Check Blog page Content Restriction settings
 		 */
-		function um_access_check_blog_page_settings() {
+		public function um_access_check_blog_page_settings() {
 			global $wp_query;
 
 			if ( ! empty( $wp_query->is_home ) && ! empty( $wp_query->is_posts_page ) ) {
@@ -1573,7 +1676,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		/**
 		 * Check individual term Content Restriction settings
 		 */
-		function um_access_check_individual_term_settings() {
+		public function um_access_check_individual_term_settings() {
 			//check only tax|tags|categories - skip archive, author, and date lists
 			if ( ! ( is_tax() || is_tag() || is_category() ) ) {
 				return;
@@ -1626,7 +1729,6 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			}
 		}
 
-
 		/**
 		 * @param $template
 		 * @param $type
@@ -1634,7 +1736,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return string
 		 */
-		function taxonomy_message( $template, $type, $templates ) {
+		public function taxonomy_message( $template, $type, $templates ) {
 			return UM()->locate_template( 'restricted-taxonomy.php' );
 		}
 
@@ -1645,15 +1747,14 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return string
 		 */
-		function blog_message( $template, $type, $templates ) {
+		public function blog_message( $template, $type, $templates ) {
 			return UM()->locate_template( 'restricted-blog.php' );
 		}
-
 
 		/**
 		 * Check global accessible settings
 		 */
-		function um_access_check_global_settings() {
+		public function um_access_check_global_settings() {
 			global $post;
 
 			$curr = UM()->permalinks()->get_current_url();
@@ -1698,10 +1799,10 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 					$access = UM()->options()->get( 'accessible' );
 
 					if ( $access == 2 ) {
-						//global settings for accessible home page
+						// Global settings for accessible home page
 						$home_page_accessible = UM()->options()->get( 'home_page_accessible' );
 
-						if ( $home_page_accessible == 0 ) {
+						if ( ! $home_page_accessible ) {
 							//get redirect URL if not set get login page by default
 							$redirect = UM()->options()->get( 'access_redirect' );
 							if ( ! $redirect ) {
@@ -1721,9 +1822,9 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 					$access = UM()->options()->get( 'accessible' );
 
 					if ( $access == 2 ) {
-						//global settings for accessible home page
+						// Global settings for accessible home page
 						$category_page_accessible = UM()->options()->get( 'category_page_accessible' );
-						if ( $category_page_accessible == 0 ) {
+						if ( ! $category_page_accessible ) {
 							//get redirect URL if not set get login page by default
 							$redirect = UM()->options()->get( 'access_redirect' );
 							if ( ! $redirect ) {
@@ -1775,13 +1876,12 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			}
 		}
 
-
 		/**
 		 * Check access
 		 *
 		 * @return bool
 		 */
-		function check_access() {
+		public function check_access() {
 			if ( $this->allow_access === true ) {
 				return true;
 			}
@@ -1794,6 +1894,21 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return false;
 		}
 
+		/**
+		 * Sends a HTTP header to limit rendering of pages to same origin iframes when loading sensitive pages.
+		 *
+		 * Can be disabled with: remove_action( 'template_redirect', array( UM()->access(), 'send_frame_options_header' ), 1010 );
+		 *
+		 * @since  2.8.0
+		 */
+		public function send_frame_options_header() {
+			if ( um_is_core_page( 'account' )
+				|| um_is_core_page( 'login' )
+				|| um_is_core_page( 'password-reset' )
+				|| um_is_core_page( 'register' ) ) {
+				send_frame_options_header();
+			}
+		}
 
 		/**
 		 * Sets a custom access referer in a redirect URL
@@ -1803,7 +1918,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return string
 		 */
-		function set_referer( $url, $referer ) {
+		public function set_referer( $url, $referer ) {
 
 			/**
 			 * UM hook
@@ -1834,13 +1949,13 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $url;
 		}
 
-
 		/**
 		 * Get privacy settings for post
 		 * return false if post is not private
 		 * Restrict content new logic
 		 *
-		 * @param \WP_Post|int $post Post ID or object
+		 * @param WP_Post|int $post Post ID or object
+		 *
 		 * @return bool|array
 		 */
 		public function get_post_privacy_settings( $post ) {
@@ -1849,7 +1964,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 				return false;
 			}
 
-			if ( ! is_numeric( $post ) && ! is_a( $post, \WP_Post::class ) ) {
+			if ( ! is_numeric( $post ) && ! is_a( $post, WP_Post::class ) ) {
 				return false;
 			}
 
@@ -1996,15 +2111,15 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return false;
 		}
 
-
 		/**
 		 * Helper for checking if the user can some of the roles array
 		 *
 		 * @param $user_id
 		 * @param $roles
+		 *
 		 * @return bool
 		 */
-		function user_can( $user_id, $roles ) {
+		public function user_can( $user_id, $roles ) {
 			$user_can = false;
 
 			if ( ! empty( $roles ) ) {
@@ -2019,7 +2134,6 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $user_can;
 		}
 
-
 		/**
 		 * Helper for 3rd-party integrations with content restriction settings
 		 *
@@ -2027,7 +2141,7 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 		 *
 		 * @return bool
 		 */
-		function um_custom_restriction( $restriction ) {
+		public function um_custom_restriction( $restriction ) {
 			/**
 			 * UM hook
 			 *
@@ -2052,16 +2166,16 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return apply_filters( 'um_custom_restriction', true, $restriction );
 		}
 
-
 		/**
 		 * Is post restricted?
 		 *
 		 * @param int $post_id
 		 * @param bool $on_single_page
 		 * @param bool $ignore_cache
+		 *
 		 * @return bool
 		 */
-		function is_restricted( $post_id, $on_single_page = false, $ignore_cache = false ) {
+		public function is_restricted( $post_id, $on_single_page = false, $ignore_cache = false ) {
 			// break for incorrect post
 			if ( empty( $post_id ) ) {
 				return false;
@@ -2151,16 +2265,16 @@ if ( ! class_exists( 'um\core\Access' ) ) {
 			return $restricted;
 		}
 
-
 		/**
 		 * Is term restricted?
 		 *
 		 * @param int $term_id
 		 * @param bool $on_term_page
 		 * @param bool $ignore_cache
+		 *
 		 * @return bool
 		 */
-		function is_restricted_term( $term_id, $on_term_page = false, $ignore_cache = false ) {
+		public function is_restricted_term( $term_id, $on_term_page = false, $ignore_cache = false ) {
 			static $cache = array();
 
 			if ( isset( $cache[ $term_id ] ) && ! $ignore_cache ) {

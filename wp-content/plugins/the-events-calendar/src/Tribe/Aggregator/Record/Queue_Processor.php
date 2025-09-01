@@ -62,7 +62,12 @@ class Tribe__Events__Aggregator__Record__Queue_Processor {
 		add_action( self::$scheduled_key, [ $this, 'process_queue' ], 20, 0 );
 		add_action( self::$scheduled_single_key, [ $this, 'process_queue' ], 20, 0 );
 
-		$this->register_scheduled_task();
+		// Prevents problems with text domain loading too early.
+		if ( did_action( 'init' ) || doing_action( 'init' ) ) {
+			$this->register_scheduled_task();
+		} else {
+			add_action( 'init', [ $this, 'register_scheduled_task' ] );
+		}
 	}
 
 	/**
@@ -192,11 +197,18 @@ class Tribe__Events__Aggregator__Record__Queue_Processor {
 	 */
 	public function next_waiting_record( $interactive_only = false, $cache = false ) {
 		if ( true === $cache ) {
-			$transient_key       = 'tribe-event-aggregator-next_waiting_record' . ( ! $interactive_only ?: '_interactive_only' );
+			$interactive_only_suffix = '';
+			if ( $interactive_only ) {
+				$interactive_only_suffix = '_interactive_only';
+			}
+			$transient_key       = 'tribe-event-aggregator-next_waiting_record' . ( ! $interactive_only ? '' : '_interactive_only' );
 			$next_waiting_record = get_transient( $transient_key );
 
 			if ( ! empty( $next_waiting_record ) ) {
 				return $this->current_record_id = $next_waiting_record;
+			} elseif ( null === $next_waiting_record ) {
+				// When not false we
+				return false;
 			}
 		}
 
@@ -222,6 +234,12 @@ class Tribe__Events__Aggregator__Record__Queue_Processor {
 		$waiting_records = get_posts( $args );
 
 		if ( empty( $waiting_records ) ) {
+			// Set cache in case of usage.
+			if ( true === $cache ) {
+				// Setting to null prevents us from running for 5 minutes.
+				set_transient( $transient_key, null, 5 * MINUTE_IN_SECONDS );
+			}
+
 			return $this->current_record_id = 0;
 		}
 

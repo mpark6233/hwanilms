@@ -11,7 +11,7 @@
  * @modified 2018-08-23Probably you updated your paid version of Booking Calendar
  */
 
-//FixIn: 8.3.3.99
+// FixIn: 8.3.3.99.
 
 /*
 		window.wp.blocks,
@@ -40,7 +40,7 @@
 		 */
 		var __ = wp.i18n.__;
 
-		//FixIn: 8.4.3.1
+		// FixIn: 8.4.3.1.
 		/*
 		var source = wp.blocks.source,
 		    RichText = wp.editor.RichText,
@@ -50,9 +50,16 @@
 		/**
 		 * Custom SVG path for Booking Calendar icon
 		 */
-		var wpbc_icon = el('svg', { width: 16, height: 16, fill: "currentColor", className: "bi bi-calendar3-range", viewBox: "-2 -1 20 20"  },
-		  el('path', { d: "M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z" } ),
-		  el('path', { d: "M7 10a1 1 0 0 0 0-2H1v2h6zm2-3h6V5H9a1 1 0 0 0 0 2z" } )
+		// var wpbc_icon = el('svg', { width: 16, height: 16, fill: "currentColor", className: "bi bi-calendar3-range", viewBox: "-2 -1 20 20"  },
+		//   el('path', { d: "M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z" } ),
+		//   el('path', { d: "M7 10a1 1 0 0 0 0-2H1v2h6zm2-3h6V5H9a1 1 0 0 0 0 2z" } )
+		// );
+
+		// FixIn: 10.11.3.3.
+		var wpbc_icon = el('svg', { width: 16, height: 16, fill: "currentColor", className: "bi bi-calendar3-range", viewBox: "0 0 550 550"  },
+		  el('path', { d: "M275 162.36c-92.32 0-167.15 77.82-167.15 173.81S182.69 509.99 275 509.99s167.15-77.82 167.15-173.82S367.31 162.36 275 162.36Zm0 264.53c-50.1 0-90.71-40.61-90.71-90.71s40.61-90.71 90.71-90.71 90.71 40.61 90.71 90.71-40.61 90.71-90.71 90.71Z", fill: "#eee" } ),
+		  el('path', { d: "M340.53 398.91c-14.85 15.51-35.16 25.76-57.84 27.66-54.87 4.6-101.64-41.14-98.23-96.1 2.94-47.44 42.35-85.01 90.54-85.01 24.84 0 47.34 9.98 63.72 26.16 5.86 5.78 15.29 5.73 21.11-.09l35.14-35.14c5.69-5.69 5.9-14.87.43-20.77-30.41-32.83-73.1-53.26-120.4-53.26-92.32 0-167.15 77.82-167.15 173.81S182.69 509.99 275 509.99c48.49 0 92.15-21.47 122.68-55.76 5.29-5.94 5.02-14.97-.6-20.59l-35.05-35.05c-5.98-5.98-15.67-5.79-21.51.32Z", fill: "#000" } ),
+		  el('path', { d: "M112.53 261.27c12.34-39.07 38.32-70.02 77.79-97.04.92-.63 1.48-1.67 1.48-2.79V14.76c0-4.28-3.68-7.76-8.22-7.76h-3.76c-18.56 0-73.17 40.3-71.79 60.62l-.17 192.91c0 2.74 3.86 3.34 4.68.73Z", fill: "#000" } )
 		);
 
 		registerBlockType( 'booking/booking', {
@@ -61,7 +68,7 @@
 
 			description: __( 'Show a booking form, availability calendar or other elements from Booking Calendar plugin.' ),
 
-			icon: wpbc_icon,			//FixIn: 9.5.2.1
+			icon: wpbc_icon,			// FixIn: 9.5.2.1.
 
 			// icon:  {
 			// 			// Specifying a background color to appear with the icon e.g.: in the inserter.
@@ -146,14 +153,14 @@
 							    href         : '#!',
 								data_block_id: cid,
 							    popup_tab_index: 0						// Will be index for active tab in popup dialog
-							   , key: 'configure_' + cid																//FixIn: 8.7.3.18
+							   , key: 'configure_' + cid																// FixIn: 8.7.3.18.
 							},
 						__( 'Configure Booking Calendar Block' )
 						)
 					);
 
 					// Visual Preview of Block
-					children = wpbc_gt_parse_shortcode( props.attributes.wpbc_shortcode, children , cid );				//FixIn: 8.7.3.18
+					children = wpbc_gt_parse_shortcode( props.attributes.wpbc_shortcode, children , cid );				// FixIn: 8.7.3.18.
 
 //console.log( 'WPBC children', children) ;
 
@@ -162,19 +169,19 @@
 						el(
 							'input',
 							{
-								key: 'onchangewpbcinput_' + cid,														//FixIn: 8.7.3.18
+								key: 'onchangewpbcinput_' + cid,														// FixIn: 8.7.3.18.
 								value	  : _val, //props.attributes.wpbc_shortcode,
 								onChange  : function ( event ) {
 												props.setAttributes( {wpbc_shortcode: event.target.value } );
 //console.log( '%cWPBC-Gb :: o n C h a n  g e  !!!! Y E S  !!! event for onChangeWPBCinputShortcode', 'color: orange; font-weight: bold;', event );
 											},
-								onClick: function (event) {																//FixIn: 8.8.2.10
+								onClick: function (event) {																// FixIn: 8.8.2.10.
 										props.setAttributes( {wpbc_shortcode: event.target.value } );
 								},
 								className: 'wpbc_gb_text_shortcode',
 								type     : 'text',
-								//readOnly : 'readonly',																//FixIn: 8.8.2.10
-								//disabled : 'disabled',																//FixIn: 8.8.2.10
+								//readOnly : 'readonly',																// FixIn: 8.8.2.10.
+								//disabled : 'disabled',																// FixIn: 8.8.2.10.
 								// onFocus  : function ( event ){
 								// 								event.target.select();
 								// 		}
@@ -223,7 +230,7 @@
 
 		$( document ).on( 'click', '.wpbc_gb_block_preview_inner_title_edit', function( e ) {
 //jQuery( '.wpbc-gutenberg-open-btn' ).hide();
-			$( this ).closest( '.wpbc_gb_div_block' ).find( '.wpbc-gutenberg-open-btn' ).trigger( 'click' );			//FixIn: 8.7.11.12
+			$( this ).closest( '.wpbc_gb_div_block' ).find( '.wpbc-gutenberg-open-btn' ).trigger( 'click' );			// FixIn: 8.7.11.12.
 
 		});
 
@@ -239,7 +246,7 @@
 
 
 			// Remove CSS class 'is-selected' (remove blue focus) in main DIV (after popup opened), because of that hide via CSS BIG blue button: "Configure Booking Calendar Block"
-			jQuery( 'div[data-block="' + _id + '"]' ).removeClass( 'is-selected' );										//FixIn: 8.8.2.10
+			jQuery( 'div[data-block="' + _id + '"]' ).removeClass( 'is-selected' );										// FixIn: 8.8.2.10.
 
 			// Get num. of popup active tab to  set
 			var popup_tab_index = $( this ).attr( 'popup_tab_index' );
@@ -251,7 +258,7 @@
 			jQuery( "#wpbc_text_gettenberg_section_id" ).val( _id );
 
 			// Select specific TAB in poup dialog
-			jQuery( "#wpbc_tiny_modal .wpdvlp-top-tabs a.nav-tab" ).eq( popup_tab_index ).trigger( 'click' );			//FixIn: 8.7.11.12
+			jQuery( "#wpbc_tiny_modal .wpdvlp-top-tabs a.nav-tab" ).eq( popup_tab_index ).trigger( 'click' );			// FixIn: 8.7.11.12.
 
 
 //console.log( 'WPBC-Gb :: Popup window for configuration Booking Calendar shortcode. Section #', _id );
@@ -301,7 +308,7 @@
 		//Its does not work for automatic generating "Edit" event :((( , so we make some workarround in Edit block event
 		jQuery( 'div[data-block="' + block_section_id + '"] .wpbc_gb_text_shortcode' ).trigger( 'focus' ).trigger('mousedown').trigger( 'click' ).trigger('mouseup').trigger('change');
 
-		//FixIn: 8.4.2.10
+		// FixIn: 8.4.2.10.
 		//FixIn: 8.7.3.17	href: '#!'
 		//FixIn: 8.7.3.19		- chnaged <a href="#!" to '<div href="#!"	- its make update of block  after  clicking on DIV (and not A) element
 
@@ -311,7 +318,7 @@
 // 	'<div href="#!" class="button wpbc-gutenberg-update-preview-btn" ' +
 // 	'>' + wp.i18n.__( 'Click to Preview Block' ) + '</div></div>'
 // );
-// 			//FixIn: 8.7.6.11
+// 			// FixIn: 8.7.6.11.
 // jQuery( 'div[data-block="' + block_section_id + '"]' ).before(
 // 	'<div class="editor-block-list__block wpbc-gutenberg-update-view" style="cursor: pointer;text-align: center;">' +
 // 	'<div href="#!" class="button wpbc-gutenberg-update-preview-btn" ' +
@@ -345,7 +352,7 @@
 	 * @param children			- array of el for gnerating preview
 	 * @returns 				- array of el
 	 */
-	function wpbc_gt_parse_shortcode( shortcode_in_text, children, cid ){												//FixIn: 8.7.3.18
+	function wpbc_gt_parse_shortcode( shortcode_in_text, children, cid ){												// FixIn: 8.7.3.18.
 
 //console.log( 'wpbc_gt_parse_shortcode cid', cid );
 
@@ -388,7 +395,7 @@
 					case 'booking':
 						block_preview_el = wpbc_gt_get_visual_block_for_booking( shortcode_obj.shortcode, {
 																									'shortcode_in_text': shortcode_in_text
-																									, 'cid_key': wpbc_shortcode_type+ '_' + cid		//FixIn: 8.7.3.18
+																									, 'cid_key': wpbc_shortcode_type+ '_' + cid		// FixIn: 8.7.3.18.
 																						} );
 						children[ (children.length - 1) ].props.popup_tab_index = 0;									// Set index of Active tab in popup dialog
 						break;
@@ -527,7 +534,7 @@
 	 */
 	function wpbc_gt_get_visual_block_for_default( shortcode_obj, params ){
 
-		// Booking Form Parameters		//FixIn: 10.0.0.16
+		// Booking Form Parameters		// FixIn: 10.0.0.16.
 		var shortcode_defaults = {
 			type      	: 1,
 			resource_id : 1,
@@ -589,7 +596,7 @@
 	 */
 	function wpbc_gt_get_visual_block_for_booking( shortcode_obj, params ){
 
-		// Booking Form Parameters		//FixIn: 10.0.0.16
+		// Booking Form Parameters		// FixIn: 10.0.0.16.
 		var shortcode_defaults = {
 			type      : 1,
 			resource_id : 1,
@@ -607,19 +614,19 @@
 
 		var inner_header = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_header'
-										, key: 'header_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'header_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_header( { header: wp.i18n.__( 'Booking Form' ), cid_key: 'header_' + params[ 'cid_key' ] } )
 							);
 		var inner_body   = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_body'
-										, key: 'body_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'body_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_shortcode_parameters( wpbc_parse_params_into_rows_arr_for_booking( props ), { cid_key: 'body_' + params[ 'cid_key' ] } )
 							);
 		var inner_footer = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_footer'
-										, key: 'footer_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'footer_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_footer( { shortcode_in_text: params[ 'shortcode_in_text' ], cid_key: 'footer_' + params[ 'cid_key' ] } )
 							);
@@ -627,11 +634,11 @@
 
 		return  el( 'div', {
 							className: 'wpbc_gb_block_shortcode_preview_wrapper wpbc_gb_block_preview_booking'
-							, key: 'preview_wrapper_' + params[ 'cid_key' ]												//FixIn: 8.7.3.18
+							, key: 'preview_wrapper_' + params[ 'cid_key' ]												// FixIn: 8.7.3.18.
 						}
 					, el( 'div', {
 									className: 'wpbc_gb_block_shortcode_preview_content'
-									, key: 'preview_content_' + params[ 'cid_key' ]										//FixIn: 8.7.3.18
+									, key: 'preview_content_' + params[ 'cid_key' ]										// FixIn: 8.7.3.18.
 								}
 								, [ inner_header, inner_body ]
 						)
@@ -652,7 +659,7 @@
 			if ( (undefined != props[ 'type' ]) && ( 1 != props[ 'type' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'type' ]} );
 			}
-			//FixIn: 10.0.0.16
+			// FixIn: 10.0.0.16.
 			if ( (undefined != props[ 'resource_id' ]) && ( 1 != props[ 'resource_id' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'resource_id' ]} );
 			}
@@ -684,7 +691,7 @@
 	 */
 	function wpbc_gt_get_visual_block_for_bookingcalendar( shortcode_obj, params ){
 
-		// Booking Form Parameters		//FixIn: 10.0.0.16
+		// Booking Form Parameters		// FixIn: 10.0.0.16.
 		var shortcode_defaults = {
 			type      : 1,
 			resource_id : 1,
@@ -701,19 +708,19 @@
 
 		var inner_header = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_header'
-										, key: 'header_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'header_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_header( { header: wp.i18n.__( 'Availability Calendar' ), cid_key: 'header_' + params[ 'cid_key' ] } )
 							);
 		var inner_body   = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_body'
-										, key: 'body_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'body_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_shortcode_parameters( wpbc_parse_params_into_rows_arr_for_bookingcalendar( props ), { cid_key: 'body_' + params[ 'cid_key' ] } )
 							);
 		var inner_footer = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_footer'
-										, key: 'footer_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'footer_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_footer( { shortcode_in_text: params[ 'shortcode_in_text' ], cid_key: 'footer_' + params[ 'cid_key' ] } )
 							);
@@ -721,12 +728,12 @@
 
 		return  el( 'div', {
 							  className: 'wpbc_gb_block_shortcode_preview_wrapper wpbc_gb_block_preview_bookingcalendar'
-							, key: 'preview_wrapper_' + params[ 'cid_key' ]												//FixIn: 8.7.3.18
+							, key: 'preview_wrapper_' + params[ 'cid_key' ]												// FixIn: 8.7.3.18.
 						   }
 
 						, el( 'div', {
 										  className: 'wpbc_gb_block_shortcode_preview_content'
-										, key: 'preview_content_' + params[ 'cid_key' ]										//FixIn: 8.7.3.18
+										, key: 'preview_content_' + params[ 'cid_key' ]										// FixIn: 8.7.3.18.
 									 }
 								, [ inner_header, inner_body ]
 							)
@@ -747,7 +754,7 @@
 			if ( (undefined != props[ 'type' ]) && ( 1 != props[ 'type' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'type' ]} );
 			}
-			//FixIn: 10.0.0.16
+			// FixIn: 10.0.0.16.
 			if ( (undefined != props[ 'resource_id' ]) && ( 1 != props[ 'resource_id' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'resource_id' ]} );
 			}
@@ -794,19 +801,19 @@
 
 		var inner_header = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_header'
-										, key: 'header_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'header_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_header( { header: wp.i18n.__( 'Timeline' ), cid_key: 'header_' + params[ 'cid_key' ] } )
 							);
 		var inner_body   = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_body'
-										, key: 'body_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'body_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_shortcode_parameters( wpbc_parse_params_into_rows_arr_for_bookingtimeline( props ), { cid_key: 'body_' + params[ 'cid_key' ] } )
 							);
 		var inner_footer = el( 'div', {
 										className: 'wpbc_gb_block_preview_inner_footer'
-										, key: 'footer_' + params[ 'cid_key' ]											//FixIn: 8.7.3.18
+										, key: 'footer_' + params[ 'cid_key' ]											// FixIn: 8.7.3.18.
 									}
 									, wpbc_gb_tpl_footer( { shortcode_in_text: params[ 'shortcode_in_text' ], cid_key: 'footer_' + params[ 'cid_key' ] } )
 							);
@@ -972,7 +979,7 @@
 	 */
 	function wpbc_gt_get_visual_block_for_bookingform( shortcode_obj, params ){
 
-		// Booking Form Parameters		//FixIn: 10.0.0.16
+		// Booking Form Parameters		// FixIn: 10.0.0.16.
 		var shortcode_defaults = {
 			type      : 1,
 			resource_id : 1,
@@ -1019,7 +1026,7 @@
 			if ( (undefined != props[ 'type' ]) && ( 1 != props[ 'type' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'type' ]} );
 			}
-			//FixIn: 10.0.0.16
+			// FixIn: 10.0.0.16.
 			if ( (undefined != props[ 'resource_id' ]) && ( 1 != props[ 'resource_id' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'resource_id' ]} );
 			}
@@ -1478,7 +1485,7 @@
 	 */
 	function wpbc_gt_get_visual_block_for_bookingresource( shortcode_obj, params ){
 
-		// Booking Form Parameters			//FixIn: 10.0.0.16
+		// Booking Form Parameters			// FixIn: 10.0.0.16.
 		var shortcode_defaults = {
 			type              : 1,
 			resource_id       : 1,
@@ -1524,7 +1531,7 @@
 			if ( (undefined != props[ 'type' ]) && ( 1 != props[ 'type' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'type' ]} );
 			}
-			//FixIn: 10.0.0.16
+			// FixIn: 10.0.0.16.
 			if ( (undefined != props[ 'resource_id' ]) && ( 1 != props[ 'resource_id' ]) ){
 				rows_in_content.push( {name: wp.i18n.__( 'Booking resource' ), value: 'ID = ' + props[ 'resource_id' ]} );
 			}
@@ -1559,7 +1566,7 @@
 function wpbc_gb_tpl_header( props ){
 
 	var el = wp.element.createElement;
-																		//FixIn: 8.7.3.18
+																		// FixIn: 8.7.3.18.
 	return [
 		el( 'h3',  {className: 'wpbc_gb_block_preview_inner_title_text', key: 'h3header_' + props[ 'cid_key' ] }, props.header  ),
 
@@ -1576,7 +1583,7 @@ function wpbc_gb_tpl_header( props ){
  * @param props - array of objects of parameters [ {name: 'title', value: 'data'}, ... ]
  * @returns array of createElements - react elements
  */
-function wpbc_gb_tpl_shortcode_parameters( props , params ){			//FixIn: 8.7.3.18
+function wpbc_gb_tpl_shortcode_parameters( props , params ){			// FixIn: 8.7.3.18.
 
 	var el = wp.element.createElement;
 
@@ -1584,7 +1591,7 @@ function wpbc_gb_tpl_shortcode_parameters( props , params ){			//FixIn: 8.7.3.18
 
 	var propsLength = props.length;
 
-	var cid_key = params[ 'cid_key' ];	//FixIn: 8.7.3.18
+	var cid_key = params[ 'cid_key' ];	// FixIn: 8.7.3.18.
 	for ( var i = 0; i < propsLength; i++ ){
 
 		cid_key = 'internal' + i + params[ 'cid_key' ];
@@ -1624,7 +1631,7 @@ function wpbc_gb_tpl_shortcode_parameters( props , params ){			//FixIn: 8.7.3.18
 function wpbc_gb_tpl_footer( props ){
 
 	var el = wp.element.createElement;
-																				//FixIn: 8.7.3.18
+																				// FixIn: 8.7.3.18.
 	return [
 				el( 'div', { className: 'wpbc_gb_block_preview_inner_shortcode', key: 'div_foot_' + props[ 'cid_key' ] }, props.shortcode_in_text )
 	       ];

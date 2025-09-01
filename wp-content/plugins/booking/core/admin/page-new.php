@@ -20,51 +20,55 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
  *  Define where to show
  */
 class WPBC_Page_AddNewBooking extends WPBC_Page_Structure {
-    
-    
-    public function in_page() {
-        return 'wpbc-new';
-    }
-
-    public function tabs() {
-        
-        $tabs = array();
-        $tabs[ 'add-booking' ] = array(
-                              'title' => __('Add booking','booking')            // Title of TAB    
-                            , 'hint' => __('Add booking', 'booking')                      // Hint    
-                            , 'page_title' => __('Add booking', 'booking')                                // Title of Page    
-                            , 'link' => ''                                      // Can be skiped,  then generated link based on Page and Tab tags. Or can  be extenral link
-                            , 'position' => ''                                  // 'left'  ||  'right'  ||  ''
-                            , 'css_classes' => ''                               // CSS class(es)
-                            , 'icon' => ''                                      // Icon - link to the real PNG img
-                            , 'font_icon' => 'wpbc-bi-calendar-plus'                 // CSS definition  of forn Icon
-                            , 'default' => true                                 // Is this tab activated by default or not: true || false. 
-                            , 'disabled' => false                               // Is this tab disbaled: true || false. 
-                            , 'hided'   =>  true                                 // Is this tab hided: true || false. 
-                            , 'subtabs' => array()            
-        );
-        
-        return $tabs;        
-    }
 
 
-    public function content() {                
-                
-        do_action( 'wpbc_hook_add_booking_page_header', 'add_booking');         // Define Notices Section and show some static messages, if needed
-        
-        if ( ! wpbc_is_mu_user_can_be_here( 'activated_user' ) ) return false;  // Check if MU user activated,  otherwise show Warning message.
-        
-        if ( ! wpbc_set_default_resource_to__get() ) return false;              // Define default booking resources for $_GET and check if booking resource belong to user
+	public function in_page() {
+		return 'wpbc-new';
+	}
 
-        ?><span class="wpdevelop"><?php                                         // BS UI CSS Class
-        
-        wpbc_js_for_bookings_page();                                            // JavaScript functions
-        
-        //wpbc_welcome_panel();                                                   // Welcome Panel (links)
-        
-        
-        //   T o o l b a r s   /////////////////////////////////////////////////
-        wpbc_add_new_booking_toolbar();                                                
+	public function tabs() {
+
+		$tabs                = array();
+		$tabs['add-booking'] = array(
+			'is_show_top_path'                   => false,                                 // true | false.  By default value is: false.
+			'left_navigation__default_view_mode' => 'min',                             // '' | 'min' | 'compact' | 'max' | 'none'.  By default value is: ''.
+			'page_title'                         => __( 'Add New Booking', 'booking' ),        // Header - Title.  If false, than hidden.
+			'page_description'                   => __( 'Manually add new bookings from the Admin Panel.', 'booking' ), // Header - Title Description.  If false, than hidden.
+			'title'                              => __( 'Add booking', 'booking' ),        // Title of TAB.
+			'hint'                               => __( 'Add booking', 'booking' ),        // Hint.
+			'link'                               => '',                                    // Can be skiped,  then generated link based on Page and Tab tags. Or can  be extenral link.
+			'position'                           => '',                                    // Can be: 'left'  |  'right'  |  ''.
+			'css_classes'                        => '',                                    // this is CSS class(es).
+			'icon'                               => '',                                    // Icon - link to the real PNG img.
+			'font_icon'                          => 'wpbc-bi-plus',               // CSS definition  of forn Icon.
+			'default'                            => true,                                  // Is this tab activated by default or not: true || false.
+			'disabled'                           => false,                                 // Is this tab disbaled: true || false.
+			'hided'                              => true,                                  // Is this tab hided: true || false.
+			'subtabs'                            => array(),
+		);
+
+		return $tabs;
+	}
+
+
+	public function content() {
+
+		do_action( 'wpbc_hook_add_booking_page_header', 'add_booking' );         // Define Notices Section and show some static messages, if needed.
+
+		if ( ! wpbc_is_mu_user_can_be_here( 'activated_user' ) ) {
+			return false;  // Check if MU user activated,  otherwise show Warning message.
+		}
+
+		if ( ! wpbc_set_default_resource_to__get() ) {
+			return false;  // Define default booking resources for $_ GET and check if booking resource belong to user.
+		}
+
+        ?><span class="wpdevelop"><?php                                         // BS UI CSS Class.
+
+		wpbc_js_for_bookings_page();                                           // JavaScript functions.
+
+        //   T o o l b a r s.
+        wpbc_add_new_booking_toolbar();
 
         ?></span><!-- wpdevelop class --><?php 
              
@@ -73,7 +77,7 @@ class WPBC_Page_AddNewBooking extends WPBC_Page_Structure {
         ?><div class="add_booking_page_content" style="width:100%;margin-bottom:100px;"><?php
         
             // Previously we defined booking resources to  $_GET
-            $bk_type = intval( $_GET['booking_type'] );
+		$bk_type = isset( $_GET['booking_type'] ) ? intval( $_GET['booking_type'] ) : 1;  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
             // do_action( 'wpdev_bk_add_form', $bk_type, get_bk_option( 'booking_client_cal_count' ) );
             
@@ -87,7 +91,7 @@ class WPBC_Page_AddNewBooking extends WPBC_Page_Structure {
                             , ''                                                    // $my_selected_dates_without_calendar = ''
                             , false                                                 // $start_month_calendar = false
                             , '{calendar' . $saved_user_calendar_params['options_param'] . '}'          // $bk_otions=array() 
-                          );                                                        //FixIn:6.0.1.6
+                          );                                                        // FixIn: 6.0.1.6.
         
         ?></div><?php
         
@@ -135,7 +139,7 @@ class WPBC_Page_AddNewBooking extends WPBC_Page_Structure {
         if ( ! empty( $user_calendar_options['calendar_width'] ) ) {
              $unit_value = ( esc_attr( $user_calendar_options['calendar_widthunits'] ) == 'percent' ) ? '%' : esc_attr( $user_calendar_options['calendar_widthunits'] );
              $option_width = ' width=' . intval( $user_calendar_options['calendar_width'] ) . $unit_value;
-			 $option_width .= ' strong_width=' . intval( $user_calendar_options['calendar_width'] ) . $unit_value;        //FixIn: 9.3.1.6
+			 $option_width .= ' strong_width=' . intval( $user_calendar_options['calendar_width'] ) . $unit_value;        // FixIn: 9.3.1.6.
         } else $option_width = '';            
 
         if ( ! empty( $user_calendar_options['calendar_cell_height'] ) ) {

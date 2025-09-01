@@ -9,12 +9,13 @@
  *
  * @link http://evnt.is/1aiy
  *
- * @version 5.2.1
+ * @version 6.2.0
+ * @since   6.1.4 Changing our nonce verification structures.
+ * @since   6.2.0 Moved the header information into a new components/header.php template.
  *
  * @var array    $events               The array containing the events.
  * @var string   $rest_url             The REST URL.
  * @var string   $rest_method          The HTTP method, either `POST` or `GET`, the View will use to make requests.
- * @var string   $rest_nonce           The REST nonce.
  * @var bool     $disable_event_search Boolean on whether to disable the event search.
  * @var string[] $container_classes    Classes used for the container of the view.
  * @var bool     $should_manage_url    Whether the view should manage the URL or not.
@@ -29,9 +30,8 @@ if ( empty( $disable_event_search ) ) {
 
 ?>
 <div
-	<?php tribe_classes( $container_classes ); ?>
+	<?php tec_classes( $container_classes ); ?>
 	data-js="tribe-events-view"
-	data-view-rest-nonce="<?php echo esc_attr( $rest_nonce ); ?>"
 	data-view-rest-url="<?php echo esc_url( $rest_url ); ?>"
 	data-view-rest-method="<?php echo esc_attr( $rest_method ); ?>"
 	data-view-manage-url="<?php echo esc_attr( $should_manage_url ); ?>"
@@ -42,7 +42,7 @@ if ( empty( $disable_event_search ) ) {
 		data-view-breakpoint-pointer="<?php echo esc_attr( $breakpoint_pointer ); ?>"
 	<?php endif; ?>
 >
-	<div class="tribe-common-l-container tribe-events-l-container">
+	<section class="tribe-common-l-container tribe-events-l-container">
 		<?php $this->template( 'components/loader', [ 'text' => __( 'Loading...', 'the-events-calendar' ) ] ); ?>
 
 		<?php $this->template( 'components/json-ld-data' ); ?>
@@ -51,17 +51,7 @@ if ( empty( $disable_event_search ) ) {
 
 		<?php $this->template( 'components/before' ); ?>
 
-		<header <?php tribe_classes( $header_classes ); ?>>
-			<?php $this->template( 'components/messages' ); ?>
-
-			<?php $this->template( 'components/breadcrumbs' ); ?>
-
-			<?php $this->template( 'components/events-bar' ); ?>
-
-			<?php $this->template( 'day/top-bar' ); ?>
-
-			<?php $this->template( 'components/messages', [ 'classes' => [ 'tribe-events-header__messages--mobile' ] ] ); ?>
-		</header>
+		<?php $this->template( 'components/header' ); ?>
 
 		<?php $this->template( 'components/filter-bar' ); ?>
 
@@ -84,7 +74,7 @@ if ( empty( $disable_event_search ) ) {
 
 		<?php $this->template( 'components/after' ); ?>
 
-	</div>
+	</section>
 
 </div>
 

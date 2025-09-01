@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 	 */
 	function wpbc_hook_settings_page_footer_templates_simple_form( $page ){
 
-		if ( 'form_field_free_settings'  === $page ) {
+		if ( ( 'form_field_free_settings' === $page ) || ( 'color_themes_settings' === $page ) ) {
 
 			wpbc_template__form_simple__change_calendar_skin();
 
@@ -67,7 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 							wpbc_flex_label(
 												array(
 													  'id' 	  => $el_id
-													, 'label' => '<span class="" style="font-weight:600;">' . __( 'Calendar Skin', 'booking' ) . ':</span>'
+													, 'label' => '<span class="" style="font-weight:600;">' . esc_html__( 'Calendar Skin', 'booking' ) . ':</span>'
 												)
 										   );
 					?></div><?php
@@ -86,14 +86,20 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 					?><# <?php if (0) { ?><script type="text/javascript"><?php } ?>
 						jQuery( document ).ready( function (){
 							/* Set INITIAL selected option  in dropdown list based on  data. value 	//FixIn: 10.3.0.5 */
-							if (jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php echo WPBC_PLUGIN_URL; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).length){
-								jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php echo WPBC_PLUGIN_URL; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).prop( 'selected', true );
-								wpbc__calendar__change_skin( '<?php echo WPBC_PLUGIN_URL; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin  );
+							if (jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php echo esc_url( WPBC_PLUGIN_URL ); ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).length){
+								jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php echo esc_url( WPBC_PLUGIN_URL ); ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).prop( 'selected', true );
+								wpbc__calendar__change_skin( '<?php echo esc_url( WPBC_PLUGIN_URL ); ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin  );
 							}
 							/* Set INITIAL selected option  if selected CUSTOM Calendar skin 		//FixIn: 10.3.0.5 */
-							if (jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php echo $custom_user_skin_url; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).length){
-								jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php echo $custom_user_skin_url; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).prop( 'selected', true );
-								wpbc__calendar__change_skin( '<?php echo $custom_user_skin_url; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin  );
+							if (jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $custom_user_skin_url; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).length){
+								jQuery( '#ui_btn_cstm__set_calendar_skin option[value="<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $custom_user_skin_url; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin + '"]' ).prop( 'selected', true );
+								wpbc__calendar__change_skin( '<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo $custom_user_skin_url; ?>' + data.ajx_cleaned_params.customize_plugin__booking_skin  );
 							}
 							/**
 							 * Change calendar skin view
@@ -144,7 +150,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 							wpbc_flex_label(
 												array(
 													  'id' 	  => $el_id
-													, 'label' => '<span class="" style="font-weight:600;">' . __( 'Time Picker Skin', 'booking' ) . ':</span>'
+													, 'label' => '<span class="" style="font-weight:600;">' . esc_html__( 'Time Picker Skin', 'booking' ) . ':</span>'
 												)
 										   );
 					?></div><?php
@@ -160,8 +166,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;                                             
 
 						jQuery( document ).ready( function (){
 							// Set selected option  in dropdown list based on  data. value
-							jQuery( '#ui_btn_cstm__set_time_picker_skin option[value="<?php echo WPBC_PLUGIN_URL; ?>' + data.ajx_cleaned_params.customize_plugin__time_picker_skin + '"]' ).prop( 'selected', true );
-							wpbc__css__change_skin( '<?php echo WPBC_PLUGIN_URL; ?>' + data.ajx_cleaned_params.customize_plugin__time_picker_skin  , 'wpbc-time_picker-skin-css' );
+							jQuery( '#ui_btn_cstm__set_time_picker_skin option[value="<?php echo esc_url( WPBC_PLUGIN_URL ); ?>' + data.ajx_cleaned_params.customize_plugin__time_picker_skin + '"]' ).prop( 'selected', true );
+							wpbc__css__change_skin( '<?php echo esc_url( WPBC_PLUGIN_URL ); ?>' + data.ajx_cleaned_params.customize_plugin__time_picker_skin  , 'wpbc-time_picker-skin-css' );
 
 							/**
 							 * Change Time Picker Skin
@@ -201,33 +207,7 @@ function wpbc_smpl_form__ui__calendar_skin_dropdown(){
 		//if ( ! wpbc_is_user_can( $booking_action, wpbc_get_current_user_id() ) ) { 	return false; 	}
 
 
-		//FixIn: 10.3.0.5
-        //  Calendar Skin  /////////////////////////////////////////////////////
-		$cal_arr = wpbc_get_calendar_skin_options( WPBC_PLUGIN_URL );
-
-		$upload_dir = wp_upload_dir();							// Check  if this skin exist  in the Custom User folder at  the http://example.com/wp-content/uploads/wpbc_skins/
-		$custom_user_skin_folder = $upload_dir['basedir'] ;
-		$custom_user_skin_url    = $upload_dir['baseurl'] ;
-
-		$transformed_cal_arr = array();
-		foreach ( $cal_arr as $calendar_skin_url => $calendar_name ) {
-			if ( false !== strpos($calendar_skin_url, WPBC_PLUGIN_URL ) ){
-
-				$relative_cal_skin_path = str_replace( WPBC_PLUGIN_URL, '', $calendar_skin_url );
-
-				if ( file_exists( $custom_user_skin_folder .  $relative_cal_skin_path ) ) {
-					// Custom  Skin
-					$transformed_cal_arr[ $custom_user_skin_url . $relative_cal_skin_path ] = $calendar_name;
-				} else {
-					// Plugin Usual Skins
-					$transformed_cal_arr[ WPBC_PLUGIN_URL . $relative_cal_skin_path ] = $calendar_name;
-				}
-			} else {
-				// OptGroups
-				$transformed_cal_arr[ $calendar_skin_url ] = $calendar_name;
-			}
-		}
-
+		$transformed_cal_arr = wpbc_get_calendar_skin_options_with_legacy_sections();
 
 		$params_select = array(
 							  'id'       => $el_id 				// HTML ID  of element
@@ -285,12 +265,12 @@ function wpbc_smpl_form__ui__time_picker_dropdown(){
 
         // Skins in the Custom User folder (need to create it manually):    http://example.com/wp-content/uploads/wpbc_skins/ ( This folder do not owerwrited during update of plugin )
         $upload_dir = wp_upload_dir();
-	    //FixIn: 8.9.4.8
+	    // FixIn: 8.9.4.8.
 		$files_in_folder = wpbc_dir_list( array(  WPBC_PLUGIN_DIR . '/css/time_picker_skins/', $upload_dir['basedir'].'/wpbc_time_picker_skins/' ) );  // Folders where to look about Time Picker skins
 
         foreach ( $files_in_folder as $skin_file ) {                                                                            // Example: $skin_file['/css/skins/standard.css'] => 'Standard';
 
-            //FixIn: 8.9.4.8    //FixIn: 9.1.2.10
+            //FixIn: 8.9.4.8    // FixIn: 9.1.2.10.
 			$skin_file[1] = str_replace( array( WPBC_PLUGIN_DIR, WPBC_PLUGIN_URL , $upload_dir['basedir'] ), '', $skin_file[1] );                 // Get relative path for calendar skin
             $time_pickers_options[ WPBC_PLUGIN_URL . $skin_file[1] ] = $skin_file[2];
         }
@@ -327,94 +307,3 @@ function wpbc_smpl_form__ui__time_picker_dropdown(){
 
 // </editor-fold>
 
-
-
-/**
- * Button - Select Prior Skin in select-box
- * @return void
- */
-function wpbc_smpl_form__ui__selectbox_prior_btn( $dropdown_id, $is_apply_rotating_icon = true ){
-
-	$params_button = array(
-			  'type' => 'button'
-			, 'title' => ''	                 																			// Title of the button
-			// , 'hint'  => array( 'title' => __('Previous' ,'booking') , 'position' => 'top' )
-			, 'link' => 'javascript:void(0)'    																		// Direct link or skip  it
-			, 'action' => // "console.log( 'ON CLICK:', jQuery( '[name=\"set_days_customize_plugin\"]:checked' ).val() , jQuery( 'textarea[id^=\"date_booking\"]' ).val() );"                    // Some JavaScript to execure, for example run  the function
-						  " var is_selected = jQuery( '#" . $dropdown_id . " option:selected' ).prev(); "
-						  . " if ( is_selected.length == 0 ){ "
-						  . "    if (  ( 'optgroup' == jQuery( '#" . $dropdown_id . " option:selected' ).parent().prop('nodeName').toLowerCase() ) "
-						  . "       && ( jQuery( '#" . $dropdown_id . " option:selected' ).parent().prev().length )  "
-						  . "       && ( 'optgroup' == jQuery( '#" . $dropdown_id . " option:selected' ).parent().prev().prop('nodeName').toLowerCase() )   ){ "
-						  . "         is_selected = jQuery( '#" . $dropdown_id . " option:selected' ).parent().prev().find('option').last(); "
-						  . "    } "
-						  . " } "
-						  . " jQuery( '#" . $dropdown_id . " option:selected' ).prop('selected', false); "
-						  . " if ( is_selected.length == 0 ){ "
-						  . "    is_selected = jQuery( '#" . $dropdown_id . " option' ).last(); "
-						  . " } "
-						  . " if ( is_selected.length > 0 ){ "
-						  .	"    is_selected.prop('selected', true).trigger('change'); "
-						  . 	 ( ( $is_apply_rotating_icon ) ? "		wpbc_button_enable_loading_icon( this ); " : "" )
-						  . " } else { "
-						  . "    jQuery( this ).addClass( 'disabled' ); "
-						  . " } "
-			, 'class' => 'wpbc_ui_button'     				  															// wpbc_ui_button  | wpbc_ui_button_primary
-			//, 'icon_position' => 'left'         																		// Position  of icon relative to Text: left | right
-			, 'icon' 			   => array(
-										'icon_font' => 'wpbc_icn_arrow_back_ios', 										// 'wpbc_icn_check_circle_outline',
-										'position'  => 'left',
-										'icon_img'  => ''
-									)
-			, 'style' => ''                     																		// Any CSS class here
-			, 'mobile_show_text' => false       																		// Show  or hide text,  when viewing on Mobile devices (small window size).
-			, 'attr' => array()
-	);
-
-	wpbc_flex_button( $params_button );
-}
-
-/**
- * Button - Select Next Skin in select-box
- * @return void
- */
-function wpbc_smpl_form__ui__selectbox_next_btn( $dropdown_id, $is_apply_rotating_icon = true ){
-
-	$params_button = array(
-			  'type' => 'button'
-			, 'title' => ''	                 // Title of the button
-			// , 'hint'  => array( 'title' => __('Next' ,'booking') , 'position' => 'top' )
-			, 'link' => 'javascript:void(0)'    // Direct link or skip  it
-			, 'action' => //"console.log( 'ON CLICK:', jQuery( '[name=\"set_days_customize_plugin\"]:checked' ).val() , jQuery( 'textarea[id^=\"date_booking\"]' ).val() );"                    // Some JavaScript to execure, for example run  the function
-						  " var is_selected = jQuery( '#" . $dropdown_id . " option:selected' ).next(); "
-						  . " if ( is_selected.length == 0 ){ "
-						  . "    if (  ( 'optgroup' == jQuery( '#" . $dropdown_id . " option:selected' ).parent().prop('nodeName').toLowerCase() ) "
-						  . "       && ( jQuery( '#" . $dropdown_id . " option:selected' ).parent().next().length )  "
-						  . "       && ( 'optgroup' == jQuery( '#" . $dropdown_id . " option:selected' ).parent().next().prop('nodeName').toLowerCase() )   ){ "
-						  . "         is_selected = jQuery( '#" . $dropdown_id . " option:selected' ).parent().next().find('option').first(); "
-						  . "    } "
-						  . " } "
-						  . " jQuery( '#" . $dropdown_id . " option:selected' ).prop('selected', false); "
-						  . " if ( is_selected.length == 0 ){ "
-						  . "    is_selected = jQuery( '#" . $dropdown_id . " option' ).first(); "
-						  . " } "
-						  . " if ( is_selected.length > 0 ){ "
-						  .	"    is_selected.prop('selected', true).trigger('change'); "
-						  . 	 ( ( $is_apply_rotating_icon ) ? "		wpbc_button_enable_loading_icon( this ); " : "" )
-						  . " } else { "
-						  . "    jQuery( this ).addClass( 'disabled' ); "
-						  . " } "
-			, 'class' => 'wpbc_ui_button'     				  // wpbc_ui_button  | wpbc_ui_button_primary
-			//, 'icon_position' => 'left'         // Position  of icon relative to Text: left | right
-			, 'icon' 			   => array(
-										'icon_font' => 'wpbc_icn_arrow_forward_ios', // 'wpbc_icn_check_circle_outline',
-										'position'  => 'right',
-										'icon_img'  => ''
-									)
-			, 'style' => ''                     // Any CSS class here
-			, 'mobile_show_text' => false       // Show  or hide text,  when viewing on Mobile devices (small window size).
-			, 'attr' => array()
-	);
-
-	wpbc_flex_button( $params_button );
-}

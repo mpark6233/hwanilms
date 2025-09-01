@@ -96,7 +96,7 @@ class Tribe__Events__Admin__Timezone_Updater {
 	 */
 	public function notice_assets() {
 		$plugin = Tribe__Events__Main::instance();
-		$script = trailingslashit( $plugin->plugin_url ) . 'src/resources/js/events-admin-timezone-updater.js';
+		$script = trailingslashit( $plugin->plugin_url ) . 'build/js/events-admin-timezone-updater.js';
 		$handle = 'tribe-events-ajax-timezone-update';
 
 		wp_enqueue_script( $handle, $script, [ 'jquery' ], false, true );
@@ -177,7 +177,15 @@ class Tribe__Events__Admin__Timezone_Updater {
 	 * @return bool
 	 */
 	public function update_needed() {
-		return (bool) $this->find( 1, true );
+		$timed_option_key = 'events_timezone_update_needed';
+		$update_needed = tec_timed_option()->get( $timed_option_key );
+
+		if ( null === $update_needed ) {
+			$update_needed = (bool) $this->find( 1, true );
+			tec_timed_option()->set( $timed_option_key, $update_needed );
+		}
+
+		return $update_needed;
 	}
 
 	/**

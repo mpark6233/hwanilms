@@ -110,7 +110,10 @@ class MetaSlide
                 $slide_id,
                 $this->settings['width'],
                 $this->settings['height'],
-                isset($this->settings['smartCrop']) ? $this->settings['smartCrop'] : 'false'
+                isset($this->settings['smartCrop']) ? $this->settings['smartCrop'] : 'false',
+                true,
+                null,
+                isset($this->settings['cropMultiply']) ? absint($this->settings['cropMultiply']) : 1
             );
 
             return array(
@@ -604,11 +607,12 @@ class MetaSlide
      * Get the closest image based on a width size
      * 
      * @since 3.60
+     * @since 3.92 - Added a placeholder URL return instead of an empty string
      * 
      * @param int $width            Image width we want to target
      * @param int $attachment_id    Optional image ID. We use in ajax_update_slide_image()
      * 
-     * @return string 
+     * @return string A valid media image URL or a placeholder URL
      */
     public function get_intermediate_image_src( $width, $attachment_id = false )
     {
@@ -659,7 +663,7 @@ class MetaSlide
             }
         }
 
-        return '';
+        return METASLIDER_ASSETS_URL . 'metaslider/placeholder-thumb.jpg';
     }
 
     /**
@@ -733,13 +737,26 @@ class MetaSlide
      * Info icon with tooltip
      * 
      * @since 3.60
+     * @since 3.96 - Added $style param
+     * 
+     * @param string $label
+     * @param array $style 
      * 
      * @return html
      */
-    public function info_tooltip( $label )
+    public function info_tooltip( $label, $style = array() )
     {
+        $style_string = '';
+        if ( count( $style ) > 0 ) {
+            $style_array = [];
+            foreach ( $style as $key => $value ) {
+                $style_array[] = "$key: $value";
+            }
+            $style_string = implode( '; ', $style_array );
+        }
+
         $html = '<span class="dashicons dashicons-info tipsy-tooltip-top" title="' . 
-            esc_attr( $label ) . '"></span>';
+            esc_attr( $label ) . '" style="' . esc_attr( $style_string ) . '"></span>';
 
         return $html;
     }
@@ -813,4 +830,50 @@ class MetaSlide
         return $content;
     }
     
+    /**
+     * Display the Hide slide button in the slide header
+     *
+     * @since 3.100
+     */
+    public function get_hide_slide_button_html()
+    {
+        //$slide_type = get_post_meta($this->slide->ID, 'ml-slider_type', true);
+        $hide_slide = metaslider_option_is_enabled(get_post_meta($this->slide->ID, '_meta_slider_slide_is_hidden', true));
+        ?>
+
+        <button type="button" title="<?php
+        _e('Hide slide', 'ml-slider'); ?>" class="hide-slide toolbar-button alignright tipsy-tooltip-top">
+            <input class="hide-slide" type="checkbox" name="attachment[<?php
+            echo esc_attr($this->slide->ID); ?>][hide_slide]" <?php
+            echo($hide_slide ? 'checked="checked"' : ''); ?>>
+            <svg class="feather feather-eye" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" data-reactid="501">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg class="feather feather-eye-off" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" data-reactid="496">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+        </button>
+        <?php
+    }
+
+    /**
+    * Check if we're using native width/height from slideshow main options
+    * or custom image width/height
+    * 
+    * @since 3.100
+    * 
+    * @param $side string 'width' or 'height' only
+    * 
+    * @return int|bool
+    */
+    public function image_cropped_size( $side )
+    {
+        return metaslider_image_cropped_size(  $side, $this->settings );
+    }
 }

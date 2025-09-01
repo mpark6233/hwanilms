@@ -655,7 +655,7 @@ if ( ! class_exists( 'um\core\Roles_Capabilities' ) ) {
 		 *
 		 * @return array
 		 */
-		function get_roles( $add_default = false, $exclude = null ) {
+		public function get_roles( $add_default = false, $exclude = null ) {
 			global $wp_roles;
 
 			if ( empty( $wp_roles ) ) {
@@ -670,15 +670,22 @@ if ( ! class_exists( 'um\core\Roles_Capabilities' ) ) {
 
 			if ( $exclude ) {
 				foreach ( $exclude as $role ) {
-					unset ( $roles[ $role ] );
+					unset( $roles[ $role ] );
 				}
 			}
 
-			$roles = array_map( 'stripslashes', $roles );
+			$roles = array_map(
+				function( $role ) {
+					if ( is_string( $role ) ) {
+						return stripslashes( $role );
+					}
+					return $role;
+				},
+				$roles
+			);
 
 			return $roles;
 		}
-
 
 		/**
 		 * Current user can
@@ -688,28 +695,30 @@ if ( ! class_exists( 'um\core\Roles_Capabilities' ) ) {
 		 *
 		 * @return bool|int
 		 */
-		function um_current_user_can( $cap, $user_id ) {
+		public function um_current_user_can( $cap, $user_id ) {
 			if ( ! is_user_logged_in() ) {
 				return false;
 			}
 
+			$user_id = absint( $user_id ); // typecast
+
 			$return = 1;
 
-			um_fetch_user( get_current_user_id() );
+			if ( get_current_user_id() !== um_user( 'ID' ) ) {
+				$temp_id = um_user( 'ID' );
+				um_fetch_user( get_current_user_id() );
+			}
 
 			$current_user_roles = $this->get_all_user_roles( $user_id );
 
-			switch( $cap ) {
+			switch ( $cap ) {
 				case 'edit':
-
-					if ( get_current_user_id() == $user_id ) {
-						if ( um_user( 'can_edit_profile' ) ) {
-							$return = 1;
-						} else {
+					if ( get_current_user_id() === $user_id ) {
+						if ( ! um_user( 'can_edit_profile' ) ) {
 							$return = 0;
 						}
 					} else {
-
+						// don't merge these `if` conditions!
 						if ( ! um_user( 'can_access_private_profile' ) && UM()->user()->is_private_profile( $user_id ) ) {
 							$return = 0;
 						} else {
@@ -718,77 +727,75 @@ if ( ! class_exists( 'um\core\Roles_Capabilities' ) ) {
 							} else {
 								if ( um_user( 'can_edit_roles' ) && ( empty( $current_user_roles ) || count( array_intersect( $current_user_roles, um_user( 'can_edit_roles' ) ) ) <= 0 ) ) {
 									$return = 0;
-								} else {
-									$return = 1;
 								}
 							}
 						}
 					}
-
 					break;
 
 				case 'delete':
-					if ( ! um_user( 'can_delete_everyone' ) )
+					if ( ! um_user( 'can_delete_everyone' ) ) {
 						$return = 0;
-					elseif ( um_user( 'can_delete_roles' ) && ( empty( $current_user_roles ) || count( array_intersect( $current_user_roles, um_user( 'can_delete_roles' ) ) ) <= 0 ) )
+					} elseif ( um_user( 'can_delete_roles' ) && ( empty( $current_user_roles ) || count( array_intersect( $current_user_roles, um_user( 'can_delete_roles' ) ) ) <= 0 ) ) {
 						$return = 0;
+					}
 					break;
 
 			}
 
-			um_fetch_user( $user_id );
+			if ( ! empty( $temp_id ) ) {
+				um_fetch_user( $temp_id );
+			}
 
 			return $return;
 		}
 
-
 		/**
-		 * User can ( role settings )
+		 * User can (role settings)
 		 *
 		 * @param $permission
 		 * @return bool|mixed
 		 */
-		function um_user_can( $permission ) {
-			if ( ! is_user_logged_in() )
+		public function um_user_can( $permission ) {
+			if ( ! is_user_logged_in() ) {
 				return false;
+			}
 
 			$user_id = get_current_user_id();
-			$role = UM()->roles()->get_priority_user_role( $user_id );
+			$role    = UM()->roles()->get_priority_user_role( $user_id );
 
 			$permissions = $this->role_data( $role );
-
 			/**
-			 * UM hook
+			 * Filters User Permissions.
 			 *
-			 * @type filter
-			 * @title um_user_permissions_filter
-			 * @description Change User Permissions
-			 * @input_vars
-			 * [{"var":"$permissions","type":"array","desc":"User Permissions"},
-			 * {"var":"$user_id","type":"int","desc":"User ID"}]
-			 * @change_log
-			 * ["Since: 2.0"]
-			 * @usage
-			 * <?php add_filter( 'um_user_permissions_filter', 'function_name', 10, 2 ); ?>
-			 * @example
-			 * <?php
-			 * add_filter( 'um_user_permissions_filter', 'my_user_permissions', 10, 2 );
+			 * @param {array} $permissions User Permissions.
+			 * @param {int}   $user_id     User ID.
+			 *
+			 * @return {array} User Permissions.
+			 *
+			 * @since 2.0
+			 * @hook um_user_permissions_filter
+			 *
+			 * @example <caption>Add custom user permissions.</caption>
 			 * function my_user_permissions( $permissions, $user_id ) {
 			 *     // your code here
 			 *     return $permissions;
 			 * }
-			 * ?>
+			 * add_filter( 'um_user_permissions_filter', 'my_user_permissions', 10, 2 );
 			 */
 			$permissions = apply_filters( 'um_user_permissions_filter', $permissions, $user_id );
 
-			if ( isset( $permissions[ $permission ] ) && is_serialized( $permissions[ $permission ] ) )
-				return unserialize( $permissions[ $permission ] );
+			if ( isset( $permissions[ $permission ] ) && is_serialized( $permissions[ $permission ] ) ) {
+				return maybe_unserialize( $permissions[ $permission ] );
+			}
 
-			if ( isset( $permissions[ $permission ] ) && is_array( $permissions[ $permission ] ) )
+			if ( isset( $permissions[ $permission ] ) && is_array( $permissions[ $permission ] ) ) {
 				return $permissions[ $permission ];
+			}
 
-			if ( isset( $permissions[ $permission ] ) && $permissions[ $permission ] == 1 )
+			if ( isset( $permissions[ $permission ] ) && $permissions[ $permission ] == 1 ) {
 				return true;
+			}
 
 			return false;
 		}

@@ -2,9 +2,9 @@
 Contributors: emrevona
 Donate link: https://profiles.wordpress.org/emrevona/
 Tags: cache, Optimize, performance, PageSpeed, core web vitals
-Requires at least: 3.3
-Tested up to: 6.6
-Stable tag: 1.3.1
+Requires at least: 5.3
+Tested up to: 6.8
+Stable tag: 1.3.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,7 +58,7 @@ WP Fastest Cache is not only a wp cache plugin but also a speed optimization wor
 
 <h4>Premium Performance Optimization</h4>
 
-The free version is enough to speed up your site but in the premium version there are extra features such as Mobile Cache, Widget Cache, Minify HTML Plus, Minify CSS Plus, Minify JS, Combine JS Plus, Defer Javascript, Optimize Images, Convert WebP, Database Cleanup, Google Fonts Async, Lazy Load for super fast load times.
+The free version is enough to speed up your site but in the premium version there are extra features such as Mobile Cache, Widget Cache, Minify HTML Plus, Minify CSS Plus, Minify JS, Combine JS Plus, Defer Javascript, Optimize Images, Convert WebP, Database Cleanup, Google Fonts Async, Lazy Load and Delay JS for super fast load times.
 
 1. Mobile Cache
 2. Widget Cache
@@ -72,6 +72,7 @@ The free version is enough to speed up your site but in the premium version ther
 10. Database Cleanup - The Database Cleanup feature clears out all of the garbage datas such as post revisions, trashed posts & pages, comments from trash & spam, trackbacks and pingbacks, transient options etc.
 11. Google Fonts Async
 12. Lazy Load - Defer offscreen images. Consider lazy-loading offscreen and hidden images after all critical resources have finished loading to lower time to interactive
+12. Delay JS - The Delay JavaScript feature helps reduce the 'Reduce unused JavaScript' warning in the Google PageSpeed Insights tool
 
 <h4>Information</h4>
 
@@ -81,11 +82,11 @@ WP Fastest Cache is compatible with most popular plugins such as Contact Form 7,
 
 <h4>Supported Languages</h4>
 
-Although there are over 7000 languages spoken in the world today, we feel very lucky to support 28 languages for now.
+Although there are over 7000 languages spoken in the world today, we feel very lucky to support 30 languages for now.
 
 However, localizing or adapting a plugin to another language or culture is time consuming and a demanding task. That's where the amazing Translation Contributors team of WordPress comes into play. These selfless people spent their precious time without expecting anything in return so that other people can use the add-ons more easily. We sincerely thank all of them.
 
-Chinese Simplified (China), Chinese Traditional (Taiwan), Czech, Dutch (Belgium), Dutch (Netherlands), English (South Africa), English (UK), Finnish, French (France), Galician, German (Germany), Hungarian, Indonesian, Italian, Japanese, Korean (Korea), Persian, Russian, Slovak (Slovakia), Slovenian, Spanish (Argentina), Spanish (Colombia), Spanish (Ecuador), Spanish (Mexico), Spanish (Spain), Spanish (Venezuela), Swedish, Turkish
+Chinese Simplified (China), Chinese Traditional (Taiwan), Czech, Dutch (Belgium), Dutch (Netherlands), English (South Africa), English (UK), Finnish, French (France), Galician, German (Germany), Hungarian, Indonesian, Italian, Japanese, Korean (Korea), Persian, Russian, Slovak (Slovakia), Slovenian, Spanish (Argentina), Spanish (Chile), Spanish (Colombia), Spanish (Ecuador), Spanish (Mexico), Spanish (Spain), Spanish (Venezuela), Swedish, Turkish, Ukrainian
 
 == Installation ==
 
@@ -117,8 +118,48 @@ Chinese Simplified (China), Chinese Traditional (Taiwan), Czech, Dutch (Belgium)
 
 == Changelog ==
 
+= 1.3.9 =
+* <strong>[Improvement]</strong> Replaced manual <script> output in print_my_inline_script() with wp_print_inline_script_tag() for better compatibility and cleaner code
+* Fixed: RewriteCond syntax to correctly detect HTTPS connections
+
+= 1.3.8 =
+* Added a condition to exclude <script type="module"> tags from js combining 
+* Fixed: Issue where the cache was not being cleared when a page was deleted
+* Fixed: PHP fatal error caused by an undefined function current_datetime() in cache.php on line 1130
+* Added support for fetching and processing multiple pages of Cloudflare zones to ensure all potential matches are considered
+
+= 1.3.7 =
+* <strong>[Improvement]</strong> Serve cached content via .htaccess rules instead of PHP when URLs include the fbclid query string
+* <strong>[FEATURE]</strong> Added support for Spanish (Chile) and Ukrainian languages
+* to update translation files
+* to fix PHP Fatal error: Uncaught TypeError: method_exists(): Argument #1 ($object_or_class) must be of type object|string, array given in cdn.php:383
+* <strong>[Improvement]</strong> Added specific handling for BunnyCDN 403 errors
+
+= 1.3.6 =
+* Prevented unnecessary cache deletion for pending comments marked as spam or moved to trash
+* Updated caching behavior to serve URLs with Google Merchant Center query strings (e.g., /?srsltid) from the cache, improving performance
+
+= 1.3.5 =
+* Updated cache creation time display to follow WordPress date and time format settings
+* Removed the 'Static CSS File Generation' warning when using the Divi theme.
+
+= 1.3.4 =
+* to fix PHP Fatal error: Class "VarnishWPFC" not found in preload.php
+* to fix Undefined property: stdClass::$total in preload.php on line 753
+
+= 1.3.3 =
+* <strong>[Improvement]</strong> Toolbar style adjusted to align with WordPress standard for better consistency and user experience
+* to change the cache path for the Polylang-Pro plugin
+* <strong>[Improvement]</strong> Modified the toolbar menu of WP Fastest Cache plugin to improve usability and navigation
+* <strong>[FEATURE]</strong> Added a filter that allows users to easily remove the WP Fastest Cache menu from the admin toolbar [<a target="_blank" href="https://www.wpfastestcache.com/features/clear-cache-link-on-the-toolbar/#wpft-method-1-using-filter">Details</a>]
+
+= 1.3.2 =
+* <strong>[Improvement]</strong> Added a new action to handle the addition of keyword items in the Preload Wizard
+* Corrected typos in the Cloudflare CDN integration wizard and in the DB tab
+* <strong>[FEATURE]</strong> Added a filter to define the token for preload functionality [<a target="_blank" href="https://www.wpfastestcache.com/features/clear-cache-via-url/#wpft-method-2-using-filter">Details</a>]
+
 = 1.3.1 =
-* <strong>[FEATURE]</strong> Added a filter that allows users to easily remove the cache creation comment from the footer
+* <strong>[FEATURE]</strong> Added a filter that allows users to easily remove the cache creation comment from the footer [<a target="_blank" href="https://www.wpfastestcache.com/tutorial/how-to-remove-the-footer-comment/">Details</a>]
 * <strong>[Improvement]</strong> Added a warning notification to alert users if the "Element Caching" option in the Elementor plugin is not inactive [<a target="_blank" href="https://www.wpfastestcache.com/tutorial/elementor-plugin-settings/">Details</a>]
 * Refactored `remove_url_parameters()` for improved efficiency
 * Fix issue: Logic to determine the $number variable based on the WPFC_PRELOAD_NUMBER constant for preload when a sitemap is used

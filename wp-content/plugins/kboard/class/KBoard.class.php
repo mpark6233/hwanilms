@@ -262,6 +262,10 @@ class KBoard {
 				}
 			}
 		}
+		else if(get_option('kboard_allow_search_engines_always_read') && kboard_is_bot()){
+			// 검색엔진 검색로봇 허용
+			$is_reader = true;
+		}
 		return apply_filters('kboard_is_reader', $is_reader, $user_id, $secret, $this);
 	}
 	
@@ -658,6 +662,38 @@ class KBoard {
 	}
 	
 	/**
+	 * 게시글 표시 수 제외 옵션을 확인한다.
+	 * @return int
+	 */
+	public function getExceptCountList(){
+		global $wpdb;
+		$results = '';
+		if($this->meta->except_count_type == '1'){//답변 제외
+			$results = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->prefix}kboard_board_content` WHERE `board_id`='$this->id' AND `parent_uid` = 0 AND `status`!='trash'");
+			return intval($results);
+		}
+		else if($this->meta->except_count_type == '2'){//공지사항 제외
+			$results = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->prefix}kboard_board_content` WHERE `board_id`='$this->id' AND `notice` != 'true' AND `status`!='trash'");
+			return intval($results);
+		}
+		else if($this->meta->except_count_type == '3'){//답변, 공지사항 제외
+			$results = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->prefix}kboard_board_content` WHERE `board_id`='$this->id' AND `parent_uid` = 0 AND `notice` != 'true' AND `status`!='trash'");
+			return intval($results);
+		}
+		else if($this->meta->except_count_type == '4'){//글 제목 키워드 설정 제외
+			if($this->meta->except_count_type_keyword){
+				$results = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->prefix}kboard_board_content` WHERE `board_id`='$this->id' AND `title`  NOT LIKE '%{$this->meta->except_count_type_keyword}%' AND `status`!='trash'");
+				return intval($results);
+			}
+			else{
+				$results = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->prefix}kboard_board_content` WHERE `board_id`='$this->id' AND `status`!='trash'");
+				return intval($results);
+			}
+		}
+		return $results;
+	}
+	
+	/**
 	 * 게시판을 삭제한다.
 	 * @param int $board_id
 	 */
@@ -762,6 +798,11 @@ class KBoard {
 		if(!$this->id){
 			return 0;
 		}
+		
+		if($this->meta->except_count_type){
+			return $this->getExceptCountList();
+		}
+		
 		if(!$this->meta->list_total || $this->meta->list_total<=0){
 			$this->meta->list_total = $this->getTotal();
 			
@@ -790,10 +831,17 @@ class KBoard {
 	}
 	
 	/**
+	 * 본인의 글만 보기로 설정한다.
+	 */
+	public function setPrivate(){
+		$this->row->private = true;
+	}
+	
+	/**
 	 * 본인의 글만 보기인지 확인한다.
 	 */
 	public function isPrivate(){
-		if($this->meta->permission_list && !$this->isAdmin()){
+		if(($this->meta->permission_list || (isset($this->row->private) && $this->row->private == true)) && !$this->isAdmin()){
 			return true;
 		}
 		return false;

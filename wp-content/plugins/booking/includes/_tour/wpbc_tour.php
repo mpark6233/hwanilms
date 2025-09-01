@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }                                             // Exit if accessed directly
 
-//FixIn: 10.4.0.1
+// FixIn: 10.4.0.1.
 
 class WPBC_Tour_01 {
 
@@ -42,6 +42,7 @@ class WPBC_Tour_01 {
 	 */
 	public function ajax_WPBC_AJX_Response() {
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 		if ( ! isset( $_POST['action_params'] ) || empty( $_POST['action_params'] ) ) {
 			exit;
 		}
@@ -53,7 +54,7 @@ class WPBC_Tour_01 {
 		$nonce_post_key = 'nonce';
 		$result_check   = check_ajax_referer( $action_name, $nonce_post_key );
 
-		$user_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) ) ? intval( $_REQUEST['wpbc_ajx_user_id'] ) : wpbc_get_current_user_id();
+		$user_id = ( isset( $_REQUEST['wpbc_ajx_user_id'] ) ) ? intval( $_REQUEST['wpbc_ajx_user_id'] ) : wpbc_get_current_user_id();  // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 
 		/**
 		 * SQL  ---------------------------------------------------------------------------
@@ -89,6 +90,7 @@ class WPBC_Tour_01 {
 		$defaults      = array(
 			'new_listing_params'   => false,        // required for Import Google Calendar bookings
 			'after_action_result'  => false,
+			/* translators: 1: ... */
 			'after_action_message' => sprintf( __( 'No actions %s has been processed.', 'booking' )
 				, ' <strong>' . $request_params['booking_action'] . '</strong> ' )
 		);
@@ -104,6 +106,7 @@ class WPBC_Tour_01 {
 		//------------------------------------------------------------------------------------------------------------------
 		// Send JSON. Its will make "wp_json_encode" - so pass only array, and This function call wp_die( '', '', array( 'response' => null, ) )		Pass JS OBJ: response_data in "jQuery.post( " function on success.
 		wp_send_json( array(
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			'ajx_action_params'                      => $_REQUEST['action_params'],                     // Do not clean input parameters
 			'ajx_cleaned_params'                     => $request_params,	                            // Cleaned input parameters
 			'ajx_after_action_message'               => $action_result['after_action_message'],	        // Message to  show
@@ -120,10 +123,9 @@ class WPBC_Tour_01 {
 	 */
 	public function init_load_css_js() {
 
-
-//TODO: Uncomment this:     // JS & CSS Load in all Plugins menus
-//		add_action( 'wpbc_enqueue_js_files', array(  $this, 'js_load_files' ),      50 );
-//		add_action( 'wpbc_enqueue_css_files', array( $this, 'enqueue_css_files' ),  50 );
+		//TODO: Uncomment this:     // JS & CSS Load in all Plugins menus
+		//		add_action( 'wpbc_enqueue_js_files', array(  $this, 'js_load_files' ),      50 );
+		//		add_action( 'wpbc_enqueue_css_files', array( $this, 'enqueue_css_files' ),  50 );
 
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_tour_in_plugins' ) );
@@ -152,19 +154,18 @@ class WPBC_Tour_01 {
 
 		if ( ( is_admin() ) && ( in_array( $where_to_load, array( 'admin', 'both' ) ) ) ) {
 
-			wp_enqueue_script( 'wpbc_tether',    wpbc_plugin_url( '/assets/libs/tether/tether.js' ),                    array( 'jquery' ),          WP_BK_VERSION_NUM, $in_footer );
-			wp_enqueue_script( 'wpbc_shepherd',  wpbc_plugin_url( '/assets/libs/tether-shepherd/shepherd.js' ),         array( 'wpbc_tether' ),     WP_BK_VERSION_NUM, $in_footer );
+			wp_enqueue_script( 'wpbc_tether',    wpbc_plugin_url( '/vendors/tether/tether.js' ),                    array( 'jquery' ),          WP_BK_VERSION_NUM, $in_footer );
+			wp_enqueue_script( 'wpbc_shepherd',  wpbc_plugin_url( '/vendors/tether-shepherd/shepherd.js' ),         array( 'wpbc_tether' ),     WP_BK_VERSION_NUM, $in_footer );
 			wp_enqueue_script( 'wpbc_tour_01',   trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/wpbc_tour.js',  array( 'wpbc_shepherd' ),   WP_BK_VERSION_NUM, $in_footer );
-			//wp_enqueue_script( 'wpbc_shepherd',   wpbc_plugin_url( '/assets/libs/shepherd.js/dist/esm/shepherd.mjs' )  , array( 'wpbc_all' ), WP_BK_VERSION_NUM, $in_footer );
-
 
 			$tour_data = array(
 				'plugins_page'    => array(
+					/* translators: 1: ... */
 					'title'  => sprintf( __( 'Welcome to %s', 'booking' ), '<strong>WP Booking Calendar</strong>' ),
-					'text'   => sprintf( __( 'This quick product tour will show you how %s help you to manage bookings.', 'booking' ), '<strong>WP Booking Calendar</strong>' ),
+					'text'   => sprintf( __('We\'ll guide you through the steps to set up WP Booking Calendar on your site.','booking'), '<strong>WP Booking Calendar</strong>' ),
 					'button' => array(
 						'text' => __( 'Let\'s go', 'booking' ),
-						'url'  => 'admin.php?page=wpbc-setup'
+						'url'  => wpbc_get_setup_wizard_page_url()      //  URL to  start  new Guide: wpbc_get_settings_url() . '&wpbc_setup_wizard=reset&_wpnonce=' . wp_create_nonce( 'wpbc_settings_url_nonce' )
 					)
 				),
 				'setup_page'      => array(
@@ -183,12 +184,6 @@ class WPBC_Tour_01 {
 
 		if ( ( is_admin() ) && ( in_array( $where_to_load, array( 'admin', 'both' ) ) ) ) {
 
-			//wp_enqueue_style( 'wpbc-tour_01', trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/tour.css', array(), WP_BK_VERSION_NUM );
-			// wp_enqueue_style( 'wpbc_tour_01', wpbc_plugin_url('assets/libs/shepherd.js/dist/css/shepherd.css'), array(), WP_BK_VERSION_NUM );
-			// wp_enqueue_style( 'wpbc_shepherd', trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/tether-shepherd/shepherd-theme-arrows-plain-buttons.css', array(), WP_BK_VERSION_NUM );
-			//wp_enqueue_style( 'wpbc_shepherd', trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/tether-shepherd/shepherd-theme-dark.css', array(), WP_BK_VERSION_NUM );
-			//wp_enqueue_style( 'wpbc_shepherd', trailingslashit( plugins_url( '', __FILE__ ) ) .   '_out/tether-shepherd/shepherd-theme-arrows.css', array(), WP_BK_VERSION_NUM );
-
 			wp_enqueue_style( 'wpbc_tour_01',       trailingslashit( plugins_url( '', __FILE__ ) ) . '_out/wpbc-tour.css',       array(), WP_BK_VERSION_NUM );
 
 		}
@@ -200,11 +195,10 @@ class WPBC_Tour_01 {
  * Just for loading CSS and  JavaScript files   and  define Ajax hook
  */
 if (
-	( ! wpbc_is_this_demo() )
+	( ! wpbc_is_this_demo() ) &&
+	( wpbc_setup_wizard_page__is_need_start() ) &&
+	( wpbc_is_user_can_access_wizard_page() )
 ) {
 	$js_css_loading = new WPBC_Tour_01;
-	//$js_css_loading->define_ajax_hook();
-	//if ( ! empty( get_option( 'booking_feedback_03' ) ) ) {
-		$js_css_loading->init_load_css_js();
-	//}
+	$js_css_loading->init_load_css_js();
 }

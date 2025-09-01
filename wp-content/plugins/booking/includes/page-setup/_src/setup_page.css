@@ -3,6 +3,10 @@
 .wpbc_top_tabs_sub_menu {
   display: none;
 }
+/* Hide Top Right Banner for purchase with  discount in Setup  page */
+.wpbc_header_news {
+    display: none !important;
+}
 /* Loader Spinner and Text for Main Container (including calendar) */
 .wpbc_calendar_loading {
     width:95%;
@@ -118,6 +122,17 @@
     line-height: 2.21;
     align-items: first baseline;
 }
+/* required for rotating around center dot */
+.wpbc_setup_wizard_page__section_footer .wpbc_container .wpbc_button_light .wpbc_spin{
+    line-height: 50%;
+    align-self: center;
+}
+@media screen and (max-width: 782px) {
+    .wpbc__container_place__footer_buttons.wpbc_container.wpbc_container_booking_form {
+      flex: 1 1 100%;
+    }
+}
+
 /* Small  links at  the bottom  of the wizard */
 .wpbc_exit_link_small {
     width:100%;
@@ -144,104 +159,9 @@
   color:#e65d59;
 }
 
-
 /* ------------------------------------------------------------------------------------------------------------------ */
-/* Timeline Steps: */
+/* Timeline Steps: moved  -> ../includes/__css/client/form__steps_timeline.css */
 /* ------------------------------------------------------------------------------------------------------------------ */
-.wpbc__container_place__steps_for_timeline,
-.wpbc_page_top__header_tabs .wpdvlp-top-tabs .nav-tab.wpbc__container_place__steps_for_timeline {
-    flex: 1 1 400px;
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
-    align-items: center;
-    height: 50px;
-    margin: 0 auto 35px;
-    padding: 0;
-    border: 0;
-}
-.wpbc_page_top__header_tabs .wpdvlp-top-tabs .nav-tab.wpbc__container_place__steps_for_timeline{
-    display: none;
-}
-    /**   // This Code for showing  'Timeline Steps' in the TOP menu bar   **
-
-         .wpbc__container_place__steps_for_timeline{
-            display: none;
-         }
-        .wpbc_page_top__header_tabs .wpdvlp-top-tabs .nav-tab.wpbc__container_place__steps_for_timeline{
-            display: flex;
-            margin: 0 30px auto;
-        }
-
-        @media screen and (max-width: 600px) {
-            .wpbc_page_top__header_tabs .wpdvlp-top-tabs .nav-tab.wpbc__container_place__steps_for_timeline {
-                display: none;
-            }
-            .wpbc_setup_wizard_page_container .wpbc__container_place__steps_for_timeline {
-                display: flex;
-            }
-        }
-    */
-
-
-.wpbc_steps_for_timeline_container{
-    max-width: Min(400px,100%);
-    margin: 3px 0 0;
-    width: 100%;
-    --wpbc_steps_for_timeline_step_color: #d6d6d6;
-    --wpbc_steps_for_timeline_active_color: #64aa45;
-    --wpbc_steps_for_timeline_failed_color: #e76a39;
-}
-.wpbc_steps_for_timeline {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
-    align-items: center;
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step_line {
-    background: var(--wpbc_steps_for_timeline_step_color);
-    height: 2px;
-    margin: 0 7px;
-    width: 100%;
-}
-
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step_line.wpbc_steps_for_timeline_line_active {
-  background:var(--wpbc_steps_for_timeline_active_color);
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step {
-  border:none;
-  background-color: var(--wpbc_steps_for_timeline_step_color);
-  border-radius:50%;
-  flex-shrink:0;
-  height:16px;
-  width:16px
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step .icon {
-  display:none;
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step.wpbc_steps_for_timeline_step_active,
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step.wpbc_steps_for_timeline_step_completed {
-  background-color:var(--wpbc_steps_for_timeline_active_color);
-  position:relative
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step.wpbc_steps_for_timeline_step_failed {
-  background-color:var(--wpbc_steps_for_timeline_active_color);
-  position:relative
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step.wpbc_steps_for_timeline_step_completed .icon-success,
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step.wpbc_steps_for_timeline_step_failed .icon-failed {
-  color:#fff;
-  display:block;
-  position:absolute;
-  left:3px;
-  top:3px
-}
-.wpbc_steps_for_timeline .wpbc_steps_for_timeline_step.wpbc_steps_for_timeline_step_failed .icon-failed {
-  left:4px;
-  top:2px
-}
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 /* Sections Content: */
@@ -269,6 +189,10 @@ div.wpbc_container.wpbc_form .wpbc_swp_section label {
 /* ------------------------------------------------------------------------------------------------------------------ */
 /* TODO: delete this */
 
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* ==  Section  Windows  ==  */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
 .wpbc_widgets {
   width: 100%;
   display: flex;
@@ -276,15 +200,18 @@ div.wpbc_container.wpbc_form .wpbc_swp_section label {
   justify-content: flex-start;
   align-items: flex-start;
 }
+
 .wpbc_widgets .wpbc_widget {
-  margin: 0 0 20px;
-  width: 100%;
-  flex: 1 1 100%;
+    margin: 0 0 20px;
+    width: 100%;
+    flex: 1 1 100%;
+    border: 1px solid #ccc;
+    border-radius: 0 0 2px 2px;
 }
 .wpbc_widget .wpbc_widget_header {
   width: 100%;
   height: 44px;
-  border: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   background: #fff;
   font-weight: 600;
   text-shadow: none;
@@ -303,4 +230,93 @@ div.wpbc_container.wpbc_form .wpbc_swp_section label {
   border-left: 1px solid #ccc;
   padding: 5px 10px;
   color: #0e70b7;
+}
+.wpbc_widget .wpbc_widget_content {
+  padding: 10px 15px;
+}
+.wpbc_widget_preview_booking_form.wpbc_widget .wpbc_widget_content {
+  padding-bottom: 70px;
+}
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* ==  Container for shortcodes      ==     e.g.:   [booking resource_id=1]     */
+/* ------------------------------------------------------------------------------------------------------------------ */
+.wpbc_shortcode_container {
+    width: 100%;
+    max-width: 880px;
+    min-width: 341px;
+    margin: auto;
+    /*margin-top: calc(-1.7em - calc(0.25em + 8px));*/
+}
+/* Stripes Background */
+.wpbc_widget_preview_booking_form .wpbc_widget_content {
+    /*background: repeating-linear-gradient(135deg, #fff, #fff 4px, #eaeaeb 4px, #eaeaeb 8px);*/
+    /*background: repeating-linear-gradient(135deg, #fff, #fff 4px, #f5f5ef 4px, #f5f5cf 8px);*/
+    /*background: repeating-linear-gradient(-45deg, #eee 0 3px, var(--wpbc_cal-main-background-color,#fff) 3px 8px);*/
+    /*background: repeating-linear-gradient(-45deg, #f9f8f7 0 7px, var(--wpbc_cal-main-background-color,#fff) 7px 12px);*/
+    /*background: repeating-linear-gradient(-45deg, #f9f9f8 0 3px, var(--wpbc_cal-main-background-color,#fff) 3px 5px);*/
+    background: repeating-linear-gradient(-45deg,#f9f9f8 0 3px, #fff 3px 5px);
+}
+/* Mobile Buttons */
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_a{
+    text-decoration: none;
+    outline: none;
+    box-shadow: none;
+    margin: 0 5px;
+    color: #6b96ce;
+}
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_a.active,
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_a.active:focus{
+    color: #52595f;
+}
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_a:hover,
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_a:focus {
+    color: #2f76d3;
+    text-decoration: none;
+    outline: none;
+    box-shadow: none;
+}
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_icon::before{
+    font-size: 20px;
+}
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_icon.wpbc-bi-display::before,
+.wpbc_section_preview_mobile_btn_bar .wpbc_preview_icon.wpbc_icn_computer::before{
+    font-size: 21px;
+}
+.wpbc_message_wrapper.wpbc__version__free {
+  /*display: none;*/
+}
+/* Dark  theme */
+.wpbc_center_preview.wpbc_theme_dark_1,
+.wpbc_widget_preview_booking_form .wpbc_widget_content.wpbc_theme_dark_1     {
+    /*Black Color*/
+    background: #272727;
+    background: repeating-linear-gradient(-45deg, #383838 0 3px,#2f2f2f 3px 5px);
+    color:#fff;
+}
+
+.wpbc_widget_preview_booking_form .wpbc_widget_content.wpbc_theme_dark_1 .wpbc-settings-notice {
+    color: #d7d7ca;
+    background: #595959;
+    box-shadow: 0 1px 3px #313131;
+    border: 0;
+    border-left: 4px solid #9580aa;
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* ==  Section  for Appointment type selection  at Step #4 ==  */
+/* ------------------------------------------------------------------------------------------------------------------ */
+.wpbc_container_booking_form .wpbc__field .wpbc_ui_booking_timeslot_picker__get_on_off__div {
+	padding-left: 15px;
+}
+
+.wpbc_container_booking_form .wpbc__field .booking_appointments_type__get_on_off label.wpbc-form-radio,
+.wpbc_container_booking_form .wpbc__field .booking_appointments_type__get_on_off label.wpbc-form-radio:hover{
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: center;
+	margin: 10px 0;
+	font-weight: 400;
+}
+.wpbc_container_booking_form .wpbc__field .booking_appointments_type__get_on_off .wpbc-form-radio input {
+	margin: 0 10px 0 5px;
 }

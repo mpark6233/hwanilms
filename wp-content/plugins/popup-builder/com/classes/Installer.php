@@ -13,17 +13,17 @@ class Installer
 
 		foreach ($tables as $table) {
 			$pbsgTableName = $wpdb->prefix.$blogId.$table;			
-			$wpdb->query( $wpdb->prepare( "CREATE TABLE IF NOT EXISTS $pbsgTableName") );
+			$wpdb->query( "CREATE TABLE IF NOT EXISTS $pbsgTableName" );
 		}
 
 		return true;
 	}
-
+ 
 	private static function getAllNeededTables()
 	{
 		$tables = array();
 		global $SGPB_POPUP_TYPES;
-		$popupTypes = $SGPB_POPUP_TYPES['typeName'];
+		$popupTypes = is_array($SGPB_POPUP_TYPES) && isset($SGPB_POPUP_TYPES['typeName']) ? $SGPB_POPUP_TYPES['typeName'] : null;
 
 		if (empty($popupTypes)) {
 			return $tables;

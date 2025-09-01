@@ -1,5 +1,7 @@
 <?php
 
+use Tribe__Events__Main as TEC;
+
 /**
  * Initialize Gutenberg editor blocks and styles
  *
@@ -373,24 +375,29 @@ class Tribe__Events__Editor extends Tribe__Editor {
 	 * Check if current admin page is post type `tribe_events`
 	 *
 	 * @since 4.7
+	 * @since 6.2.7 Adding support to load on site editor screen.
 	 *
 	 * @return bool
 	 */
-	public function is_events_post_type() {
-		return Tribe__Admin__Helpers::instance()->is_post_type_screen( Tribe__Events__Main::POSTTYPE );
+	public function is_events_post_type(): bool {
+		$current_screen = get_current_screen();
+
+		return Tribe__Admin__Helpers::instance()->is_post_type_screen( Tribe__Events__Main::POSTTYPE )
+		       || ( $current_screen instanceof WP_Screen && 'site-editor' === $current_screen->id );
 	}
 
 	/**
 	 * Check whether the current page is an edit post type page.
 	 *
 	 * @since 5.12.0
+	 * @since 6.2.7 Adding support to load on site editor screen.
 	 *
 	 * @return bool
 	 */
-	public function is_edit_screen() {
+	public function is_edit_screen(): bool {
 		$current_screen = get_current_screen();
 
-		return 'post' === $current_screen->base;
+		return 'post' === $current_screen->base || 'site-editor' === $current_screen->id;
 	}
 
 	/**
@@ -407,14 +414,20 @@ class Tribe__Events__Editor extends Tribe__Editor {
 		 * Allows for filtering the embedded Google Maps API URL.
 		 *
 		 * @since 4.7
+		 * @since 6.0.13 Added the `$gmaps_api_callback` parameter.
 		 *
 		 * @param string $api_url The Google Maps API URL.
+		 * @param string $gmaps_api_callback The Google Maps API callback.
 		 */
-		$gmaps_api_key = tribe_get_option( 'google_maps_js_api_key' );
-		$gmaps_api_url = 'https://maps.googleapis.com/maps/api/js';
+		$gmaps_api_key      = tribe_get_option( 'google_maps_js_api_key' );
+		$gmaps_api_url      = 'https://maps.googleapis.com/maps/api/js';
+		$gmaps_api_callback = 'Function.prototype';
 
 		if ( ! empty( $gmaps_api_key ) && is_string( $gmaps_api_key ) ) {
-			$gmaps_api_url = add_query_arg( [ 'key' => $gmaps_api_key ], $gmaps_api_url );
+			$gmaps_api_url = add_query_arg( [
+				'key'      => $gmaps_api_key,
+				'callback' => $gmaps_api_callback,
+			], $gmaps_api_url );
 		}
 
 		/**
@@ -426,7 +439,7 @@ class Tribe__Events__Editor extends Tribe__Editor {
 		 */
 		$gmaps_api_url = apply_filters( 'tribe_events_google_maps_api', $gmaps_api_url );
 
-		tribe_asset(
+		tec_asset(
 			$plugin,
 			'tribe-events-editor-blocks-gmaps-api',
 			$gmaps_api_url,
@@ -441,87 +454,22 @@ class Tribe__Events__Editor extends Tribe__Editor {
 			]
 		);
 
-		tribe_asset(
+		tec_asset(
 			$plugin,
-			'tribe-the-events-calendar-data',
-			'app/data.js',
-			[],
+			'tribe-the-events-calendar-editor',
+			'app/main.js',
+			[ 'tec-common-php-date-formatter' ],
 			'enqueue_block_editor_assets',
 			[
 				'in_footer'    => false,
 				'localize'     => [],
 				'conditionals' => [ $this, 'is_events_post_type' ],
 				'priority'     => 101,
-			]
-		);
-		tribe_asset(
-			$plugin,
-			'tribe-the-events-calendar-editor',
-			'app/editor.js',
-			[],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => false,
-				'localize'     => [],
-				'conditionals' => [ $this, 'is_events_post_type' ],
-				'priority'     => 102,
-			]
-		);
-		tribe_asset(
-			$plugin,
-			'tribe-the-events-calendar-icons',
-			'app/icons.js',
-			[],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => false,
-				'localize'     => [],
-				'conditionals' => [ $this, 'is_events_post_type' ],
-				'priority'     => 103,
-			]
-		);
-		tribe_asset(
-			$plugin,
-			'tribe-the-events-calendar-hoc',
-			'app/hoc.js',
-			[],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => false,
-				'localize'     => [],
-				'conditionals' => [ $this, 'is_events_post_type' ],
-				'priority'     => 104,
-			]
-		);
-		tribe_asset(
-			$plugin,
-			'tribe-the-events-calendar-elements',
-			'app/elements.js',
-			[],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => false,
-				'localize'     => [],
-				'conditionals' => [ $this, 'is_events_post_type' ],
-				'priority'     => 105,
+				'group_path'   => TEC::class . '-packages',
 			]
 		);
 
-		tribe_asset(
-			$plugin,
-			'tribe-the-events-calendar-blocks',
-			'app/blocks.js',
-			[],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => false,
-				'localize'     => [],
-				'conditionals' => [ $this, 'is_events_post_type' ],
-				'priority'     => 106,
-			]
-		);
-
-		tribe_asset(
+		tec_asset(
 			$plugin,
 			'tec-widget-blocks',
 			'app/widgets.js',
@@ -536,13 +484,9 @@ class Tribe__Events__Editor extends Tribe__Editor {
 				'wp-i18n',
 				'wp-element',
 				'wp-editor',
-				'tribe-common-gutenberg-data',
-				'tribe-common-gutenberg-utils',
-				'tribe-common-gutenberg-store',
-				'tribe-common-gutenberg-icons',
-				'tribe-common-gutenberg-hoc',
-				'tribe-common-gutenberg-elements',
-				'tribe-common-gutenberg-components',
+				'tribe-common-gutenberg-vendor',
+				'tribe-common-gutenberg-modules',
+				'tribe-common-gutenberg-main',
 			],
 			'enqueue_block_editor_assets',
 			[
@@ -550,28 +494,14 @@ class Tribe__Events__Editor extends Tribe__Editor {
 				'localize'     => [],
 				'priority'     => 106,
 				'conditionals' => [ $this, 'is_edit_screen' ],
-			]
-		);
-
-		tribe_asset(
-			$plugin,
-			'legacy-widget',
-			'legacy-widget.js',
-			[
-				'admin-widgets',
-				'wp-widgets',
+				'group_path'   => TEC::class . '-packages',
 			],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => true,
-				'conditionals' => [ $this, 'is_edit_screen' ],
-			]
 		);
 
-		tribe_asset(
+		tec_asset(
 			$plugin,
 			'tec-widget-blocks-styles',
-			'app/widgets.css',
+			'app/style-widgets.css',
 			[
 				'wp-widgets',
 			],
@@ -579,10 +509,11 @@ class Tribe__Events__Editor extends Tribe__Editor {
 			[
 				'in_footer'    => false,
 				'conditionals' => [ $this, 'is_edit_screen' ],
+				'group_path'   => TEC::class . '-packages',
 			]
 		);
 
-		tribe_asset(
+		tec_asset(
 			$plugin,
 			'tec-blocks-category-icon-styles',
 			'tribe-admin-block-category-icons.css',
@@ -594,27 +525,16 @@ class Tribe__Events__Editor extends Tribe__Editor {
 			]
 		);
 
-		tribe_asset(
+		tec_asset(
 			$plugin,
-			'tribe-block-editor',
-			'app/editor.css',
+			'tribe-block-editor-main',
+			'app/style-main.css',
 			[],
 			'enqueue_block_editor_assets',
 			[
 				'in_footer'    => false,
 				'conditionals' => [ $this, 'is_events_post_type' ],
-			]
-		);
-
-		tribe_asset(
-			$plugin,
-			'tribe-block-editor-blocks',
-			'app/blocks.css',
-			[],
-			'enqueue_block_editor_assets',
-			[
-				'in_footer'    => false,
-				'conditionals' => [ $this, 'is_events_post_type' ],
+				'group_path'   => TEC::class . '-packages',
 			]
 		);
 	}

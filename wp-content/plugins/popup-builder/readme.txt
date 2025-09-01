@@ -4,11 +4,11 @@ Author: Popup Builder
 Author URI: https://popup-builder.com
 Plugin URI: https://popup-builder.com
 Donate link: https://popup-builder.com
-Tags: popup, pop up, wordpress popup, popup maker, exit popup, popup builder, wordpress popup plugin
+Tags: popup, pop up, wordpress popup, popup maker, popup builder
 Requires at least: 4.2
-Tested up to: 6.6.1
+Tested up to: 6.8.2
 Requires PHP: 5.3.3
-Stable tag: 4.3.4
+Stable tag: 4.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -145,6 +145,31 @@ Go to the Popup Builder settings and set your desired options.
 14. Registration popup
 
 == Changelog ==
+
+= Version 4.4.0
+* New feature: Allow to use *.webp format to create Popup with Image type.
+* Fix the PHP 8.2+ warning errors.
+
+= Version 4.3.9
+* Optimization the Popup data loading.
+* Fix the load_textdomain warning of Wordpress version 6.7 and higher.
+
+= Version 4.3.8
+* Fix the long page title issue.
+* Optimization the Popup Subscription Plus integration
+
+= Version 4.3.7
+* Fix the vulnerable to Sensitive Information Exposure When import the popups.
+
+= Version 4.3.6
+* Optimization the code for security.
+* Fix the issue with moving trash of Popup Countdown type.
+
+= Version 4.3.5
+* Optimization the code for security.
+* Fix the vulnerability issue: Stored XSS to backdoor creation.
+* Fix the  issue of Popup admin edit screen displays wrong.
+
 = Version 4.3.4
 * Fix the issue of Popup activates when scrolling on smartphone.
 * Fix the vulnerable to Sensitive Information Exposure.

