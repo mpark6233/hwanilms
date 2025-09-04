@@ -1,0 +1,90 @@
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /wp-content/uploads/
+Disallow: /wp-content/cache/
+Disallow: /wp-content/themes/*/
+Disallow: /wp-content/plugins/
+Disallow: /wp-includes/
+Disallow: /wp-json/
+Disallow: /wp-login.php
+Disallow: /wp-register.php
+Disallow: /search
+Disallow: /?s=
+Disallow: /*?*
+Disallow: /trackback/
+Disallow: /feed/
+Disallow: /comments/
+Disallow: /author/
+Disallow: */embed$
+Disallow: */attachment/
+Allow: /wp-content/uploads/*.jpg
+Allow: /wp-content/uploads/*.jpeg
+Allow: /wp-content/uploads/*.png
+Allow: /wp-content/uploads/*.gif
+Allow: /wp-content/uploads/*.pdf
+
+# Block aggressive crawlers
+User-agent: Bytespider
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: Applebot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: archive.org_bot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+# Allow legitimate search engines with crawl delay
+User-agent: Googlebot
+Crawl-delay: 1
+Allow: /
+
+User-agent: Bingbot
+Crawl-delay: 2
+Allow: /
+
+User-agent: Slurp
+Crawl-delay: 2
+Allow: /
+
+User-agent: DuckDuckBot
+Crawl-delay: 2
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Sitemap location (if you have one)
+# Sitemap: https://www.hwanil.ms.kr/sitemap.xml
